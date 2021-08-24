@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		About | 
+		title标题 | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -184,7 +184,7 @@ var _hmt = _hmt || [];
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/blog/uncategorized/test-url">
 										test
 									</a>
@@ -200,27 +200,53 @@ var _hmt = _hmt || [];
 	<div id="content">
 		<h1 id="article-title">
 
-	About
+	test
 </h1>
 <div class="article-meta">
 	
 	<span>Yury</span>
-	<span>2021-08-23 22:45:11</span>
+	<span>2021-08-23 21:43:36</span>
 		<div id="article-categories">
     
+		<span>Categories：</span>
+            
+    
 
+    
+		<span>Tags：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-tag" aria-hidden="true">
+                        <a href="/tags/test/">test</a>
+                        </i>
+                    </span>
+                
+            
     
 		</div>
 
 </div>
 
 <div id="article-content">
-	<blockquote>
-<p>about页面</p>
-</blockquote>
+	<h1 id="标题1"><a href="#标题1" class="headerlink" title="标题1"></a>标题1</h1><h2 id="标题2"><a href="#标题2" class="headerlink" title="标题2"></a>标题2</h2><h3 id="标题3"><a href="#标题3" class="headerlink" title="标题3"></a>标题3</h3><h4 id="标题4"><a href="#标题4" class="headerlink" title="标题4"></a>标题4</h4><p>主体内容</p>
 
 </div>
 
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/blog/uncategorized/hello-world">
+                hello-world
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
 
 
 
