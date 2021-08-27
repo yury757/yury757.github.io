@@ -111,12 +111,7 @@ var _hmt = _hmt || [];
 	
 
 		<li class="menu-item">
-			<a href="https://github.com/wujun234/uid-generator-spring-boot-starter" class="menu-item-link" target="_blank">
-				UidGenerator
-			</a>
-		</li>
-		<li class="menu-item">
-			<a href="https://github.com/wujun234" class="menu-item-link" target="_blank">
+			<a href="https://github.com/yury757" class="menu-item-link" target="_blank">
 				<i class="fa fa-github fa-2x"></i>
 			</a>
 		</li>
@@ -438,16 +433,16 @@ var _hmt = _hmt || [];
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/hello-world">
+              <a href="/java/SSM-Build/SSM-Build">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  
+                  SSM-Build
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/SSM-Build/SSM-Build">
-                SSM-Build
+              <a href="/java/mybatis/mybatis-study">
+                mybatis-study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
@@ -483,21 +478,8 @@ var _hmt = _hmt || [];
 	©2019-<span id="footerYear"></span> 
 	<a href="/">Yury</a> 
 	
-	
-		|
-		<span id="busuanzi_container_site_pv">
-			pv
-			<span id="busuanzi_value_site_pv"></span>
-		</span>
-		|
-		<span id="busuanzi_container_site_uv"> 
-			uv
-			<span id="busuanzi_value_site_uv"></span>
-		</span>
-	
 	<br>
 	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
-	by <a href="//github.com/wujun234" target="_blank">WuJun</a>
 	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
 	</p>
 </div>
