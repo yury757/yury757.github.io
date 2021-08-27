@@ -588,8 +588,8 @@ var _hmt = _hmt || [];
         </div>
         <div class="item right">
             
-              <a href="/java/springMVC/SpringMVC-Study">
-                SpringMVC-Study
+              <a href="/java/springboot/springboot-study">
+                springboot-study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
