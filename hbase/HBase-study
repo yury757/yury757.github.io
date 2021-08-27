@@ -427,10 +427,10 @@ var _hmt = _hmt || [];
 <td>适合存储大量数据，结构化和非结构话都适合，但是如果使用HBase来存储少量数据，效率和内存消耗上都不如关系型数据库</td>
 </tr>
 </tbody></table>
-<h3 id="4、HBase的逻辑结构"><a href="#4、HBase的逻辑结构" class="headerlink" title="4、HBase的逻辑结构"></a>4、HBase的逻辑结构</h3><p><img src="/.io//HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84.png"></p>
+<h3 id="4、HBase的逻辑结构"><a href="#4、HBase的逻辑结构" class="headerlink" title="4、HBase的逻辑结构"></a>4、HBase的逻辑结构</h3><p><img src="/hbase/HBase-study/HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84.png"></p>
 <h3 id="5、HBase的物理结构"><a href="#5、HBase的物理结构" class="headerlink" title="5、HBase的物理结构"></a>5、HBase的物理结构</h3><p>HBase的物理结构，实际上是每一个单元都对应了一行或多行数据，每行存储了其元数据信息和值。</p>
 <p><font color="Red">而实际上删除操作的第一时间并不会真正删除数据，而是插入了一条type为delete的数据，timestamp则是版本控制（这就是为什么需要校正服务器时间），查数据get命令其实就是获取timestamp最大的那条数据，如果这条数据的type是delete，则不反悔数据，否则返回那条数据。而scan命令可以通过设置VERSION参数来查看之前版本的数据。</font></p>
-<p><img src="/.io//HBase%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png"></p>
+<p><img src="/hbase/HBase-study/HBase%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png"></p>
 <h3 id="6、Hive和HBase的区别"><a href="#6、Hive和HBase的区别" class="headerlink" title="6、Hive和HBase的区别"></a>6、Hive和HBase的区别</h3><table>
 <thead>
 <tr>
@@ -461,7 +461,7 @@ var _hmt = _hmt || [];
 </tr>
 </tbody></table>
 <p>如下面是一种数据仓库架构。</p>
-<p><img src="/.io//%E5%A4%A7%E5%9E%8B%E4%BC%81%E4%B8%9A%E7%9A%84%E4%B8%80%E7%A7%8D%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E6%9E%B6%E6%9E%84.PNG"></p>
+<p><img src="/hbase/HBase-study/%E5%A4%A7%E5%9E%8B%E4%BC%81%E4%B8%9A%E7%9A%84%E4%B8%80%E7%A7%8D%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E6%9E%B6%E6%9E%84.png"></p>
 <h2 id="二、下载、安装和配置"><a href="#二、下载、安装和配置" class="headerlink" title="二、下载、安装和配置"></a>二、下载、安装和配置</h2><p>下载链接：<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/">HBase的清华大学镜像包</a></p>
 <p>选择一个稳定版本，点进去后下载其中的二进制的压缩包，不用下载源码的压缩包，源码的压缩包可以用来看源码。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 下载</span></span><br><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/hbase-2.3.5-bin.tar.gz</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压</span></span><br><span class="line">tar xzvf hbase-2.3.5-bin.tar.gz</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 以这个目录为工作目录</span></span><br><span class="line">cd hbase-2.3.5</span><br></pre></td></tr></table></figure>
@@ -528,14 +528,14 @@ var _hmt = _hmt || [];
 <h3 id="3、注意点"><a href="#3、注意点" class="headerlink" title="3、注意点"></a>3、注意点</h3><p>1、各个服务器之间的时间必须要同步，不然会出现不可预知的错误</p>
 <h2 id="六、HBase进阶"><a href="#六、HBase进阶" class="headerlink" title="六、HBase进阶"></a>六、HBase进阶</h2><h3 id="1、HBase架构"><a href="#1、HBase架构" class="headerlink" title="1、HBase架构"></a>1、HBase架构</h3><p>HMaster负责DDL操作，而HRegionServer负责DML操作，而实际操作中都会有zookeeper，zookeeper则是负责调度HRegionServer，因此当HMaster挂了，并不影响DML操作，只是不能进行DDL操作。</p>
 <p>HLog类似于MySQL的Binlog，防止数据库奔溃时数据丢失。</p>
-<p><img src="/.io//HBase%E6%9E%B6%E6%9E%84.PNG"></p>
+<p><img src="/hbase/HBase-study/HBase%E6%9E%B6%E6%9E%84.png"></p>
 <h3 id="2、写数据流程"><a href="#2、写数据流程" class="headerlink" title="2、写数据流程"></a>2、写数据流程</h3><ul>
 <li>收到put请求：put table/rowkey/cf/column value</li>
 <li>前往meta-region-server这个服务器，请求查询该表的meta表所在RegioinServer</li>
 <li>前往meta表所在服务器，请求查询该表和列簇所在的RegioinServer</li>
 <li>将该put请求发送给对应的服务器</li>
 </ul>
-<p><img src="/.io//HBase%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.png"></p>
+<p><img src="/hbase/HBase-study/HBase%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.png"></p>
 <h3 id="3、MemStore-Flush"><a href="#3、MemStore-Flush" class="headerlink" title="3、MemStore Flush"></a>3、MemStore Flush</h3><p>即把内存中的数据刷新到HDFS中。</p>
 <table>
 <thead>
@@ -567,7 +567,7 @@ var _hmt = _hmt || [];
 <li>前往meta表所在服务器，请求查询该表和列簇所在的RegioinServer</li>
 <li>同时读memstore（内存）和storefile（磁盘），将两份数据读进block cache，取时间戳最大的那条数据。</li>
 </ul>
-<p><img src="/.io//HBase%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.png"></p>
+<p><img src="/hbase/HBase-study/HBase%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.png"></p>
 <h3 id="5、StoreFile-Compaction"><a href="#5、StoreFile-Compaction" class="headerlink" title="5、StoreFile Compaction"></a>5、StoreFile Compaction</h3><p>hdfs中的hfile文件的合并，<font color="Red">compaction操作是先全部读出来，再重新合并在一起。</font>有以下两种：</p>
 <ul>
 <li>Minor compaction：只选取一些小的文件进行合并，不会删除delete类型或时间戳更小的数据</li>
@@ -676,16 +676,16 @@ var _hmt = _hmt || [];
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/java/mybatis/mybatis-study">
+              <a href="/java/java_NIO/Java_NIO-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  mybatis
+                  java_NIO
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/springMVC/SpringMVC-Study">
-                springMVC
+              <a href="/java/mybatis/mybatis-study">
+                mybatis
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
