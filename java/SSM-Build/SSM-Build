@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		About me | 
+		SSM-Build | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -177,7 +177,7 @@ var _hmt = _hmt || [];
 									</a>
 									
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/java/SSM-Build/SSM-Build">
 										SSM-Build
 									</a>
@@ -321,25 +321,83 @@ var _hmt = _hmt || [];
 	<div id="content">
 		<h1 id="article-title">
 
-	About me
+	SSM-Build
 </h1>
 <div class="article-meta">
 	
 	<span>Yury</span>
-	<span>2021-08-23 22:45:11</span>
+	<span>2021-08-24 00:00:00</span>
 		<div id="article-categories">
     
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/java/">java</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
 
+    
+		<span>Tags：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-tag" aria-hidden="true">
+                        <a href="/tags/java/">java</a>
+                        </i>
+                    </span>
+                
+            
+                
+                    <span>
+                        <i class="fa fa-tag" aria-hidden="true">
+                        <a href="/tags/spring/">spring</a>
+                        </i>
+                    </span>
+                
+            
     
 		</div>
 
 </div>
 
 <div id="article-content">
-	<p>这个人很懒，什么都没留下。</p>
+	<h2 id="SSM框架整合"><a href="#SSM框架整合" class="headerlink" title="SSM框架整合"></a>SSM框架整合</h2><p>1、web.xml中配置DispatcherServlet时的初始化参数要连接所有的spring配置文件。先当与配置文件从web.xml是一个顶点，然后依次往下细分。</p>
+<p>2、排错方法：</p>
+<ul>
+<li>使用IDEA查看bean和MVC的细节</li>
+<li>Junit单元测试</li>
+</ul>
+<p>3、即使类上面加了<code>@RestController</code>，springmvc不会自动帮你把对象转字符串再返回给前端，这时若方法返回的是对象或List接口或其他则会报错<code>No converter found for return value of type: class java.util.ArrayList</code>。若导入了<code>jackson-databind</code>包，则会自动帮你把对象或列表转字符串，就可以直接返回一个对象了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/a2&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">a2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    List&lt;User&gt; userList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;yury757&quot;</span>, <span class="number">18</span>, <span class="string">&quot;男&quot;</span>));</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;name1&quot;</span>, <span class="number">28</span>, <span class="string">&quot;男&quot;</span>));</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;name2&quot;</span>, <span class="number">38</span>, <span class="string">&quot;女&quot;</span>));</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;name3&quot;</span>, <span class="number">48</span>, <span class="string">&quot;男&quot;</span>));</span><br><span class="line">    <span class="keyword">return</span> userList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 </div>
 
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/java/java_NIO/Java_NIO-study">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  Java_NIO-study
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/hbase/HBase-study">
+                
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
 
 
 

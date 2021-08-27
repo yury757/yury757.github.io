@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		hbase-study | 
+	 
+	Yury&#39;s Blog
+	</title>
+	
+	<!-- keywords,description -->
+	 
+		<meta name="description" content="blog of usual study" />
+	
+
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "wujun234.github.io";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/js/main.js"></script>
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+
+	
+	
+		<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Blog" type="application/atom+xml">
+</head>
+
+<body>
+	<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3efe99c287df5a1d6f0d02d187e403c1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<header id="header">
+    <a id="title" href="/" class="logo">Yury's Blog</a>
+
+	<ul id="menu">
+		<li class="menu-item">
+			<a href="/about" class="menu-item-link">ABOUT</a>
+		</li>
+	
+		<li class="menu-item">
+			<a href="/tags" class="menu-item-link">标签</a>
+		</li>
+	
+
+	
+		<li class="menu-item">
+			<a href="/categories" class="menu-item-link">分类</a>
+		</li>
+	
+
+		<li class="menu-item">
+			<a href="https://github.com/wujun234/uid-generator-spring-boot-starter" class="menu-item-link" target="_blank">
+				UidGenerator
+			</a>
+		</li>
+		<li class="menu-item">
+			<a href="https://github.com/wujun234" class="menu-item-link" target="_blank">
+				<i class="fa fa-github fa-2x"></i>
+			</a>
+		</li>
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="按回车全站搜索">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hbase
+									</a>
+									
+							<ul>
+								<li class="file active">
+									<a href="/hbase/HBase-study">
+										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/hello-world">
+										hello-world
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										SSM-Build
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/SSM-Build/SSM-Build">
+										SSM-Build
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_JUC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_JUC/Java_JUC-study">
+										Java_JUC-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_NIO
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_NIO/Java_NIO-study">
+										Java_NIO-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mybatis
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/mybatis/mybatis-study">
+										mybatis-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springMVC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springMVC/SpringMVC-Study">
+										SpringMVC-Study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springboot
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springboot/springboot-study">
+										springboot-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										spring
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/spring/Spring-study">
+										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content">
+		<h1 id="article-title">
+
+	HBase-study
+</h1>
+<div class="article-meta">
+	
+	<span>Yury</span>
+	<span>2021-08-24 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/java/">java</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
+
+    
+		<span>Tags：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-tag" aria-hidden="true">
+                        <a href="/tags/java/">java</a>
+                        </i>
+                    </span>
+                
+            
+                
+                    <span>
+                        <i class="fa fa-tag" aria-hidden="true">
+                        <a href="/tags/hbase/">hbase</a>
+                        </i>
+                    </span>
+                
+            
+    
+		</div>
+
+</div>
+
+<div id="article-content">
+	<p>Linux：ubuntu18.04.5</p>
+<p>hbase：2.3.5</p>
+<p>官方文档：<a target="_blank" rel="noopener" href="http://hbase.apache.org/book.html">Apache HBase ™ Reference Guide</a></p>
+<h2 id="一、HBase介绍"><a href="#一、HBase介绍" class="headerlink" title="一、HBase介绍"></a>一、HBase介绍</h2><h3 id="1、Hadoop的局限性"><a href="#1、Hadoop的局限性" class="headerlink" title="1、Hadoop的局限性"></a>1、Hadoop的局限性</h3><ul>
+<li>hadoop主要是实现批量数据的处理，并通过顺序方式访问数据。比如批量处理一天的数据。</li>
+<li>要查找数据必须搜索整个数据集，即不具备随即读取数据的能力。</li>
+</ul>
+<h3 id="2、HBase简介"><a href="#2、HBase简介" class="headerlink" title="2、HBase简介"></a>2、HBase简介</h3><ul>
+<li>HBase是一个分布式的、<strong>面向列</strong>的开源数据库，该技术来源于Fay Chang所撰写的Google论文《Bigtable：一个结构化数据的分布式存储系统》。</li>
+<li>HBase一开始是Hadoop下的一个子项目，因为也是基于HDFS文件系统的，后成为Apache的顶级项目。</li>
+<li>HBase是Google Bigtable的开源实现，类似Google Bigtable利用GFS作为其文件存储系统，HBase利用<strong>Hadoop HDFS</strong>作为其文件存储系统；Google运行MapReduce来处理Bigtable中的海量数据，HBase同样利用Hadoop MapReduce来处理HBase中的海量数据；Google Bigtable利用 Chubby作为协同服务，HBase利用Zookeeper作为对应。</li>
+<li>HBase是一种NoSQL数据库，仅能通过主键（row key）和主键的range来检索数据，对事务的支持较弱。</li>
+<li><strong>HBase只支持一种数据类型：byte[]</strong></li>
+<li>HBase是稀疏存储的，即为空的字段不占用空间，而比如MySQL的null实际上也会占空间的。</li>
+<li><font color="Red">应用场景：需要存储海量数据，又要快速的写入和查询数据的场景。</font></li>
+</ul>
+<h3 id="3、关系型数据库（RDBMS）和HBase的比较"><a href="#3、关系型数据库（RDBMS）和HBase的比较" class="headerlink" title="3、关系型数据库（RDBMS）和HBase的比较"></a>3、关系型数据库（RDBMS）和HBase的比较</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>关系型数据库（以MySQL为例）</th>
+<th>HBase</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否以表的形式存在</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>支持的文件系统</td>
+<td>FAT（windows旧）、NTFS（windows新）、EXT（Linux）</td>
+<td>HDFS文件系统</td>
+</tr>
+<tr>
+<td>物理上的存储方式</td>
+<td>以行的形式存储，每个字段之间用分隔符隔开</td>
+<td>以每个单元格为一行的形式存储，即每一个单元格数据都会存储其row key、列簇名、列名和时间戳等。HBase会对行进行分割，一片行和一个列簇即形成一个region。具体见后面详解。</td>
+</tr>
+<tr>
+<td>索引</td>
+<td>支持主键（primary key）和二级索引</td>
+<td>仅支持主键（row key）</td>
+</tr>
+<tr>
+<td>事务</td>
+<td>最常用的InnoDB引擎的事务处理满足ACID原则</td>
+<td>对事务的支持较弱，不支持ACID</td>
+</tr>
+<tr>
+<td>是否能使用sql查询</td>
+<td>能</td>
+<td>不能，NoSQL数据库</td>
+</tr>
+<tr>
+<td>是否支持join</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>适合存储的数据</td>
+<td>适合存储少量的、结构化的数据</td>
+<td>适合存储大量数据，结构化和非结构话都适合，但是如果使用HBase来存储少量数据，效率和内存消耗上都不如关系型数据库</td>
+</tr>
+</tbody></table>
+<h3 id="4、HBase的逻辑结构"><a href="#4、HBase的逻辑结构" class="headerlink" title="4、HBase的逻辑结构"></a>4、HBase的逻辑结构</h3><p><img src="/.io//HBase%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84.png"></p>
+<h3 id="5、HBase的物理结构"><a href="#5、HBase的物理结构" class="headerlink" title="5、HBase的物理结构"></a>5、HBase的物理结构</h3><p>HBase的物理结构，实际上是每一个单元都对应了一行或多行数据，每行存储了其元数据信息和值。</p>
+<p><font color="Red">而实际上删除操作的第一时间并不会真正删除数据，而是插入了一条type为delete的数据，timestamp则是版本控制（这就是为什么需要校正服务器时间），查数据get命令其实就是获取timestamp最大的那条数据，如果这条数据的type是delete，则不反悔数据，否则返回那条数据。而scan命令可以通过设置VERSION参数来查看之前版本的数据。</font></p>
+<p><img src="/.io//HBase%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png"></p>
+<h3 id="6、Hive和HBase的区别"><a href="#6、Hive和HBase的区别" class="headerlink" title="6、Hive和HBase的区别"></a>6、Hive和HBase的区别</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>Hive</th>
+<th>HBase</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定位</td>
+<td>Hive是一个数据仓库工具，本质相当于把HDFS中已存在的数据文件在MySQL中做一个映射关系，以方便用HQL去管理查询。</td>
+<td>定位是一个NoSQL数据库</td>
+</tr>
+<tr>
+<td>功能</td>
+<td>用于数据分析和清洗</td>
+<td>高效地存储和查询数据</td>
+</tr>
+<tr>
+<td>使用场景</td>
+<td>离线数据分析和清晰，因为需要时间较长，延迟较高</td>
+<td>实时查询和存储海量数据</td>
+</tr>
+<tr>
+<td>底层</td>
+<td>基于HDFS，编写的HQL最终是转换为MapReduce代码执行</td>
+<td>基于HDFS，但是在HDFS上做了进一步的处理和优化</td>
+</tr>
+</tbody></table>
+<p>如下面是一种数据仓库架构。</p>
+<p><img src="/.io//%E5%A4%A7%E5%9E%8B%E4%BC%81%E4%B8%9A%E7%9A%84%E4%B8%80%E7%A7%8D%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E6%9E%B6%E6%9E%84.PNG"></p>
+<h2 id="二、下载、安装和配置"><a href="#二、下载、安装和配置" class="headerlink" title="二、下载、安装和配置"></a>二、下载、安装和配置</h2><p>下载链接：<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/">HBase的清华大学镜像包</a></p>
+<p>选择一个稳定版本，点进去后下载其中的二进制的压缩包，不用下载源码的压缩包，源码的压缩包可以用来看源码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 下载</span></span><br><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/hbase-2.3.5-bin.tar.gz</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解压</span></span><br><span class="line">tar xzvf hbase-2.3.5-bin.tar.gz</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 以这个目录为工作目录</span></span><br><span class="line">cd hbase-2.3.5</span><br></pre></td></tr></table></figure>
+
+<p>配置环境变量</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在最下面添加</span></span><br><span class="line">export HBASE_HOME=/home/yury/hbase-2.3.5</span><br><span class="line">export PATH=$&#123;PATH&#125;:$&#123;HBASE_HOME&#125;/bin:$&#123;HBASE_HOME&#125;/sbin</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 加载环境变量</span></span><br><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure>
+
+<p>修改配置文件<code>./conf/hbase-env.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 修改压缩包根目录下的这个文件</span></span><br><span class="line">vi ./conf/hbase-env.sh</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加JAVA_HOME配置</span></span><br><span class="line">export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 为<span class="literal">false</span>时使用自己的ZOOKEEPER，即需要自己启动zookeeper服务。为<span class="literal">true</span>时使用hbase内置的zookeeper，如果是单机版建议为<span class="literal">true</span>，或者不配置</span></span><br><span class="line">export HBASE_MANAGES_ZK=false</span><br></pre></td></tr></table></figure>
+
+<p>将一个包复制到lib目录下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp lib/client-facing-thirdparty/htrace-core4-4.2.0-incubating.jar ./lib/</span><br></pre></td></tr></table></figure>
+
+<p>移除一个日志jar包，这个版本和hadoop的3.3.0版本的日志包会有冲突</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm lib/client-facing-thirdparty/slf4j-log4j12-1.7.30.jar</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、单机版"><a href="#三、单机版" class="headerlink" title="三、单机版"></a>三、单机版</h2><p>使用单机版时最好将zookeeper和hadoop的环境变量注释掉，再重新加载环境变量，不然即使没启动zk和hadoop也可能会有问题（我所遇到的问题是hbase的hmaster进程启动后瞬间就没了，将zk和hadoop环境变量注释掉后就好了）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置完了以上操作后，直接启动即可</span></span><br><span class="line">./bin/start-hbase.sh</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 返回结果如下</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> running master, logging to /home/yury/hbase-2.3.5/bin/../logs/hbase-yury-master-myubuntu1.out</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以在http://localhost:16010这个页面中HBase的web管理页面</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> jps命令可以看到有一个HMaster进程</span></span><br><span class="line">jps</span><br><span class="line"><span class="meta">#</span><span class="bash"> 2032 Jps</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1539 HMaster</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="四、初步使用HBase的shell"><a href="#四、初步使用HBase的shell" class="headerlink" title="四、初步使用HBase的shell"></a>四、初步使用HBase的shell</h2><p>hbase的数据库结构主要以下层次：</p>
+<ul>
+<li>namespace（命名空间，相当于MySQL的schema）</li>
+<li>table</li>
+<li>column family（列簇）</li>
+<li>column qualifier（列名）</li>
+</ul>
+<p>hbase的namespace默认有两个：default和namespace，默认使用default，即在创建表时如果没有加命名空间前缀，则默认往default命名空间里面建表。</p>
+<p>而namespace这个命名空间存储着数据库的元数据信息，这个命名空间向相当于MySQL的information这个schema。</p>
+<p><font color="Red">hbase shell里面没有分号，如果敲了分号并回车了，可以通过敲一个单引号，再回车，再敲一个单引号来取消之前的命令。</font></p>
+<p><font color="Red">对于哪个命令不熟悉，可以<code>help &#39;create&#39;</code>，就有这个命令的使用方法，下面只是简单介绍。</font></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动hbase的shell命令，需要配置hbase环境变量，以下都是hbase的shell命令</span></span><br><span class="line">hbase shell</span><br></pre></td></tr></table></figure>
+
+<h3 id="1、命名空间操作"><a href="#1、命名空间操作" class="headerlink" title="1、命名空间操作"></a>1、命名空间操作</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">list_namespace                # 展示所有命名空间</span><br><span class="line">create_namespace &#x27;myns&#x27;       # 创建命名空间，相当于MySQL的创建一个schema</span><br><span class="line">drop_namespace &#x27;myns&#x27;         # 删除命名空间</span><br><span class="line">describe_namespace &#x27;myns&#x27;     # 查看指定命名空间的详细信息</span><br><span class="line">list_namespace_tables &#x27;myns&#x27;  # 查看指定命名空间下的所有表</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、表操作"><a href="#2、表操作" class="headerlink" title="2、表操作"></a>2、表操作</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 对于表的操作默认是指default命名空间，要想对其他命名空间操作表，需加命名空间的前缀，如下</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在myns命名空间下创建一个表</span></span><br><span class="line">create &#x27;myns:myns_test&#x27;, &#x27;myns_cf&#x27;</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 以下不加前缀则都是在default命名空间下操作</span></span><br><span class="line">create &#x27;test&#x27;, &#x27;cf&#x27;                              # 一个列簇cf</span><br><span class="line">create &#x27;test2&#x27;, &#x27;cf1&#x27;, &#x27;cf2&#x27;                     # 两个列簇cf1和cf2</span><br><span class="line">list &#x27;test&#x27;                                      # 确认表是否存在</span><br><span class="line">describe &#x27;test&#x27;                                  # 查看表结构</span><br><span class="line">disable &#x27;test&#x27;                                   # 使表失效</span><br><span class="line">enable &#x27;test&#x27;                                    # 使表生效</span><br><span class="line">alter &#x27;test&#x27;, &#123;NAME=&gt;&#x27;cf1&#x27;, VERSION=&gt;3&#125;          # 修改表的元数据信息</span><br><span class="line">drop &#x27;test&#x27;                                      # 删除表，删除之前要disable这个表</span><br><span class="line">scan &#x27;test&#x27;, &#123;STARTROW=&gt;&#x27;1001&#x27;, STOPROW=&gt;&#x27;1003&#x27;&#125; # 扫描查看&#x27;test&#x27;表的所有数据</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、数据操作"><a href="#3、数据操作" class="headerlink" title="3、数据操作"></a>3、数据操作</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 插入数据</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参数1：命名空间+表名</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参数2：行号，row key</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参数3：列名全限定名，即列簇名+列名</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 参数4：值</span></span><br><span class="line">put &#x27;&#123;namespace&#125;:&#123;tablename&#125;&#x27;, &#x27;&#123;row key&#125;&#x27;, &#x27;&#123;column family&#125;:&#123;column qualifier&#125;&#x27;, &#x27;&#123;value&#125;&#x27;, &#x27;&#123;timestamp&#125;&#x27;, &#x27;&#123;其他属性&#125;&#x27;</span><br><span class="line">put &#x27;test&#x27;, &#x27;row1&#x27;, &#x27;cf:a&#x27;, &#x27;value1&#x27;</span><br><span class="line">put &#x27;test&#x27;, &#x27;row2&#x27;, &#x27;cf:b&#x27;, &#x27;value2&#x27;</span><br><span class="line">put &#x27;test&#x27;, &#x27;row3&#x27;, &#x27;cf:c&#x27;, &#x27;value3&#x27;</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 根据表名和row key获取值</span></span><br><span class="line">get &#x27;&#123;namespace&#125;:&#123;tablename&#125;&#x27;, &#x27;&#123;row key&#125;&#x27;, &#x27;&#123;column family&#125;:&#123;column qualifier&#125;&#x27;</span><br><span class="line">get &#x27;test&#x27;, &#x27;row1&#x27;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 结果如下</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> COLUMN            CELL</span></span><br><span class="line"><span class="meta">#</span><span class="bash">  cf:a             timestamp=2021-05-01T17:46:15.064, value=value1</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 根据表名、row key和列删除数据，一个单元格</span></span><br><span class="line">delete &#x27;&#123;namespace&#125;:&#123;tablename&#125;&#x27;, &#x27;&#123;row key&#125;&#x27;, &#x27;&#123;column family&#125;:&#123;column qualifier&#125;&#x27;</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 根据表名、row key删除数据，row key对应的一整行</span></span><br><span class="line">deleteall &#x27;&#123;namespace&#125;:&#123;tablename&#125;&#x27;, &#x27;&#123;row key&#125;&#x27;</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 清空表</span></span><br><span class="line">truncate &#x27;&#123;namespace&#125;:&#123;tablename&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="注意："><a href="#注意：" class="headerlink" title="注意："></a><font color="Red">注意：</font></h3><ul>
+<li><p>row key为字符串类型，其排序是按照字符串的大小排序，如’10010’ &gt; ‘1001’。</p>
+</li>
+<li><p>get命令的列参数哪里如果没有冒号，则这个参数是指column family而不是column qualifier。</p>
+</li>
+<li><p>scan命令如果有STARTROW和STOPROW参数，则筛选范围为左闭右开！</p>
+</li>
+<li><p>数据的改操作没有update命令，其实直接put进去一个值，就会自动完成改操作，有点类似于hashmap直接put后会覆盖原来的值这种。</p>
+</li>
+<li><p>创建表和列簇时的VERSION属性表示这个这个列簇最终将会存几个版本的数据，如VERSION=2，则取数据时设置VERSION=3也只能拿到两条数据，并且在hbase空间时，除最新的两个版本的数据会被保留外，其余版本数据都会从磁盘中删除。</p>
+</li>
+</ul>
+<h2 id="五、分布式部署"><a href="#五、分布式部署" class="headerlink" title="五、分布式部署"></a>五、分布式部署</h2><h3 id="1、伪分布式"><a href="#1、伪分布式" class="headerlink" title="1、伪分布式"></a>1、伪分布式</h3><p><strong>伪分布式：在同一个服务器中部署，但是HMaster，HRegionServer和ZooKeeper服务在不同的JVM进程中。</strong></p>
+<p>前提：先启动zookeeper服务（可以单机模式），再启动hadoop服务（至少伪分布式），最后才能启动hbase</p>
+<p>配置/conf/hbase-site.xml</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /conf/hbase-site.xml</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 为true则是分布式的，为false则是单机版 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 这个是指数据的根目录在哪里，可以指定hdfs文件系统，即在hadoop的etc/hadoop/core-site.xml中配置的fs.defaultFS --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://localhost:9000/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 官网文档说还要删除hbase.tmp.dir配置和hbase.unsafe.stream.capability.enforce配置 --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动hbase</span></span><br><span class="line">bin/start-hbase.sh</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在hadoop中校验是否在hdfs文件系统中创建了一个hbase的文件夹</span></span><br><span class="line">bin/hadoop fs -ls /hbase</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> zookeeper、hadoop和hbase全部启动成功后，运行jps命令结果应该是这样的。如果没有jps命令，linux会提示你安装一个jdk的东西</span></span><br><span class="line">jps</span><br><span class="line">6976 DataNode           # hadoop</span><br><span class="line">6787 NameNode           # hadoop</span><br><span class="line">6531 QuorumPeerMain     # zookeeper</span><br><span class="line">7237 SecondaryNameNode  # hadoop</span><br><span class="line">7941 Jps                # jps</span><br><span class="line">7592 HMaster            # hbase</span><br><span class="line">7786 HRegionServer      # hbase</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、完全分布式"><a href="#2、完全分布式" class="headerlink" title="2、完全分布式"></a>2、完全分布式</h3><p><code>hbase-site.xml</code>配置文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.tmp.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>./tmp<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.unsafe.stream.capability.enforce<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://192.168.0.201:9000/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>192.168.0.201,192.168.0.202,192.168.0.203<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>/home/yury/zookeeper-3.6.3/zookeeper-data/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3、注意点"><a href="#3、注意点" class="headerlink" title="3、注意点"></a>3、注意点</h3><p>1、各个服务器之间的时间必须要同步，不然会出现不可预知的错误</p>
+<h2 id="六、HBase进阶"><a href="#六、HBase进阶" class="headerlink" title="六、HBase进阶"></a>六、HBase进阶</h2><h3 id="1、HBase架构"><a href="#1、HBase架构" class="headerlink" title="1、HBase架构"></a>1、HBase架构</h3><p>HMaster负责DDL操作，而HRegionServer负责DML操作，而实际操作中都会有zookeeper，zookeeper则是负责调度HRegionServer，因此当HMaster挂了，并不影响DML操作，只是不能进行DDL操作。</p>
+<p>HLog类似于MySQL的Binlog，防止数据库奔溃时数据丢失。</p>
+<p><img src="/.io//HBase%E6%9E%B6%E6%9E%84.PNG"></p>
+<h3 id="2、写数据流程"><a href="#2、写数据流程" class="headerlink" title="2、写数据流程"></a>2、写数据流程</h3><ul>
+<li>收到put请求：put table/rowkey/cf/column value</li>
+<li>前往meta-region-server这个服务器，请求查询该表的meta表所在RegioinServer</li>
+<li>前往meta表所在服务器，请求查询该表和列簇所在的RegioinServer</li>
+<li>将该put请求发送给对应的服务器</li>
+</ul>
+<p><img src="/.io//HBase%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.png"></p>
+<h3 id="3、MemStore-Flush"><a href="#3、MemStore-Flush" class="headerlink" title="3、MemStore Flush"></a>3、MemStore Flush</h3><p>即把内存中的数据刷新到HDFS中。</p>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>hbase.regionserver.global.memstore.size</td>
+<td>全局配置，一个regionserver中所有memstore之和的最大值，默认为堆内存的40%，当memstore超过这个值时，就会阻塞写数据操作</td>
+</tr>
+<tr>
+<td>hbase.regionserver.global.memstore.size.lower.limit</td>
+<td>全局配置，一个regionserver中所有memstore之和的最大值，默认为堆内存的40%*0.95=38%，当memstore超过这个值时，就会开始flush操作，此时还不会阻塞写数据操作</td>
+</tr>
+<tr>
+<td>hbase.regionserver.optionalcacheflushinterval</td>
+<td>内存中的最后一次编辑的数据文件在自动刷新前能够存活的最长时间，默认1小时，当某些数据超过这个时间时，即使memstore内存没达到flush阈值，也会进行flush</td>
+</tr>
+<tr>
+<td>hbase.hregion.memstore.flush.size</td>
+<td>单个region中memstore的缓存最大值，超过这个值时这个region就会进行flush，默认值为128M</td>
+</tr>
+</tbody></table>
+<h3 id="4、读数据流程"><a href="#4、读数据流程" class="headerlink" title="4、读数据流程"></a>4、读数据流程</h3><ul>
+<li>收到get请求</li>
+<li>前往meta-region-server查询meta表所在的RegionServer</li>
+<li>前往meta表所在服务器，请求查询该表和列簇所在的RegioinServer</li>
+<li>同时读memstore（内存）和storefile（磁盘），将两份数据读进block cache，取时间戳最大的那条数据。</li>
+</ul>
+<p><img src="/.io//HBase%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B.png"></p>
+<h3 id="5、StoreFile-Compaction"><a href="#5、StoreFile-Compaction" class="headerlink" title="5、StoreFile Compaction"></a>5、StoreFile Compaction</h3><p>hdfs中的hfile文件的合并，<font color="Red">compaction操作是先全部读出来，再重新合并在一起。</font>有以下两种：</p>
+<ul>
+<li>Minor compaction：只选取一些小的文件进行合并，不会删除delete类型或时间戳更小的数据</li>
+<li>Major compaction：将一个store下的所有hfile合并成一个大文件，对于相同rowkey且时间戳更小的数据会执行物理删除操作</li>
+</ul>
+<p>配置：</p>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>hbase.hregion.majorcompaction</td>
+<td>一个region进行自动major compaction的周期，默认为7天，即7天自动进行一次大合并。生产环境不建议开启（设置为0），因为很耗资源，而是手动进行major compaction</td>
+</tr>
+<tr>
+<td>hbase.hregion.majorcompaction.jitter</td>
+<td>抖动比例，不管，反正都会被关掉</td>
+</tr>
+<tr>
+<td>hbase.hstore.compactionThreshold</td>
+<td>一个store中允许存的hfile的最大值，超过或等于这个值，就会被合并到一个新的hfile中，默认值为3</td>
+</tr>
+</tbody></table>
+<h3 id="6、真正删数据发生在什么时候"><a href="#6、真正删数据发生在什么时候" class="headerlink" title="6、真正删数据发生在什么时候"></a>6、真正删数据发生在什么时候</h3><ul>
+<li>进行flush时，内存中版本更老的数据会被删除，即老版本数据不会被写入hfile中</li>
+<li>进行major compaction时会将老版本数据删除</li>
+</ul>
+<h3 id="7、Region-Split"><a href="#7、Region-Split" class="headerlink" title="7、Region Split"></a>7、Region Split</h3><table>
+<thead>
+<tr>
+<th>配置</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>hbase.hregion.max.filesize</td>
+<td>一个region的最大大小。默认值为10G。</td>
+</tr>
+</tbody></table>
+<p>当一个region中的某个store下的所有storefile总大小超过<code>Min(&quot;count of region&quot;^2*&quot;hbase.hregion.memstore.flush.size&quot;, &quot;hbase.hregion.max.filesize&quot;)</code>时，该region就会进行拆分。</p>
+<p><strong>数据热点问题：</strong></p>
+<p>第一个region的拆分的阈值为128M，拆分为两个，分别为64M</p>
+<p>rowkey是自增的，在第二个region后面新增数据</p>
+<p>第二个region的拆分的阈值为512M（2^2*128），拆分为两个，分别为256M</p>
+<p>rowkey继续自增，在第三个region后面新增数据</p>
+<p>第三个region的拆分阈值为1152M（3^2*128），拆分为两个，分别为576M</p>
+<p>rowkey继续自增……</p>
+<p>因此，这样的话第n个region的大小为：Min(n^2*64M, 5G)，即region在到达5G之前，各个regino的大小差异会比较大，即数据会集中在某几个region中，导致这几个region服务器压力很大。</p>
+<p><strong>官方建议，使用更少的列簇，将更多的列放进同一个列簇中，而不是创建更多的列簇，因为多个列簇flush后容易形成多个小文件</strong></p>
+<h2 id="七、优化"><a href="#七、优化" class="headerlink" title="七、优化"></a>七、优化</h2><h3 id="1、高可用"><a href="#1、高可用" class="headerlink" title="1、高可用"></a>1、高可用</h3><p>在创建conf/backup-master这个文件，在里面写入备份的master结点的服务器，当主节点挂了之后，会选举一个备份主节点来顶替主节点的位置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">192.168.141.142</span><br><span class="line">192.168.141.143</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、预分区"><a href="#2、预分区" class="headerlink" title="2、预分区"></a>2、预分区</h3><p>（1）手动设置预分区（更常用）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create &quot;staff&quot;, &quot;info&quot;, &quot;partition&quot;, SPLITS =&gt; [&#x27;1000&#x27;, &#x27;2000&#x27;, &#x27;3000&#x27;, &#x27;4000&#x27;]</span><br></pre></td></tr></table></figure>
+
+<p>（2）手动生成16进制预分区</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create &quot;staff2&quot;, &quot;info&quot;, &quot;partition2&quot;, &#123;NUMREGIONS =&gt; 15, SPLITALGO =&gt; &#x27;HexStringSplit&#x27;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（3）按照文件中设置的分区规则预分区</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 在hbase根目录下</span></span><br><span class="line">touch splits.txt</span><br><span class="line">aaaa</span><br><span class="line">bbbb</span><br><span class="line">cccc</span><br><span class="line">dddd</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">create &quot;staff3&quot;, &quot;info&quot;, &quot;partition3&quot;, SPLITS_FILE =&gt; &#x27;splits.txt&#x27;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 系统会给splits.txt这个文件进行排序</span></span><br></pre></td></tr></table></figure>
+
+<p>（4）使用javaAPI创建分区</p>
+<p>略</p>
+<h3 id="3、rowkey的设计"><a href="#3、rowkey的设计" class="headerlink" title="3、rowkey的设计"></a>3、rowkey的设计</h3><p><font color="Red">rowkey要保持散列性（随机性，使其可以随机落在不同的region中）、唯一性、长度足够长等原则，最好是70-100位字母或数字。</font></p>
+<p>如生成随机数、hash、散列值、字符串拼接。</p>
+<h4 id="（1）案例1"><a href="#（1）案例1" class="headerlink" title="（1）案例1"></a>（1）案例1</h4><p>存储通话记录以及通话详情的rowkey设计。需存储的数据如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">phone_from   phone_to     time_start           duration</span><br><span class="line">13112345678  13187654321  2021-01-01 12:12:12  45</span><br></pre></td></tr></table></figure>
+
+<p>首先根据业务对未来十年的数据的预期，需要设置300个分区，分区键分别是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">000|</span><br><span class="line">001|</span><br><span class="line">002|</span><br><span class="line">...</span><br><span class="line">156|</span><br><span class="line">157|</span><br><span class="line">...</span><br><span class="line">298|</span><br></pre></td></tr></table></figure>
+
+<p>我们将rowkey前三位作为分区号，那么为了保证随机性，我们如何将数据散列分布在这300个分区内呢？即我们如何设计rowkey以保证数据会随机分布在300个分区中？</p>
+<p>此外根据业务需求，我们最好将同一拨出号码的同一个月份的通话记录放在一个分区内，以便以后做计算更快。</p>
+<p>我们设计这样一个算法：</p>
+<p>因此有300个分区，因此我们将rowkey的前三位作为分区号，从第4位开始，我们将拨出号码作为字符串拼接进去，再将通话开始时间拼接进去，以下划线分割，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx_13112345678_2021-01-01 12:12:12</span><br></pre></td></tr></table></figure>
+
+<p>那么如何将这个rowkey随机分布到300个分区中且同一拨出号码同一月份的通话记录在同一分区呢？即rowkey前面的xxx要根据后面的13112345678_2021-01-01 12:12:12来区分。</p>
+<ul>
+<li>首先，不同的手机号可以随机区分开，因此可以用手机号进行hash，这样不同手机号的hashcode是随机分布的</li>
+<li>其次，同一拨出号码的同一月份要放一起，因此可以将手机号+年月进行hash，这样同一手机号同一月份的hashcode是相同的</li>
+<li>最后，我们只需要三位数字来存储分区号，因此我们可以通过获取hashcode除以299的余来获取分区号</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">分区号=(hash(13112345678_202101))%299</span><br></pre></td></tr></table></figure>
+
+<p><font color="Red">技巧：我们对分区键的设计可以用一个常用符号中ascii序号最大的符号为结尾，如<code>|</code>，而rowkey中以一个ascii序号小点的符号为分隔符，如<code>_</code>。这样<code>000|</code>就会大于任意以<code>000_</code>开始的值。且我们在扫描表时，是左闭右开的原则，这样做对于rowkey的比较起来更方便，如下。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 扫描001分区的数据</span><br><span class="line">STARTKEY =&gt; &#x27;001&#x27;, STOPKEY =&gt; &#x27;001|&#x27;</span><br><span class="line"></span><br><span class="line"># 扫描某拨出号码在4月份的数据</span><br><span class="line">STARTKEY =&gt; &#x27;XXX_13112345678_202103&#x27;, STOPKEY =&gt; &#x27;XXX_13112345678_202103|&#x27;</span><br><span class="line"># 其中xxx=(hash(13112345678_202103))%299</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、基础优化"><a href="#4、基础优化" class="headerlink" title="4、基础优化"></a>4、基础优化</h3><p>（1）允许在HDFS的文件中追加内容</p>
+<p>hdfs-site.xml、hbase-site.xml</p>
+<p>属性：dfs.support.append</p>
+<p>解释：开启HDFS追加同步，可以优秀地配合HBase的数据同步和持久化。默认值为true。</p>
+<p>（2）优化DataNode允许的最大文件打开数</p>
+<p>hdfs-site.xml</p>
+<p>属性：dfs.datanode.max.transfer.threads</p>
+<p>解释：</p>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/java/SSM-Build/SSM-Build">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  SSM-Build
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/java/springMVC/SpringMVC-Study">
+                springMVC
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+	<div id="vcomments"></div>
+
+
+<script>
+	
+		// 评论
+		new Valine({
+			av: AV,
+			el: '#vcomments',
+			notify: false,
+			verify: false,
+			path: window.location.pathname,
+			appId: '',
+			appKey: '',
+			placeholder: '请输入评论',
+			avatar: 'retro',
+			recordIP: false
+		})
+	
+	
+</script>
+	</div>
+	<div id="footer">
+	<p>
+	©2019-<span id="footerYear"></span> 
+	<a href="/">Yury</a> 
+	
+	
+		|
+		<span id="busuanzi_container_site_pv">
+			pv
+			<span id="busuanzi_value_site_pv"></span>
+		</span>
+		|
+		<span id="busuanzi_container_site_uv"> 
+			uv
+			<span id="busuanzi_value_site_uv"></span>
+		</span>
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	by <a href="//github.com/wujun234" target="_blank">WuJun</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+<script type="text/javascript"> 
+	document.getElementById('footerYear').innerHTML = new Date().getFullYear() + '';
+</script>
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>
