@@ -31,7 +31,7 @@
 		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
 			searchEngine = "https://www.google.com/search?q=";
 		}
-		var homeHost = "wujun234.github.io";
+		var homeHost = "";
 		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
 			homeHost = window.location.host;
 		}
@@ -74,8 +74,6 @@
 <script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
 
 	
-	
-		<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 	
 <meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Blog" type="application/atom+xml">
 </head>
@@ -146,15 +144,6 @@ var _hmt = _hmt || [];
 			
 								</li>
 								
-							</ul>
-			
-							<ul>
-								<li class="file">
-									<a href="/hello-world">
-										hello-world
-									</a>
-								</li>
-								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
 							<ul>
@@ -308,6 +297,26 @@ var _hmt = _hmt || [];
 								
 							</ul>
 			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										zookeeper
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/zookeeper/zookeeper-study">
+										zookeeper-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
 		</div>
 	</div>
 </div>
@@ -369,8 +378,16 @@ var _hmt = _hmt || [];
 <li>Junit单元测试</li>
 </ul>
 <p>3、即使类上面加了<code>@RestController</code>，springmvc不会自动帮你把对象转字符串再返回给前端，这时若方法返回的是对象或List接口或其他则会报错<code>No converter found for return value of type: class java.util.ArrayList</code>。若导入了<code>jackson-databind</code>包，则会自动帮你把对象或列表转字符串，就可以直接返回一个对象了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/a2&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">a2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    List&lt;User&gt; userList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;yury757&quot;</span>, <span class="number">18</span>, <span class="string">&quot;男&quot;</span>));</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;name1&quot;</span>, <span class="number">28</span>, <span class="string">&quot;男&quot;</span>));</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;name2&quot;</span>, <span class="number">38</span>, <span class="string">&quot;女&quot;</span>));</span><br><span class="line">    userList.add(<span class="keyword">new</span> User(<span class="string">&quot;name3&quot;</span>, <span class="number">48</span>, <span class="string">&quot;男&quot;</span>));</span><br><span class="line">    <span class="keyword">return</span> userList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="java">@RequestMapping(&quot;/a2&quot;)
+public List&lt;User&gt; a2()&#123;
+    List&lt;User&gt; userList = new ArrayList&lt;&gt;();
+    userList.add(new User(&quot;yury757&quot;, 18, &quot;男&quot;));
+    userList.add(new User(&quot;name1&quot;, 28, &quot;男&quot;));
+    userList.add(new User(&quot;name2&quot;, 38, &quot;女&quot;));
+    userList.add(new User(&quot;name3&quot;, 48, &quot;男&quot;));
+    return userList;
+&#125;
+</code></pre>
 
 </div>
 
@@ -378,7 +395,7 @@ var _hmt = _hmt || [];
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/hello-world">
+              <a href="/zookeeper/zookeeper-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
                   
               </a>
@@ -396,24 +413,8 @@ var _hmt = _hmt || [];
 
 
 
-	<div id="vcomments"></div>
-
 
 <script>
-	
-		// 评论
-		new Valine({
-			av: AV,
-			el: '#vcomments',
-			notify: false,
-			verify: false,
-			path: window.location.pathname,
-			appId: '',
-			appKey: '',
-			placeholder: '请输入评论',
-			avatar: 'retro',
-			recordIP: false
-		})
 	
 	
 </script>
@@ -421,7 +422,6 @@ var _hmt = _hmt || [];
 	<div id="footer">
 	<p>
 	©2019-<span id="footerYear"></span> 
-	<a href="/">Yury</a> 
 	
 	<br>
 	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
