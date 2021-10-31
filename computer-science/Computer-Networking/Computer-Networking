@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		Computer-Networking | 
+	 
+	Yury&#39;s Blog
+	</title>
+	
+	<!-- keywords,description -->
+	 
+		<meta name="description" content="blog of usual study" />
+	
+
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/js/main.js"></script>
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+
+	
+	
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Blog" type="application/atom+xml">
+</head>
+
+<body>
+	<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3efe99c287df5a1d6f0d02d187e403c1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<header id="header">
+    <a id="title" href="/" class="logo">Yury's Blog</a>
+
+	<ul id="menu">
+		<li class="menu-item">
+			<a href="/about" class="menu-item-link">ABOUT</a>
+		</li>
+	
+		<li class="menu-item">
+			<a href="/tags" class="menu-item-link">标签</a>
+		</li>
+	
+
+	
+		<li class="menu-item">
+			<a href="/categories" class="menu-item-link">分类</a>
+		</li>
+	
+
+		<li class="menu-item">
+			<a href="https://github.com/yury757" class="menu-item-link" target="_blank">
+				<i class="fa fa-github fa-2x"></i>
+			</a>
+		</li>
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="按回车全站搜索">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Git
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										learngit
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/Git/learngit/learn-git">
+										learn-git
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										bigdata
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hadoop
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hadoop/hadoop-study">
+										hadoop-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hbase
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hbase/HBase-study">
+										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										zookeeper
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/zookeeper/zookeeper-study">
+										zookeeper-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										computer-science
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Computer-Networking
+									</a>
+									
+							<ul>
+								<li class="file active">
+									<a href="/computer-science/Computer-Networking/Computer-Networking">
+										Computer-Networking
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										database
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mysql
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL中的exists与in的使用
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8">
+										MySQL中的exists与in的使用
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL备份-Linux版
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E5%A4%87%E4%BB%BD-Linux%E7%89%88/MySQL%E5%A4%87%E4%BB%BD-linux%E7%89%88">
+										MySQL备份-linux版
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL日期格式化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96">
+										MySQL日期格式化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL查询执行计划详解-explain
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain">
+										MySQL查询执行计划详解-explain
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										《高性能MySQL》
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第1章-MySQL架构与历史
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+										第一章-MySQL架构与历史
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第2章-MySQL基准测试
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95">
+										第二章 MySQL基准测试
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第3章-服务器性能剖析
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90">
+										第三章-服务器性能剖析
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第4章-Schema与数据类型优化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96">
+										第四章-Schema与数据类型优化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第5章-创建高性能的索引
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
+										第五章-创建高性能的索引
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										postgresql
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/postgresql/postgresql">
+										postgresql
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										JVM
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/JVM/jvm-1.8">
+										jvm-1.8
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										SSM-Build
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/SSM-Build/SSM-Build">
+										SSM-Build
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_JUC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_JUC/Java_JUC-study">
+										Java_JUC-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_NIO
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_NIO/Java_NIO-study">
+										Java_NIO-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mybatis
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/mybatis/mybatis-study">
+										mybatis-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springMVC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springMVC/SpringMVC-Study">
+										SpringMVC-Study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springboot
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springboot/springboot-study">
+										springboot-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										spring
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/spring/Spring-study">
+										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										linux
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/linux/linux%E5%91%BD%E4%BB%A4">
+										linux命令
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										operating-support
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										docker
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/operating-support/docker/docker">
+										docker
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										project
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										flink_data_warehouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/project/flink_data_warehouse/flink_data_warehouse">
+										flink_data_warehouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content">
+		<h1 id="article-title">
+
+	Computer-Networking
+</h1>
+<div class="article-meta">
+	
+	<span>Yury</span>
+	<span>2021-03-02 21:28:44</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
+</div>
+
+<div id="article-content">
+	<h1 id="Computer-Networking"><a href="#Computer-Networking" class="headerlink" title="Computer Networking"></a>Computer Networking</h1><p>本文档内容主要来源于《计算机网络——自顶向下方法》一书和中科大计算机网络课程（<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1JV411t7ow">中科大郑烇、杨坚全套《计算机网络（自顶向下方法 第7版，James F.Kurose，Keith W.Ross）》课程_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</a>）。</p>
+<p>C++太难了，本次学习中的代码都以java为示例。</p>
+<h2 id="O、没用的东西"><a href="#O、没用的东西" class="headerlink" title="O、没用的东西"></a>O、没用的东西</h2><p>网线：四组双绞线</p>
+<p><strong>1、双绞线为什么要缠绕？</strong></p>
+<p>信号的传输方式是电流，电流会产生电磁场，对周围的的线路造成干扰，且干扰会随着线路的长度而增强。而在双绞线中，两根导线会传输幅值相同，极性相反的信号，这样一来，由于大小相等、极性相反，一条导线所产生的干扰就会与另一条导线所产生的干扰相互抵消，最后接收到的就是未被干扰的纯净信号。</p>
+<p><strong>2、网线制作标准</strong></p>
+<p>主要遵循EIA/TIA的568A、568B布线标准。</p>
+<p><img src="/images/%E6%A0%87%E5%87%86568B%E7%BA%BF%E5%BA%8F.png"></p>
+<p><strong>3、路由器工作原理</strong></p>
+<p>主要接收两种报文：</p>
+<p>（1）普通数据报文</p>
+<p>（2）路由报文</p>
+<p><img src="/images/%E8%B7%AF%E7%94%B1%E5%99%A8%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png"></p>
+<p><strong>4、路由表的维护方式</strong></p>
+<p>（1）静态路由</p>
+<p>（2）动态路由：RIP、OSPF、BGP</p>
+<p><strong>5、路由器控制</strong></p>
+<p>可以使用网线连接路由器的CONSOLE端口到计算机上，就可以在计算机上控制路由器了。在计算机的超级终端控制路由器的命令：</p>
+<p>（1）display current-configuration（dis cu）：显示当前配置</p>
+<p>（2）？：帮助命令，类似于linux的–help</p>
+<p><strong>6、网卡通常的缺省工作模式</strong></p>
+<p>（1）广播模式：只能接收<strong>广播报文</strong></p>
+<p>（2）直接模式：只能接受与自身硬件地址相匹配的<strong>单播报文</strong></p>
+<p><strong>7、简单组网</strong></p>
+<p>192.168.2.1/24：即前24位都是固定网段，只有最后面8位是局域网可以使用的ip，而1开头是网关，因此可用的ip为254个。</p>
+<p><img src="/images/%E7%AE%80%E5%8D%95%E7%BB%84%E7%BD%91.png"></p>
+<p><strong>8、专用网段</strong></p>
+<p>RFC1918规定，10网段、172.16网段、192.168网段只能作为私网（Intranet，内联网）地址（即局域网内使用），不能作为公网（Internet，互联网）地址（互联网ip地址）。</p>
+<p><strong>9、通过WireShark抓包</strong></p>
+<p>下载WireShark软件，安装一个虚拟机安装一个linux，设置固定IP地址（192.168.141.141）和默认网关等，打开WireShark找到一个VMware Network Adapter VMnet8网卡，双击或者右键start capture。此时可能会有一些数据出来，也可能没有。在shell中ping我们的虚拟机ip，就可以看到四组粉色的数据。这八条数据都可以点进去看，就是Source ip机器向Desination ip机器传输了一组数据，然后Desination ip机器回应了一组数据。这就是数据包。</p>
+<pre><code class="shell">ping 192.168.141.141
+</code></pre>
+<p><img src="/images/WireShark%E7%AE%80%E5%8D%95%E6%8A%93%E5%8C%85.png"></p>
+<p><strong>10、地址转换</strong></p>
+<p>一个企业只有5个可以访问互联网的ip地址，可以建一个局域网，在出口路由器上配置地址转换，让所有设备共享这五个ip，则所有设备都可以访问互联网。</p>
+<p><img src="/images/%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2.png"></p>
+<p><strong>原理：将不同设备的ip和端口映射到可以访问互联网的ip的不同端口号上。如一个转换表如下。</strong>报文发出去时从左到右转换，封装成公网ip，报文回来时从右往左转换，转换回本机局域网ip。</p>
+<table>
+<thead>
+<tr>
+<th>本地地址</th>
+<th>本地端口</th>
+<th>公网地址</th>
+<th>公网端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10.0.1.10</td>
+<td>1001</td>
+<td>202.0.01</td>
+<td>1044</td>
+</tr>
+<tr>
+<td>10.0.1.20</td>
+<td>1001</td>
+<td>202.0.01</td>
+<td>1045</td>
+</tr>
+</tbody></table>
+<p>多级转换。即进行ip转换的层级有多层。</p>
+<h2 id="一、概论"><a href="#一、概论" class="headerlink" title="一、概论"></a>一、概论</h2><h3 id="1、互联网通信的层次结构"><a href="#1、互联网通信的层次结构" class="headerlink" title="1、互联网通信的层次结构"></a>1、互联网通信的层次结构</h3><p><img src="/images/%E4%BA%92%E8%81%94%E7%BD%91%E9%80%9A%E4%BF%A1%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.png"></p>
+<h3 id="2、什么是协议？"><a href="#2、什么是协议？" class="headerlink" title="2、什么是协议？"></a>2、什么是协议？</h3><pre><code>协议 = 语法 + 语义 + 次序 + 动作
+</code></pre>
+<p>即我们要遵循某一个协议，就是指我们在传输数据的过程中，传输的数据报文要遵循一定的语法，比如前几位数字用于表示某个属性，中间几位数字表示某个属性等；还要遵循一定的语义，即在某个属性中，1代表什么，0代表什么，10又代表什么；还要遵循次序，即我发送一个数据，不能想发就发，而是我收到一个请求之后再发；最后还要遵循动作，即我收到数据报文之后，内部要做什么处理的动作。</p>
+<h3 id="3、TCP-IP协议簇各层的作用！！"><a href="#3、TCP-IP协议簇各层的作用！！" class="headerlink" title="3、TCP/IP协议簇各层的作用！！"></a>3、TCP/IP协议簇各层的作用！！</h3><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>协议</th>
+<th>协议数据单元</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用层</td>
+<td>HTTP等</td>
+<td>报文message</td>
+<td>提供应用服务，<font color="Red">用于两个进程之间的逻辑通信</font></td>
+</tr>
+<tr>
+<td>传输层</td>
+<td>TCP，UDP</td>
+<td>报文段segment</td>
+<td>进程到进程之间的传输，可靠。</td>
+</tr>
+<tr>
+<td>网络层（E2E，End to End）</td>
+<td>IP</td>
+<td>分组package</td>
+<td>在链路层的基础上实现从源主机（Source）到目标主机（Destination）的传输。不可靠，尽力而为，可能会丢包。路由器工作在这一层</td>
+</tr>
+<tr>
+<td>数据链路层（P2P，Point to Point）</td>
+<td></td>
+<td>帧frame</td>
+<td>在一个局域网内相邻的两个结点之间传输以帧为单位的数据。交换机工作在这一层</td>
+</tr>
+<tr>
+<td>物理层</td>
+<td></td>
+<td>位bit</td>
+<td>将电信号、光信号等物理信号转换为数字信号（0、1）</td>
+</tr>
+<tr>
+<td>Media</td>
+<td></td>
+<td></td>
+<td>传输媒介，如网线、光纤等</td>
+</tr>
+</tbody></table>
+<h3 id="4、封装和解封装"><a href="#4、封装和解封装" class="headerlink" title="4、封装和解封装"></a>4、封装和解封装</h3><p><img src="/images/%E5%B0%81%E8%A3%85%E5%92%8C%E8%A7%A3%E5%B0%81%E8%A3%85.png"></p>
+<h3 id="5、多路复用和多路分解"><a href="#5、多路复用和多路分解" class="headerlink" title="5、多路复用和多路分解"></a>5、多路复用和多路分解</h3><p><img src="/images/%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%A4%9A%E8%B7%AF%E5%88%86%E8%A7%A3.png"></p>
+<h3 id="6、C-S模式和P2P模式"><a href="#6、C-S模式和P2P模式" class="headerlink" title="6、C/S模式和P2P模式"></a>6、C/S模式和P2P模式</h3><p>C/S模式是指<strong>客户/服务器模式</strong>，如web浏览器/服务器，email客户端/服务器。主要问题是可扩展性较差，请求增加时，性能下降。</p>
+<p>P2P模式是指peer-peer模式（对等模式），每个客户端都可以作为服务器提供资源，当请求资源的主体增加时，该主体已经获取到的资源碎片可以给其他主机提供，即提供资源的主体也会相应增加，典型的比如迅雷、电驴等。</p>
+<h3 id="7、TCP和UDP的特性"><a href="#7、TCP和UDP的特性" class="headerlink" title="7、TCP和UDP的特性"></a>7、TCP和UDP的特性</h3><ul>
+<li>面向连接</li>
+<li>可靠的、按顺序地传送数据</li>
+<li>流量控制</li>
+<li>拥塞控制</li>
+</ul>
+<p>UDP的特性和上面四个相反，具体内容后面讲。</p>
+<h3 id="8、计算机数据单位"><a href="#8、计算机数据单位" class="headerlink" title="8、计算机数据单位"></a>8、计算机数据单位</h3><p>计算机是以二进制存储和发送接收数据的，二进制的一位（0或1），就是1bit，即一个比特。<strong>bit是计算机存储的最小单位。</strong>计算机cpu位数也是这个bit，如32位cpu计算机一次最多可以处理32个bit数据。网络传输中物理层的传输就是以bit为单位来传输的。</p>
+<p>而Byte是指字节，是一种基本单位，但不是最小单位，一个Byte=8个bit。通常说的1KB就是指1024Byte，1MB就是指1024*1024Byte。</p>
+<p>可以大概理解为，bit用于微观上的数据计量，而Byte用于宏观上的数据计量；bit在计算机或其他硬件层面上使用， 而Byte在实际生活和计算机软件应用层面更常见。</p>
+<h3 id="9、电路交换和分组交换"><a href="#9、电路交换和分组交换" class="headerlink" title="9、电路交换和分组交换"></a>9、电路交换和分组交换</h3><p>电路交换：将传输链路的传输能力切分给不同主机使用。比如主机通过一跟光纤传输数据时，会约定好将光纤的传输能力（带宽）按一定的规则切分为30等分，每台主机只能使用其中一份传输能力。如：频分（FDM，按频段分，每台主机使用特定频段）、时分（TDM）、波分（WDM，按波长分，每台主机使用特定波长）</p>
+<p><strong>分组交换：</strong>将传输的数据切分一个个的package发送，数据在传输链路上使用全部带宽传输，每个网络节点收到数据后会完全存储下来，再转发给下一个网络节点。</p>
+<p>分组交换的缺点：分组丢失、处理延迟、传播延迟、传输延迟和排队延迟。</p>
+<p><strong>分组丢失</strong>：当分组队列已满，新进来的分组会被丢弃，这就是分组丢失。</p>
+<p><strong>处理延迟：</strong>路由器设备接收到数据包并决定如何处理它所需要的时间。一般是微妙数量级或更少，依赖于处理器。</p>
+<p><strong>传播延迟</strong>：分组在物理介质中传播的时间；</p>
+<p><strong>传输延迟</strong>：每个分组需要完整接收后，存储下来，才会发送给下一个节点，因此一份分组从刚开始接受到接收完毕，存在一个传输时间的延迟；</p>
+<p><strong>排队延迟</strong>：有多个不同种类的数据要传给下一个节点时，需要排队，存在等待时间，取决于流量强度[0, 1)。</p>
+<p>分组交换的优点：共享性高，按需使用。</p>
+<p>分组交换中分组在每个网络节点之间的传输叫做“跳”。</p>
+<p><img src="/images/%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2.png"></p>
+<h3 id="10、虚电路网络和数据报网络"><a href="#10、虚电路网络和数据报网络" class="headerlink" title="10、虚电路网络和数据报网络"></a>10、虚电路网络和数据报网络</h3><p>虚电路网络，构建一张类似于路由表的虚电路表，根据虚电路表转发数据。（有连接，有连接和面向连接不是一个意思）</p>
+<p>数据报网络，每个数据包都有源地址、目标地址等所有信息。（无连接）</p>
+<p>数据报网络的特点：</p>
+<ul>
+<li>传输时无需建立一个连接，有数据就传</li>
+<li>每一个分组都独立路由（路径不一样，可能会失序）</li>
+<li>路由器根据分组的目标地址进行路由</li>
+</ul>
+<h3 id="11、ICMP协议"><a href="#11、ICMP协议" class="headerlink" title="11、ICMP协议"></a>11、ICMP协议</h3><p>ICMP（Internet Control Message Protocol，互联网控制消息协议），它用于 TCP/IP 网络中发送控制消息，通过这些消息以及反馈，网络管理者可以对网络中所发生的问题进行诊断。</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/369623317">深入理解ICMP协议 - 知乎 (zhihu.com)</a></p>
+<p>即这个协议常用于网络测试。常用的两个实现是ping和traceroute。</p>
+<p>TTL：time to live，数据包允许存活的跳数，即数据包每经过一跳，则TTL减1，当TTL为0时，路由器会抛弃该数据包，并给源主机发送ICMP报文，说数据包因为TTL减为零，被干掉了。</p>
+<p>RTT：round trip time，往返延迟，数据包发送出去后，收到回应的数据包的时间。</p>
+<h3 id="12、其他术语"><a href="#12、其他术语" class="headerlink" title="12、其他术语"></a>12、其他术语</h3><p><strong>吞吐量</strong>：在源主机和目标主机之间传输的速率（数据量/单位时间）。</p>
+<p>瓶颈链路：端到端路径上，限制吞吐的链路。</p>
+<p>DU：data unit，数据单元，网络信息传输的基本单位。</p>
+<p>SDU：service data unit，服务数据单元。</p>
+<p>PDU：protocol data unit，协议数据单元。这两个数据单元大概意思可能是，SDU为服务层的业务数据，而PDU为对应层的协议数据。</p>
+<h2 id="二、应用层"><a href="#二、应用层" class="headerlink" title="二、应用层"></a>二、应用层</h2><h3 id="1、分布式进程需要解决的问题"><a href="#1、分布式进程需要解决的问题" class="headerlink" title="1、分布式进程需要解决的问题"></a>1、分布式进程需要解决的问题</h3><h4 id="问题1：进程标识和寻址问题"><a href="#问题1：进程标识和寻址问题" class="headerlink" title="问题1：进程标识和寻址问题"></a>问题1：进程标识和寻址问题</h4><p>进程标识：ip + TCP或UDP端口号</p>
+<p>如HTTP，采用TCP 80端口，Mail采用TCP 25端口，ftp采用TCP 2端口。</p>
+<p>寻址：协议头指定源ip和目标ip</p>
+<h4 id="问题2：传输层提供的服务-层间信息的代表"><a href="#问题2：传输层提供的服务-层间信息的代表" class="headerlink" title="问题2：传输层提供的服务-层间信息的代表"></a>问题2：传输层提供的服务-层间信息的代表</h4><p>如果Socket Api每次传输报文，都携带上面的这么多的信息，太繁琐易出错，不便于管理。</p>
+<p>因此用一个代号标示通信的双方或单方，即为socket，注意<font color="Red">socket只用于本地标示</font>！</p>
+<p>TCP socket：TCP建立稳定连接后，可以用一个整数标识两个应用实体之间的通信关系，本地标示。TCP socket包含源IP、源端口、目标IP、目标端口。发送消息时只需要带上这个socket，操作系统就可以查到这个socket对应的源IP、源端口、目标IP、目标端口，然后按照这些内容发送对应的消息。对于网络通信而言，socket对应一个网络会话关系的本地标示。</p>
+<table>
+<thead>
+<tr>
+<th>socket</th>
+<th>源IP</th>
+<th>源端口</th>
+<th>目标IP</th>
+<th>目标端口</th>
+<th>状态…</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10</td>
+<td>192.168.141.141</td>
+<td>9000</td>
+<td>192.168.141.142</td>
+<td>9001</td>
+<td></td>
+</tr>
+<tr>
+<td>20</td>
+<td>192.168.141.141</td>
+<td>9000</td>
+<td>192.168.141.143</td>
+<td>9001</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>UDP socket：通信之间不需要建立连接，其socket仅包含源IP和源端口，<strong>但是传输报文时，必须提供目标IP和目标端口</strong>。接收报文时，传输层必须上传对方IP和对方端口。</p>
+<table>
+<thead>
+<tr>
+<th>socket</th>
+<th>源IP</th>
+<th>源端口</th>
+<th>状态…</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10</td>
+<td>192.168.141.141</td>
+<td>8000（用于发送）</td>
+<td></td>
+</tr>
+<tr>
+<td>20</td>
+<td>192.168.141.141</td>
+<td>8001（用于接收）</td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="问题3：使用传输层提供的服务实现应用"><a href="#问题3：使用传输层提供的服务实现应用" class="headerlink" title="问题3：使用传输层提供的服务实现应用"></a>问题3：使用传输层提供的服务实现应用</h4><p>（1）规定应用层协议，公用协议（HTTP，ftp）和私有协议（Skype使用的通讯协议）</p>
+<p>（2）考虑数据丢失率、吞吐、延迟、安全性</p>
+<p>（3）应用层协议和传输层协议对应</p>
+<p>（4）安全性，如：HTTP+SSL=HTTPS</p>
+<h3 id="2、Web与HTTP"><a href="#2、Web与HTTP" class="headerlink" title="2、Web与HTTP"></a>2、Web与HTTP</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>HTTP：超文本传输协议。</p>
+<p>url格式：</p>
+<pre><code>协议名://用户名:口令@主机:端口号/路径名
+protocol://user:password@www.someschool.edu.cn:port/somedept/pic.gif
+</code></pre>
+<p>建立在TCP协议之上，HTTP是无状态的，即服务器不维护关于客户的任何信息，维护状态的TCP协议是很复杂的，需要考虑很多对状态有影响的情况。</p>
+<p>HTTP1.0：非持久连接，HTTP请求步骤如下：建立TCP连接请求，确认TCP连接，发送请求数据包，解析处理，返回响应数据包，断开连接。</p>
+<p>HTTP1.1：持久连接，HTTP请求步骤如下：建立TCP连接请求，确认TCP连接，发送请求数据包，解析处理，返回响应数据包，不断开连接，如果有其他请求可以继续使用这个连接。</p>
+<p><img src="/images/%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5%E5%92%8C%E9%9D%9E%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5.png"></p>
+<p><img src="/images/%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E6%A8%A1%E5%9E%8B.png"></p>
+<h4 id="HTTP请求报文格式"><a href="#HTTP请求报文格式" class="headerlink" title="HTTP请求报文格式"></a>HTTP请求报文格式</h4><pre><code class="shell">get /somedir/page.html HTTP/1.1\r\n
+Host: www.someschool.edu\r\n
+User-agent: Mozilla/4.0\r\n
+Connection: close\r\n
+Accept-language: fr\r\n
+\r\n
+</code></pre>
+<p><img src="/images/HTTP%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F.png"></p>
+<p>HTTP/1.0支持的请求方法：GET、POST、HEAD</p>
+<p>HTTP/1.1支持的请求方法：GET、POST、HEAD、PUT、DELETE</p>
+<h4 id="HTTP响应报文格式"><a href="#HTTP响应报文格式" class="headerlink" title="HTTP响应报文格式"></a>HTTP响应报文格式</h4><pre><code class="shell">HTTP/1.1 200 OK\r\n
+Connection: keep-alive\r\n
+Date: Thu, 06 Aug 1998 12:00:15 GMT\r\n
+Server: Apache/1.3.0 (Unix)\r\n
+Last-Modified: Mon, 22 Jun 1998 ...\r\n
+Content-Length: 6821\r\n
+Content-Type: text/html\r\n
+\r\n
+\r\n
+data ..data .. data ..
+</code></pre>
+<h4 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h4><p>之前提到HTTP是无状态的，而cookie可以维持一定的状态，如登陆状态等。</p>
+<p>cookie的理解如下：</p>
+<ul>
+<li>客户端第一次访问服务器，服务器发现这个东西没有带cookie，是新来的</li>
+<li>服务器给这个客户端分配一个cookie，存储在服务器，服务器响应时顺便把这个cookie带回去</li>
+<li>客户端拿到响应html和cookie，将cookie存储在本地</li>
+<li>客户端第二次访问服务器，就会带上这个cookie，服务器在自己这里也找到同样一个cookie，就知道这个东西之前来过我这里。</li>
+</ul>
+<p>cookie的携带也会写在报文中。</p>
+<p>cookie如果和很多信息关联在一起，容易泄露隐私。</p>
+<h4 id="web缓存（代理服务器）"><a href="#web缓存（代理服务器）" class="headerlink" title="web缓存（代理服务器）"></a>web缓存（代理服务器）</h4><p>即在客户端和原始服务器之间加了一个代理服务器，客户端访问时首先会经过这个代理服务器，如果代理服务器中有这个资源，则返回这个资源，如果代理服务器没有这个资源则发给原始服务器去访问。</p>
+<p>好处：减少资源响应时间，减少原始服务器的负载。</p>
+<p>问题：原始服务器更新了资源怎么办？缓存服务器可以原始服务器发GET，报文中带上一个特殊的参数如下：</p>
+<pre><code class="SHELL">If-modified-since: &lt;date&gt;
+</code></pre>
+<p>如果原始服务器的响应资源在这个时间点之后都没发生改变，则不发送这个资源，并通过响应一个特殊的状态码告诉缓存服务器，资源在这个时间点后没有发生改变。</p>
+<pre><code class="shell">HTTP/1.0 304 Not Modified
+</code></pre>
+<h3 id="3、FTP"><a href="#3、FTP" class="headerlink" title="3、FTP"></a>3、FTP</h3><p>FTP协议是有状态的。</p>
+<ul>
+<li>客户端发出用户名、口令等，向服务器建立TCP连接-控制连接，服务器确认连接</li>
+<li>服务器向客户端建立TCP连接-数据连接，在数据连接上进行发送数据。</li>
+</ul>
+<h3 id="4、EMail应用"><a href="#4、EMail应用" class="headerlink" title="4、EMail应用"></a>4、EMail应用</h3><p>EMail应用由三个组成部分：</p>
+<p>（1）用户代理</p>
+<p>（2）邮件服务器</p>
+<p>（3）邮件传输协议，如SMTP</p>
+<p><img src="/images/%E9%82%AE%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8.png"></p>
+<p>流程：</p>
+<ul>
+<li>用户代理通过SMTP协议，把邮件发送到发件人邮箱对应的邮件服务器中，并放到发件箱队列中</li>
+<li>发件人邮箱对应的邮件服务器从发件箱队列中取出邮件，通过SMTP协议，发送给收件人邮箱对应的邮件服务器中，并放在一个待收取的收件箱中，发送成功。</li>
+<li>收件人通过POP3协议，从收件人邮箱对应的邮件服务器中查询收件箱中是否有新邮件，并收取邮件。</li>
+</ul>
+<p><img src="/images/%E7%AE%80%E5%8D%95%E7%9A%84SMTP%E4%BA%A4%E4%BA%92.png"></p>
+<p><strong>smtp协议报文格式：</strong></p>
+<pre><code class="shell">To: xxx
+From: xxx
+Subject: xxx
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Type: image/jpeg
+
+base64 encoded data ........................
+</code></pre>
+<p>邮件访问协议，常见POP3、IMAP、HTTP</p>
+<h3 id="5、DNS"><a href="#5、DNS" class="headerlink" title="5、DNS"></a>5、DNS</h3><p>DNS，Domain Name System，域名解析系统，即完成从域名到ip地址的解析工作的系统。</p>
+<p>之前说过了进程之间的标示和寻址是通过ip和端口，但是ip很难记住，因此可以通过给ip设置一个比较容易记住的域名来表示这个主机的ip，而DNS服务器就是通过给定域名，查询出响应的ip地址的系统。</p>
+<p>特点：</p>
+<ul>
+<li>域名通过分层的、基于域的形式命名</li>
+<li>通过分布式数据库完成域名到ip地址的解析。</li>
+<li>运行在UDP之上端口号为53的应用服务</li>
+<li>是internet的核心功能，但以应用层协议实现，处于网络边缘。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>域名</th>
+<th>ip</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="6、P2P应用"><a href="#6、P2P应用" class="headerlink" title="6、P2P应用"></a>6、P2P应用</h3><h3 id="7、CDN"><a href="#7、CDN" class="headerlink" title="7、CDN"></a>7、CDN</h3><h3 id="8、TCP套接字编程"><a href="#8、TCP套接字编程" class="headerlink" title="8、TCP套接字编程"></a>8、TCP套接字编程</h3><p>应用层要实现网络通信，要把报文传给下一层传输层去传输，而应用层和传输层之间的接口就是socket；传输层把报文段传给下一层就是他们之间的工作，我们先不用管。因此socket就像分布式应用进程之间的门，通过socket就可以实现分布式应用进程之间的逻辑通信。socket服务提供的就是字节流服务。</p>
+<h4 id="TCP套接字编程流程"><a href="#TCP套接字编程流程" class="headerlink" title="TCP套接字编程流程"></a>TCP套接字编程流程</h4><p>（1）启动服务器进程</p>
+<ul>
+<li>创建服务器的socket</li>
+<li>和本地ip、端口绑定</li>
+<li>在welcome socket上阻塞式等待接收用户的连接。</li>
+</ul>
+<p>（2）客户端主动和服务器建立连接</p>
+<ul>
+<li>创建客户端的socket，自动绑定本地端口</li>
+<li>指定服务器ip和端口，调用连接api，向服务器端发送连接请求。</li>
+</ul>
+<p>（3）服务器接收到连接请求</p>
+<ul>
+<li>服务端接收到客户端的请求，解除阻塞时等待，<font color="Red">返回一个新的socket（和welcome socket不一样）来和客户端通信，原welcome socket重新回到阻塞式等待模式等待后面的用户连接。</font></li>
+</ul>
+<h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务器socket类为ServerSocket，其初始化函数中有一个bind函数，即将IP地址、端口绑定到这个serversocket上。如果没有指定绑定的ip，则默认为InetAddress.anyLocalAddress()，即任意的本地地址<code>0.0.0.0</code>。</p>
+<pre><code class="java">public ServerSocket(int port) throws IOException &#123;
+    this(port, 50, null);
+&#125;
+
+public ServerSocket(int port, int backlog) throws IOException &#123;
+    this(port, backlog, null);
+&#125;
+
+public ServerSocket(int port, int backlog, InetAddress bindAddr) throws IOException &#123;
+    setImpl();
+    if (port &lt; 0 || port &gt; 0xFFFF)
+        throw new IllegalArgumentException(
+        &quot;Port value out of range: &quot; + port);
+    if (backlog &lt; 1)
+        backlog = 50;
+    try &#123;
+        bind(new InetSocketAddress(bindAddr, port), backlog);
+    &#125; catch(SecurityException e) &#123;
+        close();
+        throw e;
+    &#125; catch(IOException e) &#123;
+        close();
+        throw e;
+    &#125;
+&#125;
+</code></pre>
+<p> 创建的serversocket即为课程中的welcome socket，accept函数会阻塞，直到接收到一个连接，连接成功后会返回一个新的socket，发送和接受数据都在这个新的socket上。</p>
+<pre><code class="java">package net.yury757;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class ServerTest01 &#123;
+    public static void main(String[] args) throws IOException &#123;
+        InetAddress serveraddr = InetAddress.getByName(&quot;192.168.0.101&quot;);
+        ServerSocket serverSocket = new ServerSocket(8888, 50, serveraddr); // 这个socket为2222
+        int nums = 0;
+        while (true)&#123;
+            Socket socket = serverSocket.accept();                                       // 这个socket为新创建的
+            nums++;
+            System.out.println(&quot;收到第&quot; + nums + &quot;个连接。目标ip地址为：&quot; + socket.getInetAddress() + &quot;，目标端口为：&quot; + socket.getPort() + &quot;。&quot;);
+            if (nums &gt;= 10)&#123;
+                break;
+            &#125;
+            socket.close();
+        &#125;
+        serverSocket.close();
+    &#125;
+&#125;
+</code></pre>
+<p>服务器中的socket表，调用socket.close方法后对应的socket在表中的数据会被移除。</p>
+<table>
+<thead>
+<tr>
+<th>socket</th>
+<th>源IP</th>
+<th>源端口</th>
+<th>目标IP</th>
+<th>目标端口</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2222（welcome socket）</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3333（每次新创建的socket）</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td>192.168.0.101</td>
+<td>10266</td>
+<td>连接成功</td>
+</tr>
+<tr>
+<td>4444</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td>192.168.0.101</td>
+<td>10496</td>
+<td>连接成功</td>
+</tr>
+<tr>
+<td>5555</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td>192.168.0.101</td>
+<td>10503</td>
+<td>连接成功</td>
+</tr>
+</tbody></table>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>客户端的socket类的初始化有很多重载方法，<font color="Red">不管那种方式创建，至少要给服务器地址和端口两个参数，如下。若不指定本机地址和端口，则本机操作系统会自动分配端口出去</font>，Socket类创建成功后即连接上了服务器，即不需要像C/C++那样显示调用connect。</p>
+<pre><code class="java">package net.yury757;
+
+import java.io.IOException;
+import java.net.Socket;
+
+public class ClientTest01 &#123;
+    public static void main(String[] args) throws IOException &#123;
+        String serverHost = &quot;192.168.0.101&quot;;
+        int port = 8888;
+        Socket socket = new Socket(serverHost, port); // 创建后即连接成功
+
+        socket.close();
+    &#125;
+&#125;
+</code></pre>
+<p>客户端的socket表</p>
+<table>
+<thead>
+<tr>
+<th>socket</th>
+<th>源IP</th>
+<th>源端口</th>
+<th>目标IP</th>
+<th>目标端口</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>333</td>
+<td>192.168.0.101</td>
+<td>10266</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td>连接成功</td>
+</tr>
+<tr>
+<td>444</td>
+<td>192.168.0.101</td>
+<td>10496（自动分配）</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td>连接成功</td>
+</tr>
+<tr>
+<td>555</td>
+<td>192.168.0.101</td>
+<td>10503</td>
+<td>192.168.0.101</td>
+<td>8888</td>
+<td>连接成功</td>
+</tr>
+</tbody></table>
+<p>客户端多次启动后，服务器打印的内容如下，可以发现客户端的端口是操作系统自己分配的。</p>
+<pre><code>收到第1个连接。目标ip地址为：/192.168.0.101，目标端口为：10266。
+收到第2个连接。目标ip地址为：/192.168.0.101，目标端口为：10496。
+收到第3个连接。目标ip地址为：/192.168.0.101，目标端口为：10503。
+</code></pre>
+<h4 id="客户端服务端通信"><a href="#客户端服务端通信" class="headerlink" title="客户端服务端通信"></a>客户端服务端通信</h4><p>建立TCP连接后，<font color="Red">客户端和服务端之间的通信其实就是IO操作，注意每次输出完了之后都要调用socket.shutdownOutput()方法，表明其中一方输出结束，另外一方可以开始接收消息。</font>一个简单的通信的例子如下：</p>
+<p>服务端：</p>
+<pre><code class="java">package net.yury757;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
+public class ServerTest02 &#123;
+    public static void main(String[] args) throws IOException &#123;
+        InetAddress serveraddr = InetAddress.getByName(&quot;192.168.0.101&quot;);
+        ServerSocket serverSocket = new ServerSocket(8888, 50, serveraddr);
+        int nums = 0;
+        while (true)&#123;
+            Socket socket = serverSocket.accept();
+            nums++;
+
+            // 读取客户端消息
+            InputStream inputStream = socket.getInputStream();
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            StringBuilder sb = new StringBuilder();
+            while ((len = inputStream.read(buffer)) &gt; 0)&#123;
+                sb.append(new String(buffer, 0, len, StandardCharsets.UTF_8));
+            &#125;
+            System.out.println(sb.toString());
+
+            // 向客户端回复
+            String reply = &quot;客户端，你好！—— reply from server(&quot; + socket.getLocalPort() + &quot;) to client(&quot; + socket.getPort() + &quot;)&quot;;
+            OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(reply.getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
+            socket.shutdownOutput();
+
+            // 关闭
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+            if (nums &gt;= 10)&#123;
+                break;
+            &#125;
+        &#125;
+        serverSocket.close();
+    &#125;
+&#125;
+</code></pre>
+<p>客户端：</p>
+<pre><code class="java">package net.yury757;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
+public class ClientTest02 &#123;
+    public static void main(String[] args) throws IOException &#123;
+        InetAddress serverAddr = InetAddress.getByName(&quot;192.168.0.101&quot;);
+        int port = 8888;
+        Socket socket = new Socket(serverAddr, port);
+
+        // 向服务器发送消息
+        OutputStream outputStream = socket.getOutputStream();
+        String message = &quot;服务器，你好！—— message from client whose port is &quot; + socket.getLocalPort();
+        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        outputStream.flush();
+        socket.shutdownOutput();
+
+        // 读取服务器回复的消息
+        InputStream inputStream = socket.getInputStream();
+        int len = 0;
+        byte[] buffer = new byte[1024];
+        StringBuilder sb = new StringBuilder();
+        while ((len = inputStream.read(buffer)) &gt; 0)&#123;
+            sb.append(new String(buffer, 0, len, StandardCharsets.UTF_8));
+        &#125;
+        System.out.println(sb.toString());
+
+        // 关闭资源
+        outputStream.close();
+        inputStream.close();
+        socket.close();
+    &#125;
+&#125;
+</code></pre>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/bigdata/hadoop/hadoop-study">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  hadoop-study
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+                《高性能MySQL》
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
+	</div>
+	<div id="footer">
+	<p>
+	©2019-<span id="footerYear"></span> 
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+<script type="text/javascript"> 
+	document.getElementById('footerYear').innerHTML = new Date().getFullYear() + '';
+</script>
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>

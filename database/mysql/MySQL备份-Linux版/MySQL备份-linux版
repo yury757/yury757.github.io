@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		MySQL备份-Linux版 | 
+	 
+	Yury&#39;s Blog
+	</title>
+	
+	<!-- keywords,description -->
+	 
+		<meta name="description" content="blog of usual study" />
+	
+
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/js/main.js"></script>
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+
+	
+	
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Blog" type="application/atom+xml">
+</head>
+
+<body>
+	<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3efe99c287df5a1d6f0d02d187e403c1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<header id="header">
+    <a id="title" href="/" class="logo">Yury's Blog</a>
+
+	<ul id="menu">
+		<li class="menu-item">
+			<a href="/about" class="menu-item-link">ABOUT</a>
+		</li>
+	
+		<li class="menu-item">
+			<a href="/tags" class="menu-item-link">标签</a>
+		</li>
+	
+
+	
+		<li class="menu-item">
+			<a href="/categories" class="menu-item-link">分类</a>
+		</li>
+	
+
+		<li class="menu-item">
+			<a href="https://github.com/yury757" class="menu-item-link" target="_blank">
+				<i class="fa fa-github fa-2x"></i>
+			</a>
+		</li>
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="按回车全站搜索">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Git
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										learngit
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/Git/learngit/learn-git">
+										learn-git
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										bigdata
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hadoop
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hadoop/hadoop-study">
+										hadoop-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hbase
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hbase/HBase-study">
+										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										zookeeper
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/zookeeper/zookeeper-study">
+										zookeeper-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										computer-science
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Computer-Networking
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/computer-science/Computer-Networking/Computer-Networking">
+										Computer-Networking
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										database
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mysql
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL中的exists与in的使用
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8">
+										MySQL中的exists与in的使用
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL备份-Linux版
+									</a>
+									
+							<ul>
+								<li class="file active">
+									<a href="/database/mysql/MySQL%E5%A4%87%E4%BB%BD-Linux%E7%89%88/MySQL%E5%A4%87%E4%BB%BD-linux%E7%89%88">
+										MySQL备份-linux版
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL日期格式化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96">
+										MySQL日期格式化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL查询执行计划详解-explain
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain">
+										MySQL查询执行计划详解-explain
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										《高性能MySQL》
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第1章-MySQL架构与历史
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+										第一章-MySQL架构与历史
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第2章-MySQL基准测试
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95">
+										第二章 MySQL基准测试
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第3章-服务器性能剖析
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90">
+										第三章-服务器性能剖析
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第4章-Schema与数据类型优化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96">
+										第四章-Schema与数据类型优化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第5章-创建高性能的索引
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
+										第五章-创建高性能的索引
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										postgresql
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/postgresql/postgresql">
+										postgresql
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										JVM
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/JVM/jvm-1.8">
+										jvm-1.8
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										SSM-Build
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/SSM-Build/SSM-Build">
+										SSM-Build
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_JUC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_JUC/Java_JUC-study">
+										Java_JUC-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_NIO
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_NIO/Java_NIO-study">
+										Java_NIO-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mybatis
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/mybatis/mybatis-study">
+										mybatis-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springMVC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springMVC/SpringMVC-Study">
+										SpringMVC-Study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springboot
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springboot/springboot-study">
+										springboot-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										spring
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/spring/Spring-study">
+										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										linux
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/linux/linux%E5%91%BD%E4%BB%A4">
+										linux命令
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										operating-support
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										docker
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/operating-support/docker/docker">
+										docker
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										project
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										flink_data_warehouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/project/flink_data_warehouse/flink_data_warehouse">
+										flink_data_warehouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content">
+		<h1 id="article-title">
+
+	MySQL备份-linux版
+</h1>
+<div class="article-meta">
+	
+	<span>Yury</span>
+	<span>2020-12-01 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/mysql/">mysql</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
+</div>
+
+<div id="article-content">
+	<h2 id="一、该文档适用版本"><a href="#一、该文档适用版本" class="headerlink" title="一、该文档适用版本"></a>一、该文档适用版本</h2><p>MySQL：8.0.22</p>
+<p>Linux：18.04.5 LTS</p>
+<h2 id="二、MySQL在Linux上各种的默认路径"><a href="#二、MySQL在Linux上各种的默认路径" class="headerlink" title="二、MySQL在Linux上各种的默认路径"></a>二、MySQL在Linux上各种的默认路径</h2><table>
+<thead>
+<tr>
+<th>MySQL变量</th>
+<th>路径</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>datadir</td>
+<td>/var/lib/mysql</td>
+<td align="left">存放数据文件、log_bin日志文件等</td>
+</tr>
+<tr>
+<td>log-error</td>
+<td>/var/log/mysql/error.log</td>
+<td align="left">错误日志文件</td>
+</tr>
+<tr>
+<td></td>
+<td>/etc/mysql</td>
+<td align="left">存放MySQL配置文件</td>
+</tr>
+<tr>
+<td>basedir</td>
+<td>/usr/</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>character_sets_dir</td>
+<td>/usr/share/mysql-8.0/charsets/</td>
+<td align="left">字符集路径</td>
+</tr>
+<tr>
+<td>general_log_file</td>
+<td>/var/lib/mysql/yuyr757.log</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>lc_messages_dir</td>
+<td>/usr/share/mysql-8.0/</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>log_bin_basename</td>
+<td>/var/lib/mysql/binlog</td>
+<td align="left">bin_log日志文件路径和文件名前缀</td>
+</tr>
+<tr>
+<td>log_bin_index</td>
+<td>/var/lib/mysql/binlog.index</td>
+<td align="left">bin_log日志文件索引</td>
+</tr>
+<tr>
+<td>log_error</td>
+<td>/var/log/mysql/error.log</td>
+<td align="left">报错日志</td>
+</tr>
+<tr>
+<td>plugin_dir</td>
+<td>/usr/lib/mysql/plugin/</td>
+<td align="left">插件路径</td>
+</tr>
+<tr>
+<td>pid_file</td>
+<td>/var/run/mysqld/mysqld.pid</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>relay_log_basename</td>
+<td>/var/lib/mysql/yuyr757-relay-bin</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>relay_log_index</td>
+<td>/var/lib/mysql/yuyr757-relay-bin.index</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>secure_file_priv</td>
+<td>/var/lib/mysql-files/</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>slow_query_log_file</td>
+<td>/var/lib/mysql/yuyr757-slow.log</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>socket</td>
+<td>/var/run/mysqld/mysqld.sock</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>sql_log_off</td>
+<td>OFF</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>tmpdir</td>
+<td>/tmp</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<pre><code class="shell">/usr/bin                 客户端程序和脚本  
+/usr/sbin                mysqld 服务器  
+/var/lib/mysql           日志文件，数据文件
+/usr/share/doc/packages  文档  
+/usr/include/mysql       包含( 头) 文件  
+/usr/lib/mysql           库  
+/usr/share/mysql         错误消息和字符集文件  
+/usr/share/sql-bench     基准程序 
+</code></pre>
+<h2 id="三、热备份（不需要关闭服务器）"><a href="#三、热备份（不需要关闭服务器）" class="headerlink" title="三、热备份（不需要关闭服务器）"></a>三、热备份（不需要关闭服务器）</h2><h3 id="1、mysqldump"><a href="#1、mysqldump" class="headerlink" title="1、mysqldump"></a>1、mysqldump</h3><p>mysqldump用法：</p>
+<pre><code class="shell">Usage: mysqldump [OPTIONS] database [tables]
+OR     mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...]
+OR     mysqldump [OPTIONS] --all-databases [OPTIONS]
+
+Default options are read from the following files in the given order:
+/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf
+</code></pre>
+<p>[OPTIONS]参数很多，和mysql命令参数差不多，有需要自行查看<code>mysqldump --help</code>，以下讲解常用参数。</p>
+<pre><code class="shell">-u, --user：用户名
+-p, --password：密码，该参数不能带值
+-h, --host：服务器地址
+-P, --port：端口
+-A, --all-databses：所有数据库
+-S, --socket：用来连接服务器的socket文件
+-B, --databses：指定要导出的数据库，默认情况下生成的sql文件是不带create database if not exists语句的，加上--database就会有创建数据库的语句。
+-R, --routines：导出数据库中的procedures和functions
+--triggers：导出对应表的触发器
+-E, --events：导出所有事件
+-w, --where：按照指定where条件下的数据
+--single-transaction：通过开启一个事务导出所有表来创建一致的快照（个人理解为导出的一瞬间创建一个快照，然后导出的数据都是基于那个快照版本，可以保持数据一致性）。仅适用于存储在支持多版本的存储引擎中的表（当前仅InnoDB支持）；
+-d, --no-data：不导出数据
+-t, --no-create-info：不重建数据库和表结构，即不输出drop database并create database，drop table并create table语句
+</code></pre>
+<p>下面是对一个test数据库的全备份</p>
+<pre><code class="shell">mysqldump -u root -p --single-transaction --routines --events --triggers --databases test &gt; /tmp/test.sql
+</code></pre>
+<h3 id="2、select-into-outfile"><a href="#2、select-into-outfile" class="headerlink" title="2、select into outfile"></a>2、select into outfile</h3><p><font color="Red">注意：如果<code>secure_file_priv</code>变量不为空，则outfile的文件只能导出到那个变量的文件夹。</font></p>
+<pre><code class="shell"># 在一个正常的select语句结束，加上以下语句到sql语句结尾，即可将select出来的数据导出到文件
+INTO OUTFILE &#39;/tmp/employee_data_1.txt&#39;
+FIELDS TERMINATED BY &#39;,&#39; OPTIONALLY ENCLOSED BY &#39;&quot;&#39; ESCAPED BY &#39;\&#39; LINES TERMINATED BY &#39;\n&#39;;
+
+FIELDS TERMINATED BY # 字段分隔符
+ENCLOSED BY          # 字段引用符，即字段左右两端会加上符号。OPTIONALLY即选择性，int和decimal不会被加上引用符，其他会。
+LINES TERMINATED BY  # 行分隔符
+ESCAPED BY           # 转义符，当文本中的符号和这里设置的符号冲突时，输出到csv时会自动给文本加上转义符，即表示转义符后面的这个符号是纯文本，不用做字段分隔，或字段引用，或行分隔符，或转义作用。
+
+在Linux中，显示加上ESCAPED BY &#39;\&#39;时，sql语句没有任何响应。显示加上显示加上ESCAPED BY &#39;\\&#39;会报错。很迷，无所谓，反正默认为&#39;\&#39;。
+</code></pre>
+<p><strong>示例1</strong>（以下\t和\n都是手敲进去的，实际上查数据时\t和\n都会显示为缩进和换行）：</p>
+<pre><code class="shell">mysql&gt; select * from test2;
++----+---------+------------+------------------------------+-------------------+
+| id | value   | date       | text                         | decimal_value     |
++----+---------+------------+------------------------------+-------------------+
+|  1 | &#39;sfas1&#39; | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |
+|  2 | sfsa2   | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |
+|  3 | sfsa3   | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |
+|  4 | NULL    | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |
+|  5 | _abcd_  | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |
++----+---------+------------+------------------------------+-------------------+
+5 rows in set (0.00 sec)
+
+mysql&gt; select * from test2 into outfile &#39;/var/lib/mysql-files/test.csv&#39; FIELDS TERMINATED BY &#39;,&#39; OPTIONALLY ENCLOSED BY &#39;&quot;&#39; lines terminated by &#39;\n&#39;;
+Query OK, 5 rows affected (0.00 sec)
+
+vim /var/lib/mysql-files/test.csv
+
+# 数据如下：
+1,&quot;&#39;sfas1&#39;&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf asdf\&quot;as,df\\as\
+f&quot;,436526.7780000000
+2,&quot;sfsa2&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf   asdf\&quot;as,df\\as\
+f&quot;,436526.7780000000
+3,&quot;sfsa3&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf   asdf\&quot;as,df\\as\
+f&quot;,436526.7780000000
+4,\N,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf        asdf\&quot;as,df\\as\
+f&quot;,436526.7780000000
+5,&quot;_abcd_&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf  asdf\&quot;as,df\\as\
+f&quot;,436526.7780000000
+</code></pre>
+<p>解释：</p>
+<ul>
+<li><p><code>,</code>虽然为字段分隔符，但有字段引用符的存在，所以不需要转义。没有字段引用符的例子见后面</p>
+</li>
+<li><p> <code>\N</code>表示MySQL中的NULL</p>
+</li>
+<li><p><code>&quot;</code>需要转义，所以csv中表示为<code>\&quot;</code></p>
+</li>
+<li><p><code>\t</code>不需要被转义，因此在csv中表示为<code>\t</code>，用vim查看时即显示为若干个空格。</p>
+</li>
+<li><p><code>\n</code>需要转义，所以在csv中为<code>\\n</code>，用vim查看时即显示为<code>\</code>再换行。</p>
+</li>
+</ul>
+<p><strong>示例2：</strong>（不带字段引用符）</p>
+<pre><code class="shell">mysql&gt; select * from test2 into outfile &#39;/var/lib/mysql-files/test.csv&#39; FIELDS TERMINATED BY &#39;,&#39; lines terminated by &#39;\n&#39;;
+Query OK, 5 rows affected (0.00 sec)
+
+# 数据如下，可以看到text列中的逗号就带上了\，而双引号就没有带\
+1,&#39;sfas1&#39;,2021-01-17,sdfasdf&quot;asdf       asdf&quot;as\,df\\as\
+f,436526.7780000000
+2,sfsa2,2021-01-17,sdfasdf&quot;asdf asdf&quot;as\,df\\as\
+f,436526.7780000000
+3,sfsa3,2021-01-17,sdfasdf&quot;asdf asdf&quot;as\,df\\as\
+f,436526.7780000000
+4,\N,2021-01-17,sdfasdf&quot;asdf    asdf&quot;as\,df\\as\
+f,436526.7780000000
+5,_abcd_,2021-01-17,sdfasdf&quot;asdf        asdf&quot;as\,df\\as\
+f,436526.7780000000
+</code></pre>
+<h3 id="3、percona的xtrabackup"><a href="#3、percona的xtrabackup" class="headerlink" title="3、percona的xtrabackup"></a>3、percona的xtrabackup</h3><p>percona是一个提供数据库工具一个第三方供应商，xtrabackup是他的一个用于数据库备份的产品，使用方法略，因为我也没用过。</p>
+<h2 id="四、冷备份（需要关闭服务器）"><a href="#四、冷备份（需要关闭服务器）" class="headerlink" title="四、冷备份（需要关闭服务器）"></a>四、冷备份（需要关闭服务器）</h2><p><font color="Red">本人在windows上使用8.0.17版本的MySQL在import tablespace时不要cfg文件，不知道是windows版本的原因，还是8.0.17版本的原因，懒得追究了。</font></p>
+<pre><code class="mysql"># 用一个test表来做测试
+create table test(id int primary key);
+
+# 将该步骤确保所有对表的修改全部写入到二进制文件中，并将表加上锁，只允许读操作，不允许写操作
+flush tables test for export;
+
+# 将test.ibd表空间文件和test.cfg元数据文件复制一份命名为tmp.ibd、tmp.cfg
+cp test.ibd tmp.ibd
+cp test.cfg tmp.cfg
+
+# 解除锁表
+unlock tables;
+
+# 修改表名为你需要的复制的表
+alter table test rename to test22;
+
+# 创建一张原表
+create table test like test22;
+
+# 删除表空间
+alter table test discard tablespace;
+
+# 将备份的表空间文件和元数据文件恢复
+mv tmp.ibd test.ibd
+mv tmp.cfg test.cfg
+
+# 更改文件的所属用户，否则会出现权限错误
+chown -R mysql.mysql .
+
+# 恢复表空间
+alter table test import tablespace;
+
+# 解除锁表
+unlock tables;
+
+# 待所有恢复都成功了之后，再删除cfg文件
+rm test.cfg
+</code></pre>
+<h2 id="五、数据恢复"><a href="#五、数据恢复" class="headerlink" title="五、数据恢复"></a>五、数据恢复</h2><h3 id="1、MySQL中的source命令"><a href="#1、MySQL中的source命令" class="headerlink" title="1、MySQL中的source命令"></a>1、MySQL中的source命令</h3><pre><code class="shell"># 注意这个是MySQL的命令，而不是Linux命令
+source /tmp/test.sql # 即执行test.sql中的全部语句
+</code></pre>
+<h3 id="2、MySQL中的load-data命令"><a href="#2、MySQL中的load-data命令" class="headerlink" title="2、MySQL中的load data命令"></a>2、MySQL中的load data命令</h3><p>MySQL官网的load data命令语法如下：</p>
+<pre><code class="shell">LOAD DATA
+    [LOW_PRIORITY | CONCURRENT] [LOCAL]
+    INFILE &#39;file_name&#39;
+    [REPLACE | IGNORE]
+    INTO TABLE tbl_name
+    [PARTITION (partition_name [, partition_name] ...)]
+    [CHARACTER SET charset_name]
+    [&#123;FIELDS | COLUMNS&#125;
+        [TERMINATED BY &#39;string&#39;]
+        [[OPTIONALLY] ENCLOSED BY &#39;char&#39;]
+        [ESCAPED BY &#39;char&#39;]
+    ]
+    [LINES
+        [STARTING BY &#39;string&#39;]
+        [TERMINATED BY &#39;string&#39;]
+    ]
+    [IGNORE number &#123;LINES | ROWS&#125;]
+    [(col_name_or_user_var
+        [, col_name_or_user_var] ...)]
+    [SET col_name=&#123;expr | DEFAULT&#125;
+        [, col_name=&#123;expr | DEFAULT&#125;] ...]
+</code></pre>
+<p>基本用法和select into outfile一样，高阶用法具体查看MySQL文档。</p>
+<p>示例：</p>
+<pre><code class="shell">mysql&gt; drop table test2;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; CREATE TABLE `test2` (
+    -&gt;   `id` int NOT NULL AUTO_INCREMENT,
+    -&gt;   `value` varchar(20) DEFAULT NULL,
+    -&gt;   `date` date DEFAULT NULL,
+    -&gt;   `text` text,
+    -&gt;   `decimal_value` decimal(20,10) DEFAULT NULL,
+    -&gt;   PRIMARY KEY (`id`)
+    -&gt; ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql&gt; load data infile &#39;/var/lib/mysql-files/test.csv&#39; into table test2  FIELDS TERMINATED BY &#39;,&#39; lines terminated by &#39;\n&#39;;
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Deleted: 0  Skipped: 0  Warnings: 0
+
+mysql&gt; select * from test2;
++----+---------+------------+------------------------------+-------------------+
+| id | value   | date       | text                         | decimal_value     |
++----+---------+------------+------------------------------+-------------------+
+|  1 | &#39;sfas1&#39; | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as
+f | 436526.7780000000 |
+|  2 | sfsa2   | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as
+f | 436526.7780000000 |
+|  3 | sfsa3   | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as
+f | 436526.7780000000 |
+|  4 | NULL    | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as
+f | 436526.7780000000 |
+|  5 | _abcd_  | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as
+f | 436526.7780000000 |
++----+---------+------------+------------------------------+-------------------+
+5 rows in set (0.00 sec)
+</code></pre>
+<p><font color="Red">注意：在做数据转移时一定要把以下符号记住，否则容易出现数据错误。</font></p>
+<pre><code class="shell">[CHARACTER SET charset_name]
+[&#123;FIELDS | COLUMNS&#125;
+    [TERMINATED BY &#39;string&#39;]
+    [[OPTIONALLY] ENCLOSED BY &#39;char&#39;]
+    [ESCAPED BY &#39;char&#39;]
+]
+[LINES
+    [STARTING BY &#39;string&#39;]
+    [TERMINATED BY &#39;string&#39;]
+]
+</code></pre>
+<h2 id="额外"><a href="#额外" class="headerlink" title="额外"></a>额外</h2><h3 id="1、禁用log-bin对insert速度的影响"><a href="#1、禁用log-bin对insert速度的影响" class="headerlink" title="1、禁用log_bin对insert速度的影响"></a>1、禁用log_bin对insert速度的影响</h3><pre><code class="mysql">mysql&gt; show master status;
++---------------+----------+--------------+------------------+-------------------+
+| File          | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++---------------+----------+--------------+------------------+-------------------+
+| binlog.000002 |      156 |              |                  |                   |
++---------------+----------+--------------+------------------+-------------------+
+1 row in set (0.00 sec)
+
+# 查看binlog文件，因为刚重启了MySQL服务器，所以大小是156字节
+root@yuyr757:/var/lib/mysql# ll binlog.000002
+-rw-r----- 1 mysql mysql 156 1月  24 14:40 binlog.000002
+
+# 禁用log_bin
+mysql&gt; set sql_log_bin = 0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; create table test3 like test;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql&gt; select count(id) from test;
++-----------+
+| count(id) |
++-----------+
+|   3145728 |
++-----------+
+1 row in set (0.99 sec)
+
+# 300万条数据插入约8.6秒。
+mysql&gt; insert into test3(value) select value from test;
+Query OK, 3145728 rows affected (8.62 sec)
+Records: 3145728  Duplicates: 0  Warnings: 0
+
+# 再次查看binlog文件，还是156字节
+root@yuyr757:/var/lib/mysql# ll binlog.000002
+-rw-r----- 1 mysql mysql 156 1月  24 14:40 binlog.000002
+</code></pre>
+<p>下面重启MySQL服务器，不禁用log_bin，看看300万条数据插入需要花多少时间。</p>
+<pre><code class="mysql">root@yuyr757:/home/yuyr757# systemctl restart mysql
+
+root@yuyr757:/home/yuyr757# mysql -u root -p
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.22 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &#39;help;&#39; or &#39;\h&#39; for help. Type &#39;\c&#39; to clear the current input statement.
+
+mysql&gt; use test;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql&gt; select count(1) from test;
++----------+
+| count(1) |
++----------+
+|  3145728 |
++----------+
+1 row in set (1.12 sec)
+
+mysql&gt; create table test4 like test;
+Query OK, 0 rows affected (0.01 sec)
+
+# 约13.9秒
+mysql&gt; insert into test4(value) select value from test;
+Query OK, 3145728 rows affected (13.93 sec)
+Records: 3145728  Duplicates: 0  Warnings: 0
+
+# 查看logbin文件，37911028字节
+root@yuyr757:/var/lib/mysql# ll binlog.000003
+-rw-r----- 1 mysql mysql 37911028 1月  24 14:49 binlog.000003
+</code></pre>
+<p>可见，禁用log_bin，insert速度从13.9秒缩短到了8.6秒。提高了38.13%的速度。即一些需要插入大量数据且允许适当禁用log_bin的情况时，可以适当禁用log_bin，来提高插入数据的速度。</p>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  第5章-创建高性能的索引
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/operating-support/docker/docker">
+                
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
+	</div>
+	<div id="footer">
+	<p>
+	©2019-<span id="footerYear"></span> 
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+<script type="text/javascript"> 
+	document.getElementById('footerYear').innerHTML = new Date().getFullYear() + '';
+</script>
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>

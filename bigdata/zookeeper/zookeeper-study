@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		zookeeper-study | 
+	 
+	Yury&#39;s Blog
+	</title>
+	
+	<!-- keywords,description -->
+	 
+		<meta name="description" content="blog of usual study" />
+	
+
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/js/main.js"></script>
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+
+	
+	
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Blog" type="application/atom+xml">
+</head>
+
+<body>
+	<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3efe99c287df5a1d6f0d02d187e403c1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<header id="header">
+    <a id="title" href="/" class="logo">Yury's Blog</a>
+
+	<ul id="menu">
+		<li class="menu-item">
+			<a href="/about" class="menu-item-link">ABOUT</a>
+		</li>
+	
+		<li class="menu-item">
+			<a href="/tags" class="menu-item-link">标签</a>
+		</li>
+	
+
+	
+		<li class="menu-item">
+			<a href="/categories" class="menu-item-link">分类</a>
+		</li>
+	
+
+		<li class="menu-item">
+			<a href="https://github.com/yury757" class="menu-item-link" target="_blank">
+				<i class="fa fa-github fa-2x"></i>
+			</a>
+		</li>
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="按回车全站搜索">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Git
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										learngit
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/Git/learngit/learn-git">
+										learn-git
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										bigdata
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hadoop
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hadoop/hadoop-study">
+										hadoop-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hbase
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hbase/HBase-study">
+										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										zookeeper
+									</a>
+									
+							<ul>
+								<li class="file active">
+									<a href="/bigdata/zookeeper/zookeeper-study">
+										zookeeper-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										computer-science
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Computer-Networking
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/computer-science/Computer-Networking/Computer-Networking">
+										Computer-Networking
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										database
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mysql
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL中的exists与in的使用
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8">
+										MySQL中的exists与in的使用
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL备份-Linux版
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E5%A4%87%E4%BB%BD-Linux%E7%89%88/MySQL%E5%A4%87%E4%BB%BD-linux%E7%89%88">
+										MySQL备份-linux版
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL日期格式化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96">
+										MySQL日期格式化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL查询执行计划详解-explain
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain">
+										MySQL查询执行计划详解-explain
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										《高性能MySQL》
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第1章-MySQL架构与历史
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+										第一章-MySQL架构与历史
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第2章-MySQL基准测试
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95">
+										第二章 MySQL基准测试
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第3章-服务器性能剖析
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90">
+										第三章-服务器性能剖析
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第4章-Schema与数据类型优化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96">
+										第四章-Schema与数据类型优化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第5章-创建高性能的索引
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
+										第五章-创建高性能的索引
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										postgresql
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/postgresql/postgresql">
+										postgresql
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										JVM
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/JVM/jvm-1.8">
+										jvm-1.8
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										SSM-Build
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/SSM-Build/SSM-Build">
+										SSM-Build
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_JUC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_JUC/Java_JUC-study">
+										Java_JUC-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_NIO
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_NIO/Java_NIO-study">
+										Java_NIO-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mybatis
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/mybatis/mybatis-study">
+										mybatis-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springMVC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springMVC/SpringMVC-Study">
+										SpringMVC-Study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springboot
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springboot/springboot-study">
+										springboot-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										spring
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/spring/Spring-study">
+										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										linux
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/linux/linux%E5%91%BD%E4%BB%A4">
+										linux命令
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										operating-support
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										docker
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/operating-support/docker/docker">
+										docker
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										project
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										flink_data_warehouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/project/flink_data_warehouse/flink_data_warehouse">
+										flink_data_warehouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content">
+		<h1 id="article-title">
+
+	zookeeper-study
+</h1>
+<div class="article-meta">
+	
+	<span>Yury</span>
+	<span>2021-08-28 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/bigdata/">bigdata</a>
+                        </i>
+                      
+                        >
+                      
+                    </span>
+                
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/bigdata/zookeeper/">zookeeper</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
+</div>
+
+<div id="article-content">
+	<h2 id="一、Zookeeper介绍"><a href="#一、Zookeeper介绍" class="headerlink" title="一、Zookeeper介绍"></a>一、Zookeeper介绍</h2><h3 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h3><p>zookeeper是一个分布式数据一致性解决方案，致力于为分布式应用提供一个高性能、高可能，且具有严格顺序访问控制能力的分布式<strong>协调</strong>存储服务。提供的功能包括：<strong>配置维护、域名服务、分布式同步、组服务</strong>等。</p>
+<p>zookeeper是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。</p>
+<h2 id="二、下载安装"><a href="#二、下载安装" class="headerlink" title="二、下载安装"></a>二、下载安装</h2><p>地址：<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/">Index of /apache/zookeeper (tsinghua.edu.cn)</a></p>
+<pre><code class="shell">cd /home/yury
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.6.3/apache-zookeeper-3.6.3-bin.tar.gz
+
+# 解压
+tar xzvf apache-zookeeper-3.6.3-bin.tar.gz
+
+# 将文件夹重命名为zookeeper-3.6.3-bin方便使用
+mkdir zookeeper-3.6.3-bin/
+mv -f apache-zookeeper-3.6.3-bin/* zookeeper-3.6.3-bin/
+
+# 使用这个目录作为根目录
+cd zookeeper-3.6.3-bin
+</code></pre>
+<p>将以下配置写入一个新建的文件：<code>vi /conf/zoo.cfg</code></p>
+<pre><code class="shell"># ZooKeeper使用的基本时间单位（毫秒）。 它用于做心跳，并且最小会话超时将是tickTime的两倍。
+tickTime=2000
+# 除非另有说明，否则存储内存中数据库快照的位置以及数据库更新的事务日志
+dataDir=/home/yury/zookeeper-3.6.3-bin/zookeeper-data
+# 客户端访问的端口
+clientPort=2181
+</code></pre>
+<h2 id="三、单机模式"><a href="#三、单机模式" class="headerlink" title="三、单机模式"></a>三、单机模式</h2><pre><code class="shell"># 启动
+bin/zkServer.sh start
+
+# 查看运行状态
+bin/zkServer.sh status
+# ZooKeeper JMX enabled by default
+# Using config: /home/yury/zookeeper-3.6.3-bin/bin/../conf/zoo.cfg
+# Client port found: 2181. Client address: localhost. Client SSL: false.
+# Mode: standalone
+
+# 使用命令行连接到服务器
+bin/zkCli.sh -server localhost:2181
+
+# jps命令，需要手动安装jps
+16722 Jps
+16365 QuorumPeerMain
+</code></pre>
+<h2 id="四、分布式模式"><a href="#四、分布式模式" class="headerlink" title="四、分布式模式"></a>四、分布式模式</h2><p>官方文档建议使用奇数个服务器。 如果只有两台服务器，那么您将处于一种情况，如果其中一台服务器发生故障，则没有足够的计算机构成多数仲裁。由于存在两个单点故障，因此两个服务器本来就不如单个服务器稳定。因此我们创建3台服务器。</p>
+<p>修改之前创建的那个配置文件，新增以下内容：</p>
+<pre><code class="shell"># initLimit is timeouts ZooKeeper uses to limit the length of time the ZooKeeper servers in quorum have to connect to a leader.
+initLimit=5
+
+# syncLimit limits how far out of date a server can be from a leader
+# 这几个时间都是以上面那个tickTime为单位时间
+syncLimit=2
+
+# server.N是指第N台服务器
+# A=B:C:D，其中B位置是ip，或者ip的别名，在hosts中可以为ip设置别名解析
+# 服务器使用前一个端口连接到其他服务器。ZooKeeper服务器使用此端口将follower连接到leader。当出现新的leader时，follower使用此端口打开与leader的TCP连接。由于leader选举时默认使用TCP，因此我们当前需要另一个端口来进行leader选举。这是配置中的第二个端口。
+server.1=192.168.0.201:2888:3888
+server.2=192.168.0.202:2888:3888
+server.3=192.168.0.203:2888:3888
+</code></pre>
+<pre><code class="shell"># 将配置文件拷贝到其他服务器
+scp ./conf/* yury@192.168.141.142:/home/yury/zookeeper-3.6.3-bin/conf/
+scp ./conf/* yury@192.168.141.143:/home/yury/zookeeper-3.6.3-bin/conf/
+</code></pre>
+<p><font color="Red">注意：最后还要在上面的<code>dataDir</code>目录下新建一个<code>myid</code>的文件，写入本台服务器的数字id，如第2台服务器，只需要放一个数字2进去即可。</font></p>
+<p>启动之后查看服务器状态，结果如下，其中141和142服务器的mode为follower，而143服务器的mode为leader，这是由分布式系统投票决定的，不是我们定义的。    </p>
+<pre><code class="shell">ZooKeeper JMX enabled by default
+Using config: /home/yury/zookeeper-3.6.3-bin/bin/../conf/zoo.cfg
+Client port found: 2181. Client address: localhost. Client SSL: false.
+Mode: follower
+</code></pre>
+<p>搭好了之后，像上面一样用zkCli.sh命令连接随意连接一台服务器，创建节点，修改节点，会发现，三台服务器均会做相应修改。</p>
+<h2 id="五、使用"><a href="#五、使用" class="headerlink" title="五、使用"></a>五、使用</h2><p>zkServer.sh脚本的功能如下</p>
+<p>Usage: bin/zkServer.sh [–config &lt;conf-dir&gt;] {start|start-foreground|stop|version|restart|status|print-cmd}</p>
+<h3 id="1、zkCli-sh命令"><a href="#1、zkCli-sh命令" class="headerlink" title="1、zkCli.sh命令"></a>1、zkCli.sh命令</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>help</td>
+<td>帮助</td>
+</tr>
+<tr>
+<td>ls /path</td>
+<td>/path为节点路径，如：ls /zookeeper<br>-w 注册监听子节点路径变化，如果其他客户端修改该节点的值，或删除该节点，则可以收到通知。<font color="Red">但是有一个缺陷，这个监听只能监控到一次变化， 如果还需要继续监控，需要继续注册。</font></td>
+</tr>
+<tr>
+<td>create /path [value]</td>
+<td>创建节点，如：create /zktest mydata</td>
+</tr>
+<tr>
+<td>get /path</td>
+<td>获取节点的值，如：get /zktest<br>-w 注册监听节点的变化，监听效果同上<br>-s 获取节点信息</td>
+</tr>
+<tr>
+<td>set /path value</td>
+<td>设置节点的值，如：set /zktest junk</td>
+</tr>
+<tr>
+<td>delete /path</td>
+<td>删除节点（如果该节点下面非空，即有子节点，则无法删除），如：delete /zktest</td>
+</tr>
+<tr>
+<td>deleteall /path</td>
+<td>递归删除节点（会删除所有子节点）</td>
+</tr>
+<tr>
+<td>quit</td>
+<td>退出</td>
+</tr>
+</tbody></table>
+<h3 id="2、节点类型"><a href="#2、节点类型" class="headerlink" title="2、节点类型"></a>2、节点类型</h3><p>持久、短暂、有序号、无序号</p>
+<p>待完善。</p>
+<h3 id="3、API使用"><a href="#3、API使用" class="headerlink" title="3、API使用"></a>3、API使用</h3><h2 id="六、分布式理论"><a href="#六、分布式理论" class="headerlink" title="六、分布式理论"></a>六、分布式理论</h2><h3 id="1、CAP理论"><a href="#1、CAP理论" class="headerlink" title="1、CAP理论"></a>1、CAP理论</h3><p>CAP 理论指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
+<ul>
+<li><p><strong>一致性（Consistency）</strong>：在分布式环境中，一致性是指数据在多个副本之间是否能够保持一致的特性，等同于所有节点访问同一份最新的数据副本。在一致性的需求下，当一个系统在数据一致的状态下执行更新操作后，应该保证系统的数据仍然处于一致的状态。</p>
+</li>
+<li><p><strong>可用性（Availability）</strong>：每次请求都能获取到正确的响应，但是不保证获取的数据为最新数据。</p>
+</li>
+<li><p><strong>分区容错性（Partition Tolerance）</strong>：分布式系统在遇到任何网络分区故障的时候，仍然需要能够保证对外提供满足一致性和可用性的服务，除非是整个网络环境都发生了故障。</p>
+</li>
+</ul>
+<p><img src="/images/CAP%E7%90%86%E8%AE%BA.png"></p>
+<p>一个分布式系统最多只能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三项中的两项。</p>
+<p>在这三个基本需求中，最多只能同时满足其中的两项，P 是必须的，因此只能在 CP 和 AP 中选择，zookeeper 保证的是 CP，对比 spring cloud 系统中的注册中心 eruka 实现的是 AP。</p>
+<h3 id="2、BASE理论"><a href="#2、BASE理论" class="headerlink" title="2、BASE理论"></a>2、BASE理论</h3><p>BASE是Basically Available（基本可用）、Soft-state（软状态）和Eventually Consistent（最终一致性）三个短语的缩写。</p>
+<ul>
+<li><strong>基本可用：</strong>在分布式系统出现故障，允许损失部分可用性（服务降级、页面降级）。</li>
+<li><strong>软状态：</strong>允许分布式系统出现中间状态。而且中间状态不影响系统的可用性。这里的中间状态是指不同的 data replication（数据备份节点）之间的数据更新可以出现延时的最终一致性。</li>
+<li><strong>最终一致性：</strong>data replications 经过一段时间达到一致性。</li>
+</ul>
+<p>BASE 理论是对 CAP 中的一致性和可用性进行一个权衡的结果，理论的核心思想就是：我们无法做到强一致，但每个应用都可以根据自身的业务特点，采用适当的方式来使系统达到最终一致性。</p>
+<p>五、分布式一致性</p>
+<p><img src="/images/%E4%B8%80%E8%87%B4%E6%80%A7.png"></p>
+<p>1、强一致性：用户更新了value后，服务器先把数据同步到其他服务器，再将“更新成功”的消息返回给用户，即这两个操作是同步的，也可以说<strong>服务器的主从复制是同步的</strong>，则用户不管读那台服务器都是更新后的值。</p>
+<p>2、弱一致性：用户更新了value后，服务器把数据同步到其他服务器和将“更新成功”的消息返回给用户这两个操作是异步的，也可以说<strong>服务器的主从复制是异步的</strong>，因此用户读取时可能会读到旧的数据。</p>
+<p>3、半同步：保证一台从服务器是同步的，其他从服务器则是异步的，如果同步的从服务器出现问题，则让另外一台异步服务器来做同步。即始终保证有两个节点拥有完整数据。</p>
+<p>3、最终一致性，最终一致性其实还是弱一致性，只不过用户看到的旧数据只是一个暂时的状态，如果等待一段时间，从服务器最终会和主服务器数据一致，这就是最终一致性。数据同步的速度受很多因素影响，一般都比较快，即这个等待延迟一般很短。</p>
+<h2 id="七、选举机制"><a href="#七、选举机制" class="headerlink" title="七、选举机制"></a>七、选举机制</h2><p>1、半数机制。集群中半数以上机器存活，集群可用。所以zookeeper适合安装奇数台服务器。</p>
+<p>2、zookeeper虽然在配置文件中没有指定leader和follower，但是在集群启动后，zookeeper会通过内部选举产生临时的leader和follower。</p>
+<h2 id="八、监听器"><a href="#八、监听器" class="headerlink" title="八、监听器"></a>八、监听器</h2>
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/database/postgresql/postgresql">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  postgresql
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/java/SSM-Build/SSM-Build">
+                SSM-Build
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
+	</div>
+	<div id="footer">
+	<p>
+	©2019-<span id="footerYear"></span> 
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+<script type="text/javascript"> 
+	document.getElementById('footerYear').innerHTML = new Date().getFullYear() + '';
+</script>
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>
