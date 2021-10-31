@@ -157,6 +157,26 @@ var _hmt = _hmt || [];
 								<li class="directory">
 									<a href="#" class="directory">
 										<i class="fa fa-plus-square-o"></i>
+										JVM
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/JVM/jvm-1.8">
+										jvm-1.8
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
 										SSM-Build
 									</a>
 									
@@ -284,6 +304,57 @@ var _hmt = _hmt || [];
 								<li class="file">
 									<a href="/java/spring/Spring-study">
 										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										postgresql
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/postgresql/postgresql">
+										postgresql
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										project
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										flink_data_warehouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/project/flink_data_warehouse/flink_data_warehouse">
+										flink_data_warehouse
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -506,13 +577,12 @@ export HBASE_MANAGES_ZK=false
 <p>移除一个日志jar包，这个版本和hadoop的3.3.0版本的日志包会有冲突</p>
 <pre><code class="shell">rm lib/client-facing-thirdparty/slf4j-log4j12-1.7.30.jar
 </code></pre>
-<h2 id="三、单机版"><a href="#三、单机版" class="headerlink" title="三、单机版"></a>三、单机版</h2><p>使用单机版时最好将zookeeper和hadoop的环境变量注释掉，再重新加载环境变量，不然即使没启动zk和hadoop也可能会有问题（我所遇到的问题是hbase的hmaster进程启动后瞬间就没了，将zk和hadoop环境变量注释掉后就好了）。</p>
-<pre><code class="shell"># 配置完了以上操作后，直接启动即可
+<h2 id="三、单机版"><a href="#三、单机版" class="headerlink" title="三、单机版"></a>三、单机版</h2><pre><code class="shell"># 配置完了以上操作后，直接启动即可
 ./bin/start-hbase.sh
 
 # 返回结果如下
 # running master, logging to /home/yury/hbase-2.3.5/bin/../logs/hbase-yury-master-myubuntu1.out
-# 可以在http://localhost:16010这个页面中HBase的web管理页面
+# 可以在http://192.168.141.141:16010这个页面中HBase的web管理页面
 
 # jps命令可以看到有一个HMaster进程
 jps
@@ -832,8 +902,8 @@ STARTKEY =&gt; &#39;XXX_13112345678_202103&#39;, STOPKEY =&gt; &#39;XXX_13112345
         </div>
         <div class="item right">
             
-              <a href="/java/mybatis/mybatis-study">
-                mybatis
+              <a href="/java/springboot/springboot-study">
+                springboot
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

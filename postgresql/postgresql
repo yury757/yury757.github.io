@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		tags | 
+		postgresql-question | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -325,7 +325,7 @@ var _hmt = _hmt || [];
 									</a>
 									
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/postgresql/postgresql">
 										postgresql
 									</a>
@@ -395,58 +395,136 @@ var _hmt = _hmt || [];
 	<!-- 引入正文 -->
 	<div id="content">
 		<h1 id="article-title">
-	<i class="fa fa-tags" aria-hidden="true"></i>TAGS
-</h1>
-<h2 id="article-title">
-	目前共计 5 个标签
-</h2>
 
+	postgresql
+</h1>
+<div class="article-meta">
+	
+	<span>Yury</span>
+	<span>2021-09-11 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/database/">database</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
+</div>
 
 <div id="article-content">
-	<ul>
-      
-          
-            <li class="menu-item">
-                <span>
-                      <a href="/tags/java/">java(9)</a>
-                </span>
-            </li>
-          
-      
-          
-            <li class="menu-item">
-                <span>
-                      <a href="/tags/zookeeper/">zookeeper(1)</a>
-                </span>
-            </li>
-          
-      
-          
-            <li class="menu-item">
-                <span>
-                      <a href="/tags/spring/">spring(3)</a>
-                </span>
-            </li>
-          
-      
-          
-            <li class="menu-item">
-                <span>
-                      <a href="/tags/hbase/">hbase(1)</a>
-                </span>
-            </li>
-          
-      
-          
-            <li class="menu-item">
-                <span>
-                      <a href="/tags/springboot/">springboot(1)</a>
-                </span>
-            </li>
-          
-      
-	</ul>
+	<h2 id="一、postgresql安装部署"><a href="#一、postgresql安装部署" class="headerlink" title="一、postgresql安装部署"></a>一、postgresql安装部署</h2><p>postgresql版本：11.13</p>
+<p>源码下载路径（最好下载源码，自己编译）：<a target="_blank" rel="noopener" href="https://www.postgresql.org/ftp/source/v11.13/">PostgreSQL: File Browser</a></p>
+<p>安装过程：</p>
+<pre><code class="shell"># 下载
+wget https://ftp.postgresql.org/pub/source/v11.13/postgresql-11.13.tar.gz
+tar -xzf postgresql-11.13.tar.gz
+cd postgresql-11.13.tar.gz
+
+# 安装
+./configure
+# 上面一步可能会出现library not found问题，安装对应的lib即可，经常碰到需要安装以下两个lib：
+# sudo apt install libreadline-dev
+# sudo apt install zlib1g-dev
+make
+# 上面这一步如果成功后会显示：All of PostgreSQL successfully made. Ready to install.
+sudo make install
+# 上面这一步成功后会显示：Postgresql installation complete，默认安装在/usr/local/pgsql目录下
+</code></pre>
+<p>配置：</p>
+<pre><code class="shell">cd /usr/local/pgsql
+sudo mkdir data
+sudo chown yury /usr/local/pgsql/data # 修改data目录的所有者为yury，或者你自己新建的postgresql用户
+
+# 创建环境变量，将以下两行写入/etc/profile文件中
+export PGHOME=/usr/local/pgsql
+export PGDATA=/usr/local/pgsql/data
+export PATH=$&#123;PATH&#125;:$&#123;PG_HOME&#125;/bin
+
+# 重新加载环境变量
+source /etc/profile
+</code></pre>
+<p>初始化数据库：</p>
+<pre><code class="shell">cd /usr/local/pgsql
+bin/initdb
+# 出现以下输出时，说明初始化成功
+# Success. You can now start the database server using:
+#     bin/pg_ctl -D /usr/local/pgsql/data -l logfile start
+
+# 启动数据库
+bin/pg_ctl start
+
+# 创建一个postgres用户
+bin/createuser postgres
+
+# 以postgres用户登录
+bin/psql postgres
+
+# 修改当前用户（postgres）的密码
+\password
+</code></pre>
+<p>配置网络以便其他客户端可以连接：</p>
+<pre><code class="shell">vi bin/pg_hba.conf
+# 修改下面这一行为第二行的值
+# host    all    127.0.0.1/32    trust
+# host    all    0.0.0.0/0       trust
+
+vi bin/postgresql.conf
+# 修改下面这一行为第二行的值，并且取消注释这个配置
+# listen_addresses = &#39;127.0.0.1&#39;
+# listen_addresses = &#39;*&#39;
+
+bin/pg_ctl restart # 重启服务
+</code></pre>
+<h2 id="二、MySQL安装部署"><a href="#二、MySQL安装部署" class="headerlink" title="二、MySQL安装部署"></a>二、MySQL安装部署</h2><p>MySQL版本：8.0.25</p>
+<p>使用apt安装</p>
+<p>数据库目录：/var/lib/mysql/</p>
+<p>配置文件：/usr/share/mysql-8.0（命令及配置文件），/etc/mysql（如my.cnf）</p>
+<p>相关命令：/usr/bin（mysqladmin、mysqldump等命令）和/usr/sbin</p>
+<p>启动脚本：/etc/init.d/mysql（启动脚本文件mysql的目录）</p>
+
 </div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/java/JVM/jvm-1.8">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  JVM
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/zookeeper/zookeeper-study">
+                zookeeper-study
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
 	</div>
 	<div id="footer">
 	<p>

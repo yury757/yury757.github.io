@@ -157,6 +157,26 @@ var _hmt = _hmt || [];
 								<li class="directory">
 									<a href="#" class="directory">
 										<i class="fa fa-plus-square-o"></i>
+										JVM
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/JVM/jvm-1.8">
+										jvm-1.8
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
 										SSM-Build
 									</a>
 									
@@ -284,6 +304,57 @@ var _hmt = _hmt || [];
 								<li class="file">
 									<a href="/java/spring/Spring-study">
 										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										postgresql
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/postgresql/postgresql">
+										postgresql
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										project
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										flink_data_warehouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/project/flink_data_warehouse/flink_data_warehouse">
+										flink_data_warehouse
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -452,7 +523,7 @@ public static SqlSession getSqlSession(boolean autoCommit)&#123;
 public List&lt;User&gt; getTwoUserById4(@Param(&quot;id&quot;) int id,@Param(&quot;user&quot;) User user);
 </code></pre>
 <ul>
-<li>、模糊查询有两种方式<ul>
+<li>模糊查询有两种方式<ul>
 <li>在mapper中这样用来拼接<code>%</code>：<code>like &quot;%&quot;#&#123;param1&#125;&quot;%&quot;</code></li>
 <li>mapper中仍然使用<code>like #&#123;param1&#125;</code>，而在调用方式时手动在传入参数两边加上<code>%</code></li>
 </ul>
@@ -801,16 +872,16 @@ public class Teacher2 &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/hbase/HBase-study">
+              <a href="/java/springboot/springboot-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  
+                  springboot-study
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/springboot/springboot-study">
-                springboot-study
+              <a href="/java/springMVC/SpringMVC-Study">
+                SpringMVC-Study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
