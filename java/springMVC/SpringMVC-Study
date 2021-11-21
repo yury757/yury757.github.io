@@ -168,6 +168,26 @@ var _hmt = _hmt || [];
 								<li class="directory">
 									<a href="#" class="directory">
 										<i class="fa fa-plus-square-o"></i>
+										clickhouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/clickhouse/clickhouse">
+										clickhouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
 										hadoop
 									</a>
 									
@@ -195,6 +215,26 @@ var _hmt = _hmt || [];
 								<li class="file">
 									<a href="/bigdata/hbase/HBase-study">
 										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										kafka
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/kafka/kafka">
+										kafka
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -1433,16 +1473,16 @@ public class FileUploader &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/java/mybatis/mybatis-study">
+              <a href="/java/springboot/springboot-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  mybatis-study
+                  springboot-study
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/springboot/springboot-study">
-                springboot-study
+              <a href="/java/spring/Spring-study">
+                Spring-study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

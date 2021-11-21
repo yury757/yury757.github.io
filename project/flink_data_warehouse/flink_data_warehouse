@@ -168,6 +168,26 @@ var _hmt = _hmt || [];
 								<li class="directory">
 									<a href="#" class="directory">
 										<i class="fa fa-plus-square-o"></i>
+										clickhouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/clickhouse/clickhouse">
+										clickhouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
 										hadoop
 									</a>
 									
@@ -195,6 +215,26 @@ var _hmt = _hmt || [];
 								<li class="file">
 									<a href="/bigdata/hbase/HBase-study">
 										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										kafka
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/kafka/kafka">
+										kafka
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -787,8 +827,8 @@ var _hmt = _hmt || [];
 <p>java：1.8</p>
 <h2 id="一、实时数仓简介"><a href="#一、实时数仓简介" class="headerlink" title="一、实时数仓简介"></a>一、实时数仓简介</h2><h3 id="1、分层介绍"><a href="#1、分层介绍" class="headerlink" title="1、分层介绍"></a>1、分层介绍</h3><ul>
 <li>ODS，数据采集层，采集原始数据、日志、业务数据等</li>
-<li>DWD，业务数据流，根据数据对象为单位进行分流</li>
-<li>DIM，维度数据，存储一些元数据信息，放在hbase</li>
+<li>DWD，对ODS层的数据进行初步处理，并根据业务逻辑进行分流</li>
+<li>DIM，维度数据，存储一些<strong>元数据信息</strong>，放在hbase</li>
 <li>DWM，对于DWD数据对象进行进一步加工，常常是DWD和DIM进行关联，形成宽表</li>
 <li>DWS，对DWM数据根据某个主题进行轻度聚合，进行主题宽表，放在clickhouse</li>
 <li>ADS，把DWS层数据根据可视化需求进行筛选聚合，不存储，而是直接查询，形成一个接口</li>
@@ -804,7 +844,32 @@ var _hmt = _hmt || [];
 <li>数据预警或提示</li>
 <li>实时推荐系统</li>
 </ul>
-<h2 id="一、数据采集（ODS）"><a href="#一、数据采集（ODS）" class="headerlink" title="一、数据采集（ODS）"></a>一、数据采集（ODS）</h2><p>数据采集（）</p>
+<h2 id="一、数据采集（ODS）"><a href="#一、数据采集（ODS）" class="headerlink" title="一、数据采集（ODS）"></a>一、数据采集（ODS）</h2><p>ODS：Operation Data Store，数据准备区。</p>
+<p>功能：采集原始数据、日志和业务数据，写入kafka</p>
+<p>kafka topic：ods_base_log</p>
+<h2 id="二、初步处理及分流（DWD）"><a href="#二、初步处理及分流（DWD）" class="headerlink" title="二、初步处理及分流（DWD）"></a>二、初步处理及分流（DWD）</h2><p>DWD：data warehouse details，细节数据层。</p>
+<p>功能：主要对ODS数据层做一些数据清洗、规范化以及分流的操作。</p>
+<ul>
+<li><p>数据清洗：剔除非法值、脏数据等</p>
+</li>
+<li><p>数据分流：按照不同的业务需求，将数据拆分，输出到下游的kafka的不同topic中。</p>
+</li>
+</ul>
+<p><font color="Red">重点：需要分流的逻辑一般以某种形式写在配置中，而不能在代码中写死。</font></p>
+<p><font color="Red">而在实际工作中，这一层一般会通过搭一个平台来实现动态增加或减少分流逻辑。</font></p>
+<p><font color="Red">实现原理就是将分流逻辑配置在数据库中，再将数据库中这个配置表通过flinkcdc生成一个广播流，将这个广播流和ods流连接合并，就可以根据配置实现动态分流。</font></p>
+<h2 id="三、维度数据（DIM）"><a href="#三、维度数据（DIM）" class="headerlink" title="三、维度数据（DIM）"></a>三、维度数据（DIM）</h2><p>DIM：Dimension，维度数据，一般就是一些业务基本信息的数据，包含：</p>
+<p>高基数维度数据：用户资料、商品资料等业务相关的基本信息。</p>
+<p>低基数维度数据：配置表、数据字典等，如业务相关枚举值及其含义等。</p>
+<blockquote>
+<p>问：维度数据为什么不放在redis，而放在hbsae？</p>
+</blockquote>
+<p>答：有些维度表会随时间扩大，比如用户信息，放redis太占内存，一些在可预见的未来不会膨胀的维度数据实际上是可以放redis的。（该问题一般不能从持久化的角度来回答，实际场景下，肯定会有数据库作为持久化存储）</p>
+<blockquote>
+<p>问：维度数据为什么不直接取数据库，而是取hbase？</p>
+</blockquote>
+<p>答：数据库一般是业务本身要用来做增删改查的，大数据处理和分析模块再请求数据库，会对数据库造成压力。</p>
+<h2 id="四、数据中间层（DWM）"><a href="#四、数据中间层（DWM）" class="headerlink" title="四、数据中间层（DWM）"></a>四、数据中间层（DWM）</h2><p>DWM：Data WareHouse Middle，数据中间层，即从DWD到DWS中间，会有很多复用的部分，将这些可复用的部分的数据加工提出出来作为一层，避免重复劳动。</p>
 
 </div>
 

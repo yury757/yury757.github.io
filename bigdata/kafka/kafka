@@ -8,6 +8,8 @@
 	<!-- title -->
 	
 	<title>
+	
+		kafka | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -230,7 +232,7 @@ var _hmt = _hmt || [];
 									</a>
 									
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/bigdata/kafka/kafka">
 										kafka
 									</a>
@@ -789,351 +791,130 @@ var _hmt = _hmt || [];
 
 	<!-- 引入正文 -->
 	<div id="content">
-		<div id="index">
-	
-		<div class="index-li">
-			<a href="/bigdata/clickhouse/clickhouse">
-				<h2 class="index-title">
-					clickhouse
-				</h2>
-				<div class="index-brief">
-					clickhouse版本：21.7.3.14
-一、介绍1、简介基于列存储的数据库，使用C++编写，主要用于在线分析处理查询（OLAP），能够使用SQL查询实时生成分析报告。
-列式存储的优点：
+		<h1 id="article-title">
 
-对于列的聚合、计数等统计操作由于行式数据库
-由于某一列的数据类型是一样的，在数据压缩上效率更高，压缩比更大
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-11-21</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/">bigdata</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
+	kafka
+</h1>
+<div class="article-meta">
 	
-		<div class="index-li">
-			<a href="/bigdata/kafka/kafka">
-				<h2 class="index-title">
-					kafka
-				</h2>
-				<div class="index-brief">
-					kafka版本：2.12_2.8.1（2.12为scale版本，2.8.1为kafka版本，3.0以上的版本不需要依赖zookeeper）
-zookeeper版本：3.6.3
-单机部署使用# 下载
-wget https://mirrors.tuna.tsinghua.edu.cn/apache/ka
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-11-03</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/kafka/">kafka</a>
-										
-											>
-										
-                                    </span>
-                                
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/kafka/bigdata/">bigdata</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/linux/linux%E5%91%BD%E4%BB%A4">
-				<h2 class="index-title">
-					linux命令
-				</h2>
-				<div class="index-brief">
-					安装1、刚安装好后的root用户的密码是随机的，需要修改密码：
-sudo passwd
-[sudo] paasword for yury: # 然后输入当前用户yury的密码
-New password: # 输入root用户的新密码
-Retype new password: # 重新输入
+	<span>Yury</span>
+	<span>2021-11-03 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/kafka/">kafka</a>
+                        </i>
+                      
+                        >
+                      
+                    </span>
+                
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/kafka/bigdata/">bigdata</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
 
-2、修改
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-11-01</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/linux/">linux</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/project/flink_data_warehouse/flink_data_warehouse">
-				<h2 class="index-title">
-					flink_data_warehouse
-				</h2>
-				<div class="index-brief">
-					前言Flink：1.12.0
-java：1.8
-一、实时数仓简介1、分层介绍
-ODS，数据采集层，采集原始数据、日志、业务数据等
-DWD，对ODS层的数据进行初步处理，并根据业务逻辑进行分流
-DIM，维度数据，存储一些元数据信息，放在hbase
-DWM，对于DWD数据对象进行进一步加工，常常是DWD
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-10-30</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/">bigdata</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/java/JVM/jvm-1.8">
-				<h2 class="index-title">
-					jvm-1.8
-				</h2>
-				<div class="index-brief">
-					JVM版本：HotSpot 1.8
-推荐书籍：
+    
+		<span>Tags：</span>
+            
+    
+		</div>
 
-《The Java Virtual Machine Specification》（The Java® Virtual Machine Specification (oracle.com)）
-《深入理解java虚拟机——JVM高级特性与最佳实践》
-
-一
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-09-20</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/java/">java</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/database/postgresql/postgresql">
-				<h2 class="index-title">
-					postgresql
-				</h2>
-				<div class="index-brief">
-					一、postgresql安装部署postgresql版本：11.13
-源码下载路径（最好下载源码，自己编译）：PostgreSQL: File Browser
-安装过程：
-# 下载
-wget https://ftp.postgresql.org/pub/source/v11.13/postgresq
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-09-11</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/postgresql/">postgresql</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/bigdata/zookeeper/zookeeper-study">
-				<h2 class="index-title">
-					zookeeper-study
-				</h2>
-				<div class="index-brief">
-					一、Zookeeper介绍1、简介zookeeper是一个分布式数据一致性解决方案，致力于为分布式应用提供一个高性能、高可能，且具有严格顺序访问控制能力的分布式协调存储服务。提供的功能包括：配置维护、域名服务、分布式同步、组服务等。
-zookeeper是Google的Chubby一个开源的实现，是H
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-08-28</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/">bigdata</a>
-										
-											>
-										
-                                    </span>
-                                
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/zookeeper/">zookeeper</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/java/SSM-Build/SSM-Build">
-				<h2 class="index-title">
-					SSM-Build
-				</h2>
-				<div class="index-brief">
-					SSM框架整合1、web.xml中配置DispatcherServlet时的初始化参数要连接所有的spring配置文件。先当与配置文件从web.xml是一个顶点，然后依次往下细分。
-2、排错方法：
-
-使用IDEA查看bean和MVC的细节
-Junit单元测试
-
-3、即使类上面加了@RestContr
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-08-24</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/java/">java</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/java/java_NIO/Java_NIO-study">
-				<h2 class="index-title">
-					Java_NIO-study
-				</h2>
-				<div class="index-brief">
-					一、NIO和IO的区别
-传统IO面向流，而NIO面向管道（channel）和缓冲区（buffer）。传统IO只能单向传输数据，而NIO可以双向传输数据。传统IO就像单向水管，而NIO中channel像列车轨道，buffer就像火车，可以双向传输数据。
-
-传统IO是阻塞（blocking）的，而NIO
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-08-24</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/java/">java</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/bigdata/hbase/HBase-study">
-				<h2 class="index-title">
-					HBase-study
-				</h2>
-				<div class="index-brief">
-					Linux：ubuntu18.04.5
-hbase：2.3.5
-官方文档：Apache HBase ™ Reference Guide
-一、HBase介绍1、Hadoop的局限性
-hadoop主要是实现批量数据的处理，并通过顺序方式访问数据。比如批量处理一天的数据。
-要查找数据必须搜索整个数据集，即
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-08-24</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/">bigdata</a>
-										
-											>
-										
-                                    </span>
-                                
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/hbase/">hbase</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-	
-	<div id="index-paginator">
-		
-			<span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/2/">&gt;</a>
-		
-	</div>
 </div>
 
+<div id="article-content">
+	<p>kafka版本：2.12_2.8.1（2.12为scale版本，2.8.1为kafka版本，3.0以上的版本不需要依赖zookeeper）</p>
+<p>zookeeper版本：3.6.3</p>
+<h2 id="单机部署使用"><a href="#单机部署使用" class="headerlink" title="单机部署使用"></a>单机部署使用</h2><pre><code class="shell"># 下载
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/2.8.1/kafka_2.12-2.8.1.tgz
+
+# 解压
+tar -xvzf kafka_2.12-2.8.1.tgz
+
+# 设置环境变量 sudo vi /etc/profile
+export KAFKA_HOME=/home/yury/kafka_2.12-2.8.1
+export PATH=$&#123;PATH&#125;:$&#123;KAFKA_HOME&#125;/bin
+source /etc/profile
+
+# 以 /kafka_2.12-2.8.1 为根目录
+# 修改配置 vi server.properties 取下以下配置的注释，并修改称以下值
+zookeeper.connect=192.168.141.141:2181
+log.dirs=$&#123;KAFKA_HOME&#125;/tmp/kafka-logs
+listeners=PLAINTEXT://192.168.141.141:9092
+
+# 启动zookeeper
+skServer.sh start
+skServer.sh status # 查看状态：Mode: standalone
+
+# 写一个快速启动命令放到bin目录下 vi bin/start-kafka.sh 并写入
+$&#123;KAFKA_HOME&#125;/bin/kafka-server-start.sh $&#123;KAFKA_HOME&#125;/config/server.properties --daemon
+
+# 启动kafka
+start-kafka.sh
+
+# jps命令
+3010 Jps
+2578 Kafka
+2046 QuorumPeerMain
+</code></pre>
+<h2 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h2><pre><code class="shell"># 新增topic
+bin/kafka-topics.sh --bootstrap-server 192.168.141.141:9092 --create --topic test_topic
+
+# 查看topic
+bin/kafka-topics.sh  --bootstrap-server 192.168.141.141:9092 --describe --topic test_topic
+
+# 删除topic
+bin/kafka-topics.sh --bootstrap-server 192.168.141.141:9092 --delete --topic test_topic
+
+# 生产数据
+bin/kafka-console-producer.sh --bootstrap-server 192.168.141.141:9092 --topic test_topic
+
+# 消费数据
+bin/kafka-console-consumer.sh --bootstrap-server 192.168.141.141:9092 --topic test_topic --from-beginning
+</code></pre>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="1、broker"><a href="#1、broker" class="headerlink" title="1、broker"></a>1、broker</h3><p>一个broker即为一个kafka服务器。</p>
+<h3 id="2、partition分区"><a href="#2、partition分区" class="headerlink" title="2、partition分区"></a>2、partition分区</h3><p>分区，即一个topic会分为多个区域存储数据。</p>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/bigdata/clickhouse/clickhouse">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  clickhouse
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/linux/linux%E5%91%BD%E4%BB%A4">
+                
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
 	</div>
 	<div id="footer">
 	<p>

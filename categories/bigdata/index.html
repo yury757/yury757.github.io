@@ -166,6 +166,26 @@ var _hmt = _hmt || [];
 								<li class="directory">
 									<a href="#" class="directory">
 										<i class="fa fa-plus-square-o"></i>
+										clickhouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/clickhouse/clickhouse">
+										clickhouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
 										hadoop
 									</a>
 									
@@ -193,6 +213,26 @@ var _hmt = _hmt || [];
 								<li class="file">
 									<a href="/bigdata/hbase/HBase-study">
 										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										kafka
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/kafka/kafka">
+										kafka
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -752,6 +792,37 @@ var _hmt = _hmt || [];
 		<div id="index">
 	
 		<div class="index-li">
+			<a href="/bigdata/clickhouse/clickhouse">
+				<h2 class="index-title">
+					clickhouse
+				</h2>
+				<div class="index-brief">
+					clickhouse版本：21.7.3.14
+一、介绍1、简介基于列存储的数据库，使用C++编写，主要用于在线分析处理查询（OLAP），能够使用SQL查询实时生成分析报告。
+列式存储的优点：
+
+对于列的聚合、计数等统计操作由于行式数据库
+由于某一列的数据类型是一样的，在数据压缩上效率更高，压缩比更大
+					...
+				</div>
+			</a>
+                <div class="article-meta">
+				    <span>2021-11-21</span>
+                    
+                            
+                                
+                                    <span>
+                                        <i class="fa fa-folder" aria-hidden="true"></i>
+                                        <a href="/categories/bigdata/">bigdata</a>
+										
+                                    </span>
+                                
+                            
+                    
+                </div>
+		</div>	
+	
+		<div class="index-li">
 			<a href="/project/flink_data_warehouse/flink_data_warehouse">
 				<h2 class="index-title">
 					flink_data_warehouse
@@ -761,9 +832,9 @@ var _hmt = _hmt || [];
 java：1.8
 一、实时数仓简介1、分层介绍
 ODS，数据采集层，采集原始数据、日志、业务数据等
-DWD，业务数据流，根据数据对象为单位进行分流
+DWD，对ODS层的数据进行初步处理，并根据业务逻辑进行分流
 DIM，维度数据，存储一些元数据信息，放在hbase
-DWM，对于DWD数据对象进行进一步加工，常常是DWD和DIM进行关
+DWM，对于DWD数据对象进行进一步加工，常常是DWD
 					...
 				</div>
 			</a>
