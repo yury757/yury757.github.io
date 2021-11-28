@@ -1046,6 +1046,93 @@ systemctl start mysql.service
 # 关闭防火墙
 systemctl stop firewalld.service
 </code></pre>
+<h2 id="磁盘相关"><a href="#磁盘相关" class="headerlink" title="磁盘相关"></a>磁盘相关</h2><pre><code class="shell"># 查看磁盘情况
+df -hT
+
+# 进入磁盘分区情况
+fdisk -l
+
+Disk /dev/fd0: 1.4 MiB, 1474560 bytes, 2880 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x90909090
+
+Device     Boot      Start        End    Sectors  Size Id Type
+/dev/fd0p1      2425393296 4850786591 2425393296  1.1T 90 unknown
+/dev/fd0p2      2425393296 4850786591 2425393296  1.1T 90 unknown
+/dev/fd0p3      2425393296 4850786591 2425393296  1.1T 90 unknown
+/dev/fd0p4      2425393296 4850786591 2425393296  1.1T 90 unknown
+
+
+Disk /dev/sda: 60 GiB, 64424509440 bytes, 125829120 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: A006A120-A37D-4375-8C47-BF69799EA710
+
+Device        Start       End  Sectors Size Type
+/dev/sda1      2048      4095     2048   1M BIOS boot
+/dev/sda2      4096   2101247  2097152   1G Linux filesystem
+/dev/sda3   2101248  41940991 39839744  19G Linux filesystem
+/dev/sda4  41940992 125829086 83888095  40G Linux filesystem
+
+
+Disk /dev/mapper/ubuntu--vg-ubuntu--lv: 19 GiB, 20396900352 bytes, 39837696 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+# 对某个分区进行管理
+fdisk /dev/sda4
+</code></pre>
+<h3 id="1、磁盘管理下的常用命令"><a href="#1、磁盘管理下的常用命令" class="headerlink" title="1、磁盘管理下的常用命令"></a>1、磁盘管理下的常用命令</h3><pre><code class="shell">m # 显示帮助页面
+p # 查看分区列表
+d # 删除分区
+n # 新建分区
+q # 不保存直接退出
+w # 保存并退出
+</code></pre>
+<h3 id="2、磁盘基本知识"><a href="#2、磁盘基本知识" class="headerlink" title="2、磁盘基本知识"></a>2、磁盘基本知识</h3><p><img src="/images/%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84.png"></p>
+<p>platter：盘片，即图中一个个的盘，一个盘片有上下两个盘面</p>
+<p>head：磁头，即图中在盘片上滑动的磁头，一个盘片有上下两个盘面，因此对应两个磁头</p>
+<p>sector：扇区，相当于图中的一条一条的弧，<font color="Red">是磁盘存取的基本单位</font>，1个sector可以是512个byte或4096个byte。</p>
+<p>track：磁道，相当于图中的一个圆</p>
+<p>cylinder：磁柱，相当于图中的一个圆柱形（不同盘片同一磁道组成的圆柱形），磁柱数等于一个盘面上的磁道数。</p>
+<p>block：数据块，<font color="Red">是文件系统存取的最小单位</font>，在Windows下如NTFS等文件系统中叫做簇；在Linux下如Ext4等文件系统中叫做块（block）。每个簇或者块可以包括2、4、8、16、32、64…2的n次方个扇区。</p>
+<p>一个block最多仅能容纳一个文件（即不存在多个文件同一个block的情况）。如果一个文件比block小，他也会占用一个block，因而block中空余的空间会浪费掉。而一个大文件，可以占多个甚至数十个成百上千万的block。</p>
+<p><font color="Red">磁盘容量 = 磁头数 * 磁柱（磁道）数 * 每个磁道的扇区数 * 每个扇区的字节数</font></p>
+<h3 id="3、新建分区流程"><a href="#3、新建分区流程" class="headerlink" title="3、新建分区流程"></a>3、新建分区流程</h3><p>本流程适用于vmware station对服务器进行扩容。</p>
+<ul>
+<li>关闭服务器，在vmware station上的服务器设置中，将硬盘扩展到你需要的大小。</li>
+<li>重新进入服务器，<code>fdisk -l</code>命令查看分区列表，找到磁盘<code>/dev/sda</code>，<code>fdisk /dev/sda</code>命令对该磁盘设备进行管理。</li>
+<li>键入<code>n</code>命令新建分区，后面如果提示选择extended或者primary partition，则选择primary partition。</li>
+<li>然后提示输入分区编号，一般使用提示的默认编号，或者直接回车。</li>
+<li>然后提示输入First cylinder（或sector），即新建的分区的起始cylinder（或sector）编号为多少，一般使用默认（最小）即可。</li>
+<li>最后提示输入Last cylinder（或sector），即新建的分区的截止cylinder（或sector）编号为多少，一般使用默认（最大）即可。</li>
+<li>以上三步有需要可以按自己的需求来选择</li>
+<li>键入<code>w</code>命令保存设置</li>
+<li><code>fdisk -l</code>，查看新分区是否生成：</li>
+<li><code>mkfs.ext4 /dev/sda4</code>，命令格式化（格式化会清除数据）分区，sda4为你之前输入的新分区编号，ext4为文件系统类型</li>
+<li><code>mkdir disk4</code>，在根目录下创建一个空文件夹，<code>mount /dev/sda4 /disk4</code>，将新分区挂载到新建的文件夹下</li>
+<li><code>echo &#39;/dev/sda4 /disk4 ext4 default 0 0&#39; &gt;&gt; /etc/fstab</code>，将这个挂载动作写入一个文件中，保证每次启动服务器时会自动将这个分区挂载到这个disk4目录。</li>
+<li><code>reboot</code>，重启服务器，<code>df -hT</code>，查看磁盘情况</li>
+</ul>
+<h3 id="4、分区扩容流程"><a href="#4、分区扩容流程" class="headerlink" title="4、分区扩容流程"></a>4、分区扩容流程</h3><p>不建议在Linux系统盘所在分区进行扩容，小心丢失数据。且必须有未分区的磁盘用于扩容。</p>
+<ul>
+<li><code>df –hT</code>和<code>fdisk -l</code>命令查看磁盘情况和分区情况</li>
+<li><code>umount /dev/sda4</code>，卸载需要扩容的磁盘挂载的分区</li>
+<li><code>fdisk /dev/sda4</code>，对需要扩容的磁盘分区进行管理</li>
+<li><code>d</code>，删除分区</li>
+<li><code>n</code>，新建分区，然后按新建分区的流程设置分区大小</li>
+<li><code>w</code>，保存设置</li>
+<li><code>e2fsck -f /dev/sda4</code>，检查扩容的分区是否ok</li>
+<li><code>resize2fs /dev/sda4</code>，扩容</li>
+<li><code>mount /dev/sda4 /disk4</code>，挂载</li>
+<li><code>df -hT</code>和<code>reboot</code>，查看磁盘情况并重启服务器</li>
+</ul>
 
 </div>
 

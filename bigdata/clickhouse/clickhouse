@@ -901,6 +901,8 @@ sudo dpkg -i *.deb
 <p>数据目录：<code>/var/lib/clickhouse/</code>，即config.xml配置文件中path标签下</p>
 <p>临时文件目录：<code>/var/lib/clickhouse/tmp/</code>，即config.xml配置文件中tmp_path标签下</p>
 <h3 id="4、配置"><a href="#4、配置" class="headerlink" title="4、配置"></a>4、配置</h3><p><font color="Red">config.xml中的配置是服务器配置，比如上面说的数据目录、日志目录都在这个配置中，而user.xml则是程序运行参数配置，如cpu、内存在这个里面配置。</font></p>
+<p>config.xml配置文档：<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings/">Server Settings | ClickHouse Documentation</a></p>
+<p>user.xml配置文档：<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/en/operations/settings/settings/">Settings | ClickHouse Documentation</a></p>
 <p>修改一个配置，使得其他ip地址也可以访问clickhouse服务器</p>
 <pre><code class="shell">sudo vi /etc/clickhouse-server/config.xml
 
@@ -910,7 +912,7 @@ sudo dpkg -i *.deb
 <p><font color="Red">此外再把tcp_port端口改为9003，因为默认的9000端口很容易被其他应用使用，比如hadoop就使用了9000端口。此外用，clickhosue-client连接时用tcp连接，而使用其他连接，比如datagrip或java，都是用的http连接，注意端口的使用。</font></p>
 <pre><code class="xml">&lt;tcp_port&gt;9003&lt;/tcp_port&gt;
 </code></pre>
-<h3 id="5、启动和连接"><a href="#5、启动和连接" class="headerlink" title="5、启动和连接"></a>5、启动和连接</h3><pre><code class="shell"># 启动
+<h3 id="5、简单使用"><a href="#5、简单使用" class="headerlink" title="5、简单使用"></a>5、简单使用</h3><pre><code class="shell"># 启动
 sudo clickhouse start
 
 # 查看服务器运行状态
@@ -933,6 +935,37 @@ clickhouse-client -m -h myubuntu1 --port 9003
 <pre><code class="shell">clickhouse-client -m -h 192.168.141.141 --port 9003 --query &quot;show databases;&quot;
 default
 system
+</code></pre>
+<p>clickhouse语法比较像MySQL，在某些语法上clickhouse区分大小写，比如数据类型UInt、String，以及表引擎MergeTree等等。</p>
+<pre><code class="sql">show databases;
+use default;
+show tables;
+
+create table test2(
+    id UInt32,
+    create_time Datetime default now(),
+    name String,
+    age UInt8,
+    money Decimal(24,6) TTL create_time + interval 10 SECOND
+)engine=MergeTree
+primary key(id)
+order by(id, name);
+</code></pre>
+<p>使用shell命令快速写一个批量插入100万条数据sql文件。</p>
+<pre><code class="shell">for i in &#123;1..1000&#125;; do
+echo -n &quot;insert into default.test2(id, name, age, money) values (1, &#39;小明&#39;, 14, 2000)&quot; &gt;&gt; test.sql;
+for j in &#123;1..1000&#125;; do echo -n &quot;,($&#123;i&#125;$&#123;j&#125;, &#39;小明$&#123;i&#125;$&#123;j&#125;&#39;, $&#123;i&#125;$&#123;j&#125;, $&#123;i&#125;$&#123;j&#125;2000)&quot; &gt;&gt; test.sql; done;
+echo &quot;;&quot; &gt;&gt; test.sql;
+done;
+</code></pre>
+<p>执行sql文件（速度贼快）</p>
+<pre><code class="shell">clickhouse-client -m -h 192.168.141.141 --port 9003 --multiquery &lt; ./test.sql
+</code></pre>
+<p>执行几个group查询（速度贼快）</p>
+<p><font color="Red">注意，这里substring也是按照字节数来算长度的。</font></p>
+<pre><code class="sql">select substring(name, 1, 6), sum(age) from test2 group by substring(name, 1, 6);
+select substring(name, 7, 1), sum(age) from test2 group by substring(name, 7, 1);
+select id % 2 as flag, sum(age) from test2 group by (id % 2);
 </code></pre>
 <h2 id="三、数据类型"><a href="#三、数据类型" class="headerlink" title="三、数据类型"></a>三、数据类型</h2><p>文档：<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/en/sql-reference/data-types/">Introduction | ClickHouse Documentation</a></p>
 <h3 id="1、整形"><a href="#1、整形" class="headerlink" title="1、整形"></a>1、整形</h3><p>（1）有符号整型</p>
@@ -1150,7 +1183,8 @@ ENGINE = TinyLog
 <p>但是这种类型，写入速度会比一般普通类型写入慢一些，因此<strong>特别不建议在重复度很低的字段上使用这个类型</strong>。</p>
 <p>这种类型和Enum比较类似，但是LowCadinality更加灵活，不仅可以存储String，还可以存储Date、DateTime，只要重复度很高，则可以使用这种类型。</p>
 <h3 id="8、Nullable-T"><a href="#8、Nullable-T" class="headerlink" title="8、Nullable(T)"></a>8、Nullable(T)</h3><p>Nullable(T)，可为空的类型，如Nullable(Int8)是可为空值的Int8</p>
-<p><font color="Red">使用Nullable会对性能产生影响，业务中可以用一些特殊字符来填充null，从而避免使用Nullable类型。</font></p>
+<p><font color="Red">使用Nullable会对性能产生影响，业务中可以用一些特殊字符或无意义的值来填充null，从而避免使用Nullable类型。</font></p>
+<p>原因：1、Nullable会单独存一个文件；2、null无法使用索引。</p>
 <p><font color="Red">注意：每种数据类型都会有自带的默认值，且不是null，如Int8的默认值是0，String的默认值是空字符串，DateTime的默认值是1970-01-01 08:00:00。如果需要为null，则需要使用Nullable(T)类型，Nullable的默认值则是null。</font></p>
 <pre><code class="sql">use default;
 create table test1(a Int8, b String, c DateTime, d Nullable(Int8), e Nullable(String) , f Nullable(DateTime))engine=TinyLog;
@@ -1259,7 +1293,7 @@ ORDER BY expr
 [SETTINGS name=value, ...]
 </code></pre>
 <p><strong>表底层存储文件夹和文件介绍：</strong></p>
-<p>分区是按文件夹存储的，一个分区一个文件夹，文件夹的名称为<code>分区id_最小分区块编号_最大分区块编号_合并层级</code></p>
+<p><font color="Red">分区是按文件夹存储的，一个分区一个文件夹</font>，文件夹的名称为<code>分区id_最小分区块编号_最大分区块编号_合并层级</code></p>
 <p>分区id生成规则：</p>
 <ul>
 <li>没有设置分区，则默认生成一个all目录作为数据分区</li>
@@ -1307,11 +1341,27 @@ ORDER BY expr
 [SAMPLE BY expr]
 [SETTINGS name=value, ...]
 </code></pre>
-<p>完全继承了MergeTree，只是多了一个<strong>去重功能</strong>，且<strong>根据order by字段进行去重</strong>。</p>
-<p>去重要删除哪些数据：建表语句中ReplacingMergeTree([ver])的ver字段值最大的那一条数据被保留，其他数据被删除。没指定这个字段，则按插入顺序来，保留最后的一条数据，类似于<code>upsert</code>。</p>
+<p>完全继承了MergeTree，只是多了一个<strong>去重功能，根据order by字段进行去重</strong>。</p>
+<p>去重要删除哪些数据：<font color="Red">建表语句中ReplacingMergeTree([ver])的ver字段值最大的那一条数据被保留，其他数据被删除。没指定这个字段，则按插入顺序来，保留最后的一条数据，类似于<code>upsert</code>。</font></p>
 <p>去重时机：并不是实时去重，而是在合并分区时进行去重，即保证<strong>最终一致性</strong>。</p>
 <p>去重范围：在同一分区内去重，并不是全表内去重。</p>
-<p>这个引擎还是比较常用的，通常ver字段都是业务中的插入时间字段，或者其他数据版本控制字段。</p>
+<p><strong>这个引擎在实际生产环境中最常用</strong>，通常ver字段都是业务中的插入时间字段，或者其他数据版本控制字段。</p>
+<p>示例：</p>
+<pre><code class="sql">CREATE TABLE default.test3
+(
+    `id` UInt32,
+    `name` String,
+    `money` Decimal(18, 6)
+)
+ENGINE = ReplacingMergeTree
+ORDER BY (id, name)
+SETTINGS index_granularity = 8192;
+
+insert into test3 values (1, &#39;小明&#39;, 1000);
+insert into test3 values (1, &#39;小明&#39;, 2000);
+optimize table test3;
+select * from test3;
+</code></pre>
 <h4 id="（3）SummingMergeTree"><a href="#（3）SummingMergeTree" class="headerlink" title="（3）SummingMergeTree"></a>（3）SummingMergeTree</h4><pre><code class="sql">CREATE TABLE [IF NOT EXISTS] [db.]table_name [ON CLUSTER cluster]
 (
     name1 [type1] [DEFAULT|MATERIALIZED|ALIAS expr1],
@@ -1327,6 +1377,498 @@ ORDER BY expr
 <p>聚合后其他字段怎么办：对columns字段进行sum，其他字段保留最早的那一条，即最早插入的那一条。</p>
 <p>聚合范围：在同一分区内进行聚合。</p>
 <p>聚合时机：并不是实时聚合，而是在合并分区时进行聚合。</p>
+<h3 id="5、ReplacatedMergeTree系列"><a href="#5、ReplacatedMergeTree系列" class="headerlink" title="5、ReplacatedMergeTree系列"></a>5、ReplacatedMergeTree系列</h3><p>该系列表引擎用于副本备份，MergeTree系列的所有子引擎都有对应的ReplacetedMergeTree引擎，如ReplacetedReplacingMergeTree等。</p>
+<h2 id="五、SQL语法"><a href="#五、SQL语法" class="headerlink" title="五、SQL语法"></a>五、SQL语法</h2><p>只介绍和标准sql不一样的地方</p>
+<h3 id="1、Update和Delete"><a href="#1、Update和Delete" class="headerlink" title="1、Update和Delete"></a>1、Update和Delete</h3><p>clickhosue提供update和delete的功能，但没有这两个关键字，即不能直接使用delete或update语句，而是提供了一类称为Mutation的查询，是Alter的一种。</p>
+<pre><code class="sql">-- 删除一条数据
+alter table test2 delete where id = 10000;
+
+-- 更新一条数据
+alter table test2 update age = 99 where id = 1;
+</code></pre>
+<p>和普通的OLTP数据库不一样，Mutation语句是一种很重的操作，而且不支持事务。<font color="Red">原因在于每次操作都要放弃目标数据的原有分区，重新建分区，旧分区被打上逻辑上的失效标记，只有分区合并的时候，才会删除旧分区旧数据。因此要尽量做批量的变更，避免做频繁的小变更。</font></p>
+<p>实现高性能的update和delete思路：</p>
+<p>表结构额外新增两个字段：<code>isvalid</code>，0表示无效，1表示有效；<code>version</code>，表示数据版本号，最大为最新数据</p>
+<p>更新：插入一条<code>version = max(version) + 1</code>的数据即可</p>
+<p>删除：插入一条<code>isvalid = 0</code>的数据即可</p>
+<p>查询：每次查询条件都要加上<code>version = max(version) and isvalid = 1</code></p>
+<p>问题：数据膨胀，需要定期清理过期数据，并对数据分区做合并</p>
+<h3 id="2、Join"><a href="#2、Join" class="headerlink" title="2、Join"></a>2、Join</h3><pre><code class="sql">select test2.id, sum(test3.money) from test2, test3 where test2.id = test3.id group by test2.id;
+</code></pre>
+<p>clickhouse的join原理：将右表（test3）加载到内存中，再和左表一条一条匹配。</p>
+<p><font color="Red">因此这里最好不要将大表写到右边</font>，这一点和MySQL的“小表驱动大表”不一样。</p>
+<h3 id="3、函数"><a href="#3、函数" class="headerlink" title="3、函数"></a>3、函数</h3><p>窗口函数，21.7.3.14版本还处于实验中，需要使用的话，要将一个设置打开：</p>
+<pre><code class="sql">set allow_experimental_window_functions = 1;
+</code></pre>
+<p>自定义函数，不支持。</p>
+<p>multiif(cond_1, then_1, cond_2, then_2, …)，类似于case when。</p>
+<h3 id="4、group"><a href="#4、group" class="headerlink" title="4、group"></a>4、group</h3><p>group增加了with rollup、with cube、with totals用于统计不同维度的值。</p>
+<pre><code class="sql">-- rollup是从右至左依次减少一个维度进行统计
+group A, B with rollup = 
+group by A, B
+union
+group by A, null
+union
+group by null, null
+
+-- cube是排列组合的维度统计
+group by A, B with cube =
+group by A, B
+union
+group by A, null
+union
+group by B, null
+union
+group by null, null
+
+-- total是额外加上统计总计值
+group by A, B with totals =
+group by A, B
+union
+group by null, null
+</code></pre>
+<p>示例：</p>
+<pre><code class="sql">select id % 2 as flag, substring(name, 7, 1) as flag2, sum(age) from test2 group by id % 2, substring(name, 7, 1) with rollup;
+
+select id % 2 as flag, substring(name, 7, 1) as flag2, sum(age) from test2 group by id % 2, substring(name, 7, 1) with cube;
+
+select id % 2 as flag, substring(name, 7, 1) as flag2, sum(age) from test2 group by id % 2, substring(name, 7, 1) with totals;
+</code></pre>
+<h2 id="六、副本写入（备份、高可用）"><a href="#六、副本写入（备份、高可用）" class="headerlink" title="六、副本写入（备份、高可用）"></a>六、副本写入（备份、高可用）</h2><p>clickhouse副本类似于MySQL的replicate，备份用。对应的表引擎为ReplicatedMergeTree。</p>
+<p>依赖zookeeper，没有主次之分。</p>
+<p><img src="/images/%E5%89%AF%E6%9C%AC%E5%86%99%E5%85%A5.png"></p>
+<p>配置的两种方式：</p>
+<p>1、修改<code>/etc/clickhouse/config.xml</code>配置文件中的zookeeper配置</p>
+<pre><code class="xml">    &lt;zookeeper&gt;
+        &lt;node&gt;
+            &lt;host&gt;example1&lt;/host&gt;
+            &lt;port&gt;2181&lt;/port&gt;
+        &lt;/node&gt;
+        &lt;node&gt;
+            &lt;host&gt;example2&lt;/host&gt;
+            &lt;port&gt;2181&lt;/port&gt;
+        &lt;/node&gt;
+        &lt;node&gt;
+            &lt;host&gt;example3&lt;/host&gt;
+            &lt;port&gt;2181&lt;/port&gt;
+        &lt;/node&gt;
+    &lt;/zookeeper&gt;
+</code></pre>
+<p>2、在<code>/etc/clickhouse-server/config.d/</code>目录下新增一个<code>metrika.xml</code>文件，按照<code>config.xml</code>中zookeeper的配置样式写入自己的配置，再添加一个<code>include_from</code>标签和一个带有<code>incl</code>属性的<code>zookeeper</code>标签，引入这个配置文件。该文件的配置会覆盖<code>config.xml</code>中zookeeper的配置。</p>
+<p>以这种方式创建xml文件不要忘了<font color="Red">用户权限</font>，将文件owner设置为clickhouse:clickhouse</p>
+<pre><code class="shell">chown clickhouse:clickhouse metrika.xml
+</code></pre>
+<pre><code class="xml">&lt;!-- metrika.xml --&gt;
+&lt;zookeeper&gt;
+    &lt;node&gt;
+        &lt;host&gt;example1&lt;/host&gt;
+        &lt;port&gt;2181&lt;/port&gt;
+    &lt;/node&gt;
+    &lt;node&gt;
+        &lt;host&gt;example2&lt;/host&gt;
+        &lt;port&gt;2181&lt;/port&gt;
+    &lt;/node&gt;
+    &lt;node&gt;
+        &lt;host&gt;example3&lt;/host&gt;
+        &lt;port&gt;2181&lt;/port&gt;
+    &lt;/node&gt;
+&lt;/zookeeper&gt;
+
+&lt;!-- config.xml --&gt;
+&lt;zookeeper incl=&quot;zookeeper-servers&quot; optional=&quot;true&quot;/&gt;
+&lt;include_from&gt;/etc/clickhouse-server/config.d/metrika.xml&lt;/include_from&gt;
+</code></pre>
+<h2 id="七、分片集群"><a href="#七、分片集群" class="headerlink" title="七、分片集群"></a>七、分片集群</h2><p>副本是指备份，每个服务器都有全量数据（就像复制了一个服务器一样，所以叫replicate）。</p>
+<p>分片集群是指分布式，将一份数据切片，分布到不同服务器上，每次查询需要将任务分发到各个服务器中，最后汇总结果（类似于map-reduce）。</p>
+<p>分片集群对应的表引擎为Distributed。</p>
+<h3 id="1、集群写入"><a href="#1、集群写入" class="headerlink" title="1、集群写入"></a>1、集群写入</h3><p>以3分片，2副本为例。</p>
+<p><img src="/images/%E9%9B%86%E7%BE%A4%E5%86%99%E5%85%A5.png"></p>
+<p>distribute hdp1类似于一个master（以下为了方便，简称为master），并不实际存储数据，而是起一个控制器和数据分发的作用。下面的hdp1-hdp6类似于worker，存储数据。客户端发送写入命令，master将接收到的数据发送给下面的worker写入数据。</p>
+<p>问题：每个副本都要由master亲自分发数据吗？</p>
+<p>internal_replication参数，</p>
+<ul>
+<li>true，表示master只将数据分发给分片，每个副本的数据写入有对应的分片进行内部复制</li>
+<li>false，表示每个副本的数据写入也由master亲自分发，而不是由分片内部复制</li>
+</ul>
+<p>一般来说都会把这个参数设置为true，原因：</p>
+<ul>
+<li>副本服务器也要master来分发的话，会对master造成压力，写入效率会降低</li>
+<li>对副本的分发过程中如果出现异常，则可能造成分片和对应的副本数据不一致</li>
+<li>每一层只负责自己的事，master是为分布式而产生了，并不是为副本而产生的，因此master不太应该管副本的备份工作。</li>
+</ul>
+<h3 id="2、集群读取"><a href="#2、集群读取" class="headerlink" title="2、集群读取"></a>2、集群读取</h3><p><img src="/images/%E9%9B%86%E7%BE%A4%E8%AF%BB%E5%8F%96.png"></p>
+<p>errors_count，即读取时发生错误的次数，每次发生错误会记录在对应的服务器中，读取时会选择错误次数更小的副本读取。</p>
+<h3 id="3、配置"><a href="#3、配置" class="headerlink" title="3、配置"></a>3、配置</h3><p>同样可以将这个配置写在默认配置文件config.xml中，也可以在外部文件中加配置再在config.xml中引入。</p>
+<p>在<code>/etc/clickhouse-server/config.xml</code>中加上</p>
+<pre><code class="xml">&lt;include_from&gt;/etc/clickhouse-server/config.d/metrika-shard.xml&lt;/include_from&gt;
+</code></pre>
+<p><code>/etc/clickhouse-server/config.d/metrika-shard.xml</code>配置如下：</p>
+<p>注意同样别忘了文件的用户权限。</p>
+<pre><code class="xml">&lt;remote_servers&gt;
+    &lt;perftest_1shards_3replicas&gt;&lt;!-- 集群名称，可以修改 --&gt;
+        &lt;shard&gt;
+            &lt;internal_replication&gt;true&lt;/internal_replication&gt;
+            &lt;replica&gt;
+                &lt;host&gt;example-perftest01j.yandex.ru&lt;/host&gt;
+                &lt;port&gt;9000&lt;/port&gt;
+             &lt;/replica&gt;
+             &lt;replica&gt;
+                &lt;host&gt;example-perftest02j.yandex.ru&lt;/host&gt;
+                &lt;port&gt;9000&lt;/port&gt;
+             &lt;/replica&gt;
+        &lt;/shard&gt;
+        &lt;shard&gt;
+            &lt;internal_replication&gt;true&lt;/internal_replication&gt;
+            &lt;replica&gt;
+                &lt;host&gt;example-perftest03j.yandex.ru&lt;/host&gt;
+                &lt;port&gt;9000&lt;/port&gt;
+             &lt;/replica&gt;
+             &lt;replica&gt;
+                &lt;host&gt;example-perftest04j.yandex.ru&lt;/host&gt;
+                &lt;port&gt;9000&lt;/port&gt;
+             &lt;/replica&gt;
+        &lt;/shard&gt;
+        &lt;shard&gt;
+            &lt;internal_replication&gt;true&lt;/internal_replication&gt;
+            &lt;replica&gt;
+                &lt;host&gt;example-perftest05j.yandex.ru&lt;/host&gt;
+                &lt;port&gt;9000&lt;/port&gt;
+             &lt;/replica&gt;
+             &lt;replica&gt;
+                &lt;host&gt;example-perftest06j.yandex.ru&lt;/host&gt;
+                &lt;port&gt;9000&lt;/port&gt;
+             &lt;/replica&gt;
+        &lt;/shard&gt;
+    &lt;/perftest_1shards_3replicas&gt;
+&lt;/remote_servers&gt;
+
+&lt;zookeeper&gt;&lt;!-- 有几台服务器就需要几台zookeeper，按照以上需求，要写六台，这里省略 --&gt;
+    &lt;node&gt;
+        &lt;host&gt;zoo01.yandex.ru&lt;/host&gt;
+        &lt;port&gt;2181&lt;/port&gt;
+    &lt;/node&gt;
+    &lt;node&gt;
+        &lt;host&gt;zoo02.yandex.ru&lt;/host&gt;
+        &lt;port&gt;2181&lt;/port&gt;
+    &lt;/node&gt;
+    &lt;node&gt;
+        &lt;host&gt;zoo03.yandex.ru&lt;/host&gt;
+        &lt;port&gt;2181&lt;/port&gt;
+    &lt;/node&gt;
+&lt;/zookeeper&gt;
+
+&lt;macros&gt;
+    &lt;shard&gt;01&lt;/shard&gt;
+    &lt;replica&gt;rep_1_1&lt;/replica&gt;
+&lt;/macros&gt;
+</code></pre>
+<p><font color="Red">macros用于建表时识别分片和副本，shard为分片名称，replica为副本名称，这个配置每台服务器上都要单独配置。</font></p>
+<p>可以自定义配置，这里配置的含义是：<code>rep_&#123;a&#125;_&#123;b&#125;</code>，a表示分片编号，b表示副本编号。</p>
+<pre><code class="xml">&lt;macros&gt;&lt;!-- 第1个分片，第1个副本 --&gt;
+    &lt;shard&gt;01&lt;/shard&gt;
+    &lt;replica&gt;rep_1_1&lt;/replica&gt;
+&lt;/macros&gt;
+&lt;macros&gt;&lt;!-- 第1个分片，第2个副本 --&gt;
+    &lt;shard&gt;01&lt;/shard&gt;
+    &lt;replica&gt;rep_1_2&lt;/replica&gt;
+&lt;/macros&gt;
+&lt;macros&gt;&lt;!-- 第2个分片，第1个副本 --&gt;
+    &lt;shard&gt;02&lt;/shard&gt;
+    &lt;replica&gt;rep_2_1&lt;/replica&gt;
+&lt;/macros&gt;
+&lt;macros&gt;&lt;!-- 第2个分片，第2个副本 --&gt;
+    &lt;shard&gt;02&lt;/shard&gt;
+    &lt;replica&gt;rep_2_2&lt;/replica&gt;
+&lt;/macros&gt;
+&lt;macros&gt;&lt;!-- 第3个分片，第1个副本 --&gt;
+    &lt;shard&gt;03&lt;/shard&gt;
+    &lt;replica&gt;rep_3_1&lt;/replica&gt;
+&lt;/macros&gt;
+&lt;macros&gt;&lt;!-- 第3个分片，第2个副本 --&gt;
+    &lt;shard&gt;03&lt;/shard&gt;
+    &lt;replica&gt;rep_3_2&lt;/replica&gt;
+&lt;/macros&gt;
+</code></pre>
+<p><font color="Red">默认配置文件config.xml中官方也给我们配好了几个示例集群的配置，可以参考上面的配置以及配置说明。</font></p>
+<pre><code class="sql">myubuntu1 :) show clusters;
+
+SHOW CLUSTERS
+
+Query id: 1d87a0a9-9e49-498d-b097-c22a23530d2e
+
+┌─cluster──────────────────────────────────────┐
+│ test_cluster_two_shards                      │
+│ test_cluster_two_shards_internal_replication │
+│ test_cluster_two_shards_localhost            │
+│ test_shard_localhost                         │
+│ test_shard_localhost_secure                  │
+│ test_unavailable_shard                       │
+└──────────────────────────────────────────────┘
+</code></pre>
+<h3 id="4、使用"><a href="#4、使用" class="headerlink" title="4、使用"></a>4、使用</h3><h4 id="（1）建表"><a href="#（1）建表" class="headerlink" title="（1）建表"></a>（1）建表</h4><p><strong>先建本地表：</strong></p>
+<p>即创建之前说的worker，存储数据用的本地表。</p>
+<pre><code class="sql">create table test_cluster_table on cluster test_shard_localhost(
+    id UInt8,
+    name String,
+    create_time Datetime default now()
+)
+engine = ReplicatedMergeTree(&#39;clickhouse/tables/&#123;shard&#125;/test_cluster_table&#39;, &#39;&#123;replica&#125;&#39;)
+order by (id, name);
+
+Query id: 86b73340-2c9d-42a1-97e2-f99d8d388f0e
+
+┌─host────────────┬─port─┬─status─┬─error─┬─num_hosts_remaining─┬─num_hosts_active─┐
+│ 192.168.141.141 │ 9003 │      0 │       │                   0 │                0 │
+└─────────────────┴──────┴────────┴───────┴─────────────────────┴──────────────────┘
+
+1 rows in set. Elapsed: 0.111 sec.
+</code></pre>
+<p>test_shard_localhost为集群名称</p>
+<p>{shard}和{replica}都是配置文件中macros导入，不用自己填。</p>
+<p><strong>再创建分布式表：</strong></p>
+<p>即创建之前说的master</p>
+<pre><code class="sql">create table test_cluster_table_all on cluster test_shard_localhost(
+    id UInt8,
+    name String,
+    create_time Datetime default now()
+)
+engine=Distributed(test_shard_localhost, default, test_cluster_table, hiveHash(id));
+
+Query id: 69a6f496-e916-47ac-ae0b-636c9244bc90
+
+┌─host────────────┬─port─┬─status─┬─error─┬─num_hosts_remaining─┬─num_hosts_active─┐
+│ 192.168.141.141 │ 9003 │      0 │       │                   0 │                0 │
+└─────────────────┴──────┴────────┴───────┴─────────────────────┴──────────────────┘
+
+1 rows in set. Elapsed: 0.114 sec.
+</code></pre>
+<p>test_shard_localhost为集群名称</p>
+<p>default为数据库名</p>
+<p>test_cluster_table为刚才创建的本地表名</p>
+<p>hiveHash(id)，hiveHash表示采用什么算法分片，id表示用哪个字段分片。</p>
+<h4 id="（2）使用"><a href="#（2）使用" class="headerlink" title="（2）使用"></a>（2）使用</h4><p>分布式表不存储数据，为每个本地表的逻辑汇总表。</p>
+<pre><code class="sql">-- 从分布式表插入数据，本地表可以看到
+insert into test_cluster_table_all values(1, &#39;小明&#39;, now());
+select * from test_cluster_table;
+
+-- 从本地表插入，从分布式表也可以看得到
+insert into test_cluster_table values(2, &#39;小红&#39;, now());
+select * from test_cluster_table_all;
+</code></pre>
+<p>本地表只能看到本服务器上存储的数据分片，无法看到其他服务器上存储的数据分片，而分布式表可以看到所有数据。</p>
+<p>因此一般不用将本地表暴露给用户写入，统一从分布式表做增删改查。</p>
+<h2 id="八、explain"><a href="#八、explain" class="headerlink" title="八、explain"></a>八、explain</h2><p>20.6.3.28及以后版本才有explain功能。</p>
+<p>官方文档：<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/en/sql-reference/statements/explain/">EXPLAIN | ClickHouse Documentation</a></p>
+<pre><code class="sql">EXPLAIN [AST | SYNTAX | PLAN | PIPELINE] [setting = value, ...] SELECT ... [FORMAT ...]
+</code></pre>
+<p>EXPLAIN SYNTAX …可以看到系统给你优化后的语法。</p>
+<p>比如上面那个join的sql，通过系统优化后的sql语句如下。</p>
+<pre><code class="sql">explain syntax select test2.id, sum(test3.money) from test3, test2 where test2.id = test3.id group by test2.id;
+
+┌─explain─────────────────────┐
+│ SELECT                      │
+│     id,                     │
+│     sum(test3.money)        │
+│ FROM test2                  │
+│ ALL INNER JOIN              │
+│ (                           │
+│     SELECT                  │
+│         id,                 │
+│         money               │
+│     FROM test3              │
+│ ) AS test3 ON id = test3.id │
+│ WHERE id = test3.id         │
+│ GROUP BY id                 │
+└─────────────────────────────┘
+</code></pre>
+<p>但这里优化后的结果不对，是因为id没有加上test2表名，并且where条件也是多余的，手动修改为如下sql，对比原始sql执行速度，优化后的sql性能确实提升了一些。</p>
+<p><font color="Red">千万不要盲目相信explain syntax后的结果，可能会让你得不偿失。</font></p>
+<pre><code class="sql">SELECT
+    test2.id,
+    sum(test3.money)
+FROM test2
+ALL INNER JOIN
+(
+    SELECT
+        id,
+        money
+    FROM test3
+) AS test3 ON test2.id = test3.id
+GROUP BY test2.id;
+</code></pre>
+<p>老版本没有explain语法，要查看执行计划，可以在进入客户端时，加上<code>--send_logs_level=trade &lt;&lt;&lt; &quot;sql&quot;</code>，然后去看日志即可。</p>
+<h2 id="九、常用配置"><a href="#九、常用配置" class="headerlink" title="九、常用配置"></a>九、常用配置</h2><h3 id="1、CPU"><a href="#1、CPU" class="headerlink" title="1、CPU"></a>1、CPU</h3><table>
+<thead>
+<tr>
+<th>位置</th>
+<th>配置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user.xml</td>
+<td>background_pool_size</td>
+<td>表引擎相关的后台线程池大小，常用于merge任务。默认值为16，允许的情况下可以调整称服务器的逻辑线程数据。</td>
+</tr>
+<tr>
+<td>user.xml</td>
+<td>background_schedule_pool_size</td>
+<td>后台任务线程池大小，常用于副本数据备份、kafka流、DNS缓存更新。默认值128。</td>
+</tr>
+<tr>
+<td>user.xml</td>
+<td>background_distributed_schedule_pool_size</td>
+<td>后台任务线程池大小，常用于分布式数据发送。默认值为16。</td>
+</tr>
+<tr>
+<td>config.xml</td>
+<td>max_concurrent_queries</td>
+<td>最大并发请求数，默认设置为100，建议不超过300。</td>
+</tr>
+<tr>
+<td>user.xml</td>
+<td>max_threads</td>
+<td>单个查询使用的最大线程数，默认值为cpu物理核心数。这个值越低，查询时占用的内存越低。</td>
+</tr>
+</tbody></table>
+<h3 id="2、内存"><a href="#2、内存" class="headerlink" title="2、内存"></a>2、内存</h3><table>
+<thead>
+<tr>
+<th>位置</th>
+<th>配置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user.xml</td>
+<td>max_memory_usage</td>
+<td>单次查询使用的最大内存。默认值为10G左右。</td>
+</tr>
+<tr>
+<td>user.xml</td>
+<td>max_bytes_before_external_groupby</td>
+<td>当使用groupby时内存占用超过最大内存时，将数据写入磁盘做缓存进行groupby时大小。一般可以设置为max_memory_usage的一半。</td>
+</tr>
+<tr>
+<td>user.xml</td>
+<td>max_bytes_before_external_sort</td>
+<td>当使用sort时内存占用超过最大内存时，将数据写入磁盘作为临时缓存进行sort时的大小。一般可以设置为max_memory_usage的一半。</td>
+</tr>
+<tr>
+<td>config.xml</td>
+<td>max_table_size_to_drop</td>
+<td>drop table时，允许删除的表的最大大小，表大小超过这个值时删除表不被允许。设置为0时，认为没有限制。</td>
+</tr>
+</tbody></table>
+<h2 id="十、查询优化"><a href="#十、查询优化" class="headerlink" title="十、查询优化"></a>十、查询优化</h2><h3 id="1、单表优化"><a href="#1、单表优化" class="headerlink" title="1、单表优化"></a>1、单表优化</h3><h4 id="（1）prewhere"><a href="#（1）prewhere" class="headerlink" title="（1）prewhere"></a>（1）prewhere</h4><p>只能用于MergeTree系列表引擎。</p>
+<p>prewhere执行时，会直接扫描过滤条件中的列，将数据过滤后，再将需要的字段补全。</p>
+<p>当查询列明显多于过滤列时，可以使用prewhere，降低IO。</p>
+<p><code>optimize_move_to_prewhere</code>参数是在有需要的时候自动将where优化成prewhere，默认是打开的。即这个参数打开时，不需要手动写prewhere，系统会在有需要的时候自动优化成prewhere去查询。</p>
+<p>部分情况下，不会自动优化成prewhere：</p>
+<ul>
+<li>使用常用表达式</li>
+<li>使用默认值的alias类型的字段</li>
+<li>包含了arrayJOIN，globalIn，globalNotIn，indexHint的查询</li>
+<li>select字段和where字段相同</li>
+<li>使用了主键字段</li>
+</ul>
+<p><font color="Red">有需要时，还是自己手动使用prewhere好，别太依赖系统的优化。</font></p>
+<h4 id="（2）sample"><a href="#（2）sample" class="headerlink" title="（2）sample"></a>（2）sample</h4><p>只能用于MergeTree系列表引擎。</p>
+<p>采样。不会对所有数据执行查询，而是对特定部分数据（样本）进行查询。</p>
+<p>且这个样本并不是严格精确的数据量。</p>
+<pre><code class="sql">-- 约10%样本查询
+select *
+from test
+sample 0.1;
+
+-- 当比例值远大于1时，这个含义便会转换为数据条数据，如这里采样至少10000条
+select *
+from test
+sample 10000;
+
+-- 加上offset表示跳过前面部分数据
+select *
+from test
+sample 0.1 offset 0.5
+</code></pre>
+<p>和limit的区别在于，limit是严格精确的数据量，而sample并不是严格的数据量。同时sample可以用在where、group和orderby前面。</p>
+<pre><code class="sql">SELECT
+    Title,
+    count() * 10 AS PageViews
+FROM hits_distributed
+SAMPLE 0.1
+WHERE
+    CounterID = 34
+GROUP BY Title
+ORDER BY PageViews DESC LIMIT 1000;
+</code></pre>
+<p>在一些特殊情况下，可以使用sample：</p>
+<ul>
+<li>业务需要查询延迟很低，但无法通过优化来降低延迟，且对具体结果的精确性不太讲究，可以使用近似结果</li>
+<li>只想大致查看数据的分布以及数据质量</li>
+</ul>
+<h4 id="（3）orderby"><a href="#（3）orderby" class="headerlink" title="（3）orderby"></a>（3）orderby</h4><p>order by不要单独使用，结合where和limit一起使用。</p>
+<p>一般排序后很少需要完整排序的结果，因此可以加一个limit。加limit和不加limit的效率还是有些差距的。</p>
+<h4 id="（4）虚拟列"><a href="#（4）虚拟列" class="headerlink" title="（4）虚拟列"></a>（4）虚拟列</h4><p>clickhouse中<font color="Red">尽量不要使用虚拟列</font>，很消耗性能。可以在服务端或者其他地方处理数据，不要在clickhouse中使用虚拟列来处理数据。</p>
+<pre><code class="sql">select a/b from test;
+select a, b from test;
+</code></pre>
+<h3 id="2、多表关联"><a href="#2、多表关联" class="headerlink" title="2、多表关联"></a>2、多表关联</h3><p>数据集：</p>
+<pre><code class="shell">curl -O https://datasets.clickhouse.com/hits/partitions/hits_v1.tar
+tar xvf hits_v1.tar -C /var/lib/clickhouse # path to ClickHouse data directory
+# check permissions on unpacked data, fix if required
+
+curl -O https://datasets.clickhouse.com/visits/partitions/visits_v1.tar
+tar xvf visits_v1.tar -C /var/lib/clickhouse # path to ClickHouse data directory
+# check permissions on unpacked data, fix if required
+
+sudo service clickhouse-server restart
+</code></pre>
+<p>clickhouse建表时没有like语法，因此使用以下语法创建一个张和hits_v1一样表结构的表。</p>
+<pre><code class="sql">create table hits_test
+ENGINE = MergeTree
+PARTITION BY toYYYYMM(EventDate)
+ORDER BY (CounterID, EventDate, intHash32(UserID))
+SAMPLE BY intHash32(UserID)
+SETTINGS index_granularity = 8192
+as select * from datasets.hits_v1 where 1 = 0;
+</code></pre>
+<h4 id="（1）用in代替join"><a href="#（1）用in代替join" class="headerlink" title="（1）用in代替join"></a>（1）用in代替join</h4><p>但是in的使用场景很有限，而且使用时要特别注意查询结果，因为join是笛卡尔积，右表有重复数据的话，结果集可能不止一条，而使用in的话，右表有重复数据对于左表来说是没关系的。</p>
+<h4 id="（2）大表在左，小表在右"><a href="#（2）大表在左，小表在右" class="headerlink" title="（2）大表在左，小表在右"></a>（2）大表在左，小表在右</h4><p>和MySQL或其他行式数据库不一样，clickhouse在使用join时，需要将大表作为主表，小表作为被关联的表。</p>
+<pre><code class="sql">-- 内存不足，直接报错
+insert into hits_test
+select a.* from datasets.visits_v1 b join datasets.hits_v1 a on a.CounterID = b.CounterID where a.CounterID &gt; 100000;
+
+-- 3.751秒，可以执行
+insert into hits_test
+select a.* from datasets.hits_v1 a join datasets.visits_v1 b on a.CounterID = b.CounterID where a.CounterID &gt; 100000;
+</code></pre>
+<h4 id="（3）先过滤再关联"><a href="#（3）先过滤再关联" class="headerlink" title="（3）先过滤再关联"></a>（3）先过滤再关联</h4><p>对于查询大数据量的sql，先过滤再关联，可以减少扫描的数据量，提升一点效率。即先对某一个表写where条件，形成一个子查询，再用子查询来关联，效率会比直接关联然后统一写where条件来的高。</p>
+<p>使用先过滤再关联还有一个好处在于，如果过滤条件是右表，则可以减少将数据加载到内存的量。</p>
+<pre><code class="sql">-- 1.999秒，效率低
+insert into hits_test
+select a.* from datasets.hits_v1 a join datasets.visits_v1 b on a.CounterID = b.CounterID where a.EventDate = &#39;2014-03-17&#39;;
+
+-- 1.772秒，效率高
+insert into hits_test
+select a.* from (select * from datasets.hits_v1 where EventDate = &#39;2014-03-17&#39;) a join datasets.visits_v1 b on a.CounterID = b.CounterID;
+
+-- 2.509秒，占用内存峰值1.91G
+insert into hits_test
+select a.* from datasets.hits_v1 a join datasets.visits_v1 b on a.CounterID = b.CounterID where b.StartDate = &#39;2014-03-17&#39;;
+
+-- 2.478秒，占用内存峰值1.7G
+insert into hits_test
+select a.* from datasets.hits_v1 a join (select CounterID from datasets.visits_v1 where StartDate = &#39;2014-03-17&#39;) b on a.CounterID = b.CounterID;
+</code></pre>
+<h4 id="（4）分布式表用GLOBAL"><a href="#（4）分布式表用GLOBAL" class="headerlink" title="（4）分布式表用GLOBAL"></a>（4）分布式表用GLOBAL</h4><p>以3分片为例，hits_v1表为分布式表，visits_v1为普通表，以下查询为例。</p>
+<pre><code class="sql">select * from (select * from hits_v1 perwhere CounterID &gt; 1000) a join visits_v1 b on on a.CounterID = b.CounterID;
+</code></pre>
+<p>分布式表在join时，每台服务器都会将右表加载到各自服务器的内存中，然后进行匹配。不使用GLOBAL时，需要查3次右表；使用GLOBAL，可以只进行1次查询，并分发到其他节点。如果此时右表也是分布式表的话，不适用GLOBAL就会查9次；使用GLOBAL只需要查3次。这就是<code>查询放大</code>。</p>
+<h4 id="（5）使用字典表"><a href="#（5）使用字典表" class="headerlink" title="（5）使用字典表"></a>（5）使用字典表</h4><p>Dictionary。</p>
+<p><a target="_blank" rel="noopener" href="https://clickhouse.com/docs/en/sql-reference/dictionaries/internal-dicts/">https://clickhouse.com/docs/en/sql-reference/dictionaries/internal-dicts/</a></p>
+<h3 id="3、其他优化"><a href="#3、其他优化" class="headerlink" title="3、其他优化"></a>3、其他优化</h3><h4 id="（1）写入数据时先排序。"><a href="#（1）写入数据时先排序。" class="headerlink" title="（1）写入数据时先排序。"></a>（1）写入数据时先排序。</h4><p>因为写入数据时，数据不会直接分配到实际所在的那个分区，而是会先临时放在一个新的分区。无序的数据会产生大量的新分区，merge时会产生性能问题。</p>
+<h4 id="（2）关注CPU"><a href="#（2）关注CPU" class="headerlink" title="（2）关注CPU"></a>（2）关注CPU</h4><p>cpu负载在50%时，会对查询性能会产生影响；cpu负载超过70%时，会出现大范围超时情况。因此不要以为在单次查询时性能很好就以为在实际生产环境中没有问题，放到生产环境中的查询sql要尽量优化好。</p>
 <h2 id="N、一些不同寻常的点（坑）"><a href="#N、一些不同寻常的点（坑）" class="headerlink" title="N、一些不同寻常的点（坑）"></a>N、一些不同寻常的点（坑）</h2><p>（1）普通类型的默认值不为null，都有各自的默认值，具体见Nullable类型说明。</p>
 <p>（2）clickhouse的primary key是可以重复的，有需要的话得手动将其设置为unique</p>
 

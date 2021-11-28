@@ -1473,16 +1473,16 @@ public class FileUploader &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/java/springboot/springboot-study">
+              <a href="/java/mybatis/mybatis-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  springboot-study
+                  mybatis-study
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/spring/Spring-study">
-                Spring-study
+              <a href="/java/springboot/springboot-study">
+                springboot-study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

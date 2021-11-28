@@ -1277,8 +1277,8 @@ public class Teacher2 &#123;
         </div>
         <div class="item right">
             
-              <a href="/java/springboot/springboot-study">
-                springboot-study
+              <a href="/java/springMVC/SpringMVC-Study">
+                SpringMVC-Study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
