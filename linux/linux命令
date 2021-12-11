@@ -397,6 +397,26 @@ var _hmt = _hmt || [];
 								<li class="directory">
 									<a href="#" class="directory">
 										<i class="fa fa-plus-square-o"></i>
+										MySQL迁移数据目录
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95">
+										MySQL迁移数据目录
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
 										《高性能MySQL》
 									</a>
 									
@@ -878,6 +898,15 @@ shutdown -c
 <li>clear</li>
 <li>sudo：允许本用户以其他用户（默认为超级管理员用户）的安全权限来运行某个命令或程序，即superuser do</li>
 </ul>
+<h2 id="shell语法"><a href="#shell语法" class="headerlink" title="shell语法"></a>shell语法</h2><p>1、读取文本文件，循环每一行数据，将数据作为参数执行命令</p>
+<pre><code class="shell"># 方法1
+for a in `cat hello.txt`; do echo &quot;$&#123;a&#125; 123&quot;; done;
+
+# 方法2
+while read a; do echo &quot;$&#123;a&#125; 123&quot;; done &lt; hello.txt;
+
+while read user_id; do echo &quot;$&#123;user_id&#125;&quot;; clickhouse-client -m -h 192.168.141.141 --port 9003 --query &quot;insert into test_score_mv select user_id, subject, argMax(score, create_time) as score, argMax(isvalid, create_time) as isvalid, max(create_time) as ctime from test_score where user_id = $&#123;user_id&#125; and create_time &lt;= &#39;2021-12-11 15:01:00&#39; group by user_id, subject&quot;; done &lt; test_score.csv;
+</code></pre>
 <h2 id="系统相关信息"><a href="#系统相关信息" class="headerlink" title="系统相关信息"></a>系统相关信息</h2><pre><code class="shell"># cpu和内存使用情况
 top
 
@@ -889,6 +918,14 @@ timedatectl status
 
 # 设置系统时区
 timedatectl set-timezone &quot;Asia/Shanghai&quot;
+
+# 查看linux内核版本
+cat /proc/version
+uname -a
+
+# 查看linux系统版本
+lsb_release -a
+cat /etc/issue
 </code></pre>
 <h2 id="apt相关"><a href="#apt相关" class="headerlink" title="apt相关"></a>apt相关</h2><p>apt search XXX：搜索软件包</p>
 <p>apt show XXX：显示软件包详情</p>

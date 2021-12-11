@@ -8,6 +8,8 @@
 	<!-- title -->
 	
 	<title>
+	
+		MySQL迁移数据目录 | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -399,7 +401,7 @@ var _hmt = _hmt || [];
 									</a>
 									
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/database/mysql/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95">
 										MySQL迁移数据目录
 									</a>
@@ -809,46 +811,104 @@ var _hmt = _hmt || [];
 
 	<!-- 引入正文 -->
 	<div id="content">
-		<div id="index">
-	
-		<div class="index-li">
-			<a href="/linux/linux%E5%91%BD%E4%BB%A4">
-				<h2 class="index-title">
-					linux命令
-				</h2>
-				<div class="index-brief">
-					安装1、刚安装好后的root用户的密码是随机的，需要修改密码：
-sudo passwd
-[sudo] paasword for yury: # 然后输入当前用户yury的密码
-New password: # 输入root用户的新密码
-Retype new password: # 重新输入
+		<h1 id="article-title">
 
-2、修改
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-11-01</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/linux/">linux</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
+	MySQL迁移数据目录
+</h1>
+<div class="article-meta">
 	
-	
-	<div id="index-paginator">
-		
-	</div>
+	<span>Yury</span>
+	<span>2021-12-11 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/database/">database</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
 </div>
 
+<div id="article-content">
+	<p>Linux版本：Ubuntu18.04</p>
+<p>MySQL版本：8.0.26</p>
+<h2 id="1、配置文件"><a href="#1、配置文件" class="headerlink" title="1、配置文件"></a>1、配置文件</h2><p>首先要搞清楚MySQL的配置文件在哪里。</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/option-files.html">MySQL :: MySQL 8.0 Reference Manual :: 4.2.2.2 Using Option Files</a></p>
+<p>大概意思是，说明了windows和Linux下MySQL读取配置文件的顺序，我们只要找到几个常用配置文件即可。</p>
+<p>windows下的配置文件在：<code>C:\%PROGRAMDIR%\MySQL\MySQL 8.0 Server\my.ini</code>这个文件中。</p>
+<p><code>%PROGRAMDIR%</code>是指windows安装时的数据目录，在中文版本中的windows系统中，这个目录经常是<code>ProgramData</code>，而在英文版本的windows系统中，这个目录经常是<code>Program Files</code>。</p>
+<p>Linux下的配置文件在：<code>/etc/mysql/my.cnf</code>或<code>/etc/mysql/mysql.conf.d/mysqld.cnf</code>（不同MySQL和Linux版本，配置文件不一样）</p>
+<h2 id="2、数据迁移"><a href="#2、数据迁移" class="headerlink" title="2、数据迁移"></a>2、数据迁移</h2><p>找到配置文件后，配置文件中指定了数据目录<code>datadir</code>。</p>
+<p>windows下只要将这个值修改为自己想要的新目录，然后将原数据目录复制过去即可。</p>
+<p>Linux中，同样修改datadir的值，但是复制文件时<font color="Red">一定要注意权限</font>！一般要加上<code>-p</code>。</p>
+<pre><code class="shell">cp -rp /var/lib/mysql/* /disk4/mysql/data/
+</code></pre>
+<p>此外新目录的创建后也要将这个目录拥有者改成MySQL。</p>
+<pre><code class="shell">chown -R mysql:mysql /disk4/mysql/
+</code></pre>
+<p>最后，还要修改<font color="Red"><code>/etc/apparmor.d/usr.sbin.mysqld</code></font>这个文件（如果有的话），这个文件限制了Linux系统中某个程序可以访问的目录。如果没有修改这个东西，则会报错：</p>
+<pre><code class="shell">Can&#39;t create test file /disk4/mysql/data/mysqld_tmp_file_case_insensitive_test.lower
+</code></pre>
+<p>在原来的旧数据目录下加上自己修改的新目录。</p>
+<pre><code class="shell">/disk4/mysql/ r,
+/disk4/mysql/** rwk,
+</code></pre>
+<p>重启apparmor</p>
+<pre><code class="shell">/etc/inid.d/apparmor restart
+</code></pre>
+<p>其中还要一个问题会导致上面说的无法在新目录下创建新文件，即启用了<font color="Red">selinux</font>，将这个东西关闭即可。</p>
+<pre><code class="shell"># 临时关闭selinux
+setenforce 0
+
+# 永久关闭selinux
+vi /etc/selinux/config
+SELINUX=disabled
+</code></pre>
+<h2 id="3、重启"><a href="#3、重启" class="headerlink" title="3、重启"></a>3、重启</h2><pre><code class="shell"># windows 管理员模式下
+net restart mysql
+
+# Linux
+systemctl restart mysql
+</code></pre>
+<p>Linux下如果重启失败，可以查看报错信息，上面说的配置文件中有一个<code>log-error</code>文件路径，报错信息就在这个文件中。</p>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/bigdata/clickhouse/clickhouse">
+                
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
 	</div>
 	<div id="footer">
 	<p>
