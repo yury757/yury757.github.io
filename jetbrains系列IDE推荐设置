@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		hadoop-study | 
+		jetbrains系列IDE推荐设置 | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -192,7 +192,7 @@ var _hmt = _hmt || [];
 									</a>
 									
 							<ul>
-								<li class="file active">
+								<li class="file">
 									<a href="/bigdata/hadoop/hadoop-study">
 										hadoop-study
 									</a>
@@ -733,7 +733,7 @@ var _hmt = _hmt || [];
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/jetbrains%E7%B3%BB%E5%88%97IDE%E6%8E%A8%E8%8D%90%E8%AE%BE%E7%BD%AE">
 										jetbrains系列IDE推荐设置
 									</a>
@@ -831,35 +831,15 @@ var _hmt = _hmt || [];
 	<div id="content">
 		<h1 id="article-title">
 
-	hadoop-study
+	jetbrains系列IDE推荐设置
 </h1>
 <div class="article-meta">
 	
 	<span>Yury</span>
-	<span>2021-07-01 00:00:00</span>
+	<span>2021-12-21 00:00:00</span>
 		<div id="article-categories">
     
 		<span>Categories：</span>
-            
-                
-                    <span>
-                        <i class="fa fa-folder" aria-hidden="true">
-                        <a href="/categories/bigdata/">bigdata</a>
-                        </i>
-                      
-                        >
-                      
-                    </span>
-                
-            
-                
-                    <span>
-                        <i class="fa fa-folder" aria-hidden="true">
-                        <a href="/categories/bigdata/hadoop/">hadoop</a>
-                        </i>
-                      
-                    </span>
-                
             
     
 
@@ -872,157 +852,11 @@ var _hmt = _hmt || [];
 </div>
 
 <div id="article-content">
-	<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>下载地址：<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/">Index of /apache/hadoop/common (tsinghua.edu.cn)</a></p>
-<pre><code class="shell">cd /home/yury
-# 下载
-wget https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/stable/hadoop-3.3.0.tar.gz
-# 解压
-tar xzvf hadoop-3.3.0.tar.gz
-
-# 以这个目录为工作目录
-cd hadoop-3.3.0/
-
-# 编辑以下文件
-vi ./etc/hadoop/hadoop-env.sh
-
-# 将以下环境变量加入文件
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
-# 配置环境变量
-sudo vi /etc/profile
-export HADOOP_HOME=/home/yury/hadoop-3.3.0/
-export PATH=$&#123;PATH&#125;:$&#123;HADOOP_HOME&#125;/bin:$&#123;HADOOP_HOME&#125;/sbin
-</code></pre>
-<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><h3 id="1、单机模式"><a href="#1、单机模式" class="headerlink" title="1、单机模式"></a>1、单机模式</h3><p>hadoop默认情况下是配置成一个单独的java进程的单机模式。以下示例为mapreduce的一个例子，复制解压缩的conf目录以用作输入，然后查找并显示给定正则表达式的每个匹配项。输出被写入给定的输出目录。</p>
-<p>hadoop本质就是一个文件系统（hdfs）以及在这个文件系统上的计算（MapReduce），只不过这个文件系统的特殊和优势之处在于适用于<strong>分布式和大数据</strong>，因此下面这个mapreduce的例子就是对文件处理。</p>
-<pre><code class="shell">mkdir input
-cp etc/hadoop/*.xml input
-bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.0.jar grep input output &#39;dfs[a-z.]+&#39;
-cat output/*
-</code></pre>
-<h3 id="2、伪分布式"><a href="#2、伪分布式" class="headerlink" title="2、伪分布式"></a>2、伪分布式</h3><p>伪分布式是指，整体还是在一个服务器中，但是namenode、datanode等服务分别运行在不同的JVM进程中。</p>
-<p>修改etc/hadoop/core-site.xml：</p>
-<pre><code class="shell">vi ./etc/hadoop/core-site.xml
-</code></pre>
-<pre><code class="xml">&lt;configuration&gt;
-  &lt;property&gt;
-    &lt;name&gt;fs.defaultFS&lt;/name&gt;
-    &lt;value&gt;hdfs://localhost:9000&lt;/value&gt;
-  &lt;/property&gt;
-&lt;/configuration&gt;
-</code></pre>
-<p>修改etc/hadoop/hdfs-site.xml：</p>
-<pre><code class="shell">vi ./etc/hadoop/hdfs-site.xml
-</code></pre>
-<pre><code class="xml">&lt;configuration&gt;
-  &lt;property&gt;
-    &lt;name&gt;dfs.replication&lt;/name&gt;
-    &lt;value&gt;1&lt;/value&gt;
-  &lt;/property&gt;
-&lt;/configuration&gt;
-</code></pre>
-<p>配置ssh无密码登录各个服务器，不然后面会提示没有权限</p>
-<pre><code class="shell"># 如果是首次使用该命令，需要输入回复yes
-ssh localhost
-
-# 以上命令如果需要密码，则配置以下命令
-ssh-keygen -t rsa -P &#39;&#39; -f ~/.ssh/id_rsa
-cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
-chmod 0600 ~/.ssh/authorized_keys
-
-# 如果是完全分布式，则需将本服务器的公钥复制到其他服务器
-ssh-copy-id 192.168.0.202
-ssh-copy-id 192.168.0.203
-</code></pre>
-<p>运行一个测试</p>
-<p><font color="Red">每次修改了core-site.xml都要格式化namenode。</font></p>
-<pre><code class="shell"># 格式化hdfs文件系统
-bin/hdfs namenode -format
-
-# 修改一个配置
-export HDFS_NAMENODE_USER=&quot;root&quot;
-export HDFS_DATANODE_USER=&quot;root&quot;
-export HDFS_SECONDARYNAMENODE_USER=&quot;root&quot;
-export YARN_RESOURCEMANAGER_USER=&quot;root&quot;
-export YARN_NODEMANAGER_USER=&quot;root&quot;
-
-# 启动一个名称节点和数据节点
-sbin/start-dfs.sh
-# 成功启动后可以在下面这个url来查看web管理界面
-# http://192.168.141.141:9870/
-# yarn的web管理页面
-# http://192.168.141.141:8088/
-
-jps
-# jps命令结果如下
-# 7969 Jps
-# 7589 DataNode
-# 7848 SecondaryNameNode
-# 7369 NameNode
-
-# 创建HDFS文件系统的文件夹
-bin/hdfs dfs -mkdir /user
-bin/hdfs dfs -mkdir /user/yury
-
-# 复制所有xml文件到分布式文件系统的input文件夹中
-bin/hdfs dfs -mkdir /input
-bin/hdfs dfs -put etc/hadoop/*.xml /input
-
-# 运行mapreduce例子
-bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.0.jar grep input output &#39;dfs[a-z.]+&#39;
-
-# 测试输出文件（把分布式系统中的文件拷贝到本地文件系统并查看内容）
-bin/hdfs dfs -get output output
-cat output/*
-# 或者直接在分布式文件系统上查看输出文件
-bin/hdfs dfs -cat output/*
-
-# 停止进程
-sbin/stop-dfs.sh
-</code></pre>
-<p>配置yarn</p>
-<p>修改etc/hadoop/mapred-site.xml</p>
-<pre><code class="shell">vi etc/hadoop/mapred-site.xml
-</code></pre>
-<pre><code class="shell">&lt;property&gt;
-  &lt;name&gt;mapreduce.framework.name&lt;/name&gt;
-  &lt;value&gt;yarn&lt;/value&gt;
-&lt;/property&gt;
-&lt;property&gt;
-    &lt;name&gt;mapreduce.application.classpath&lt;/name&gt;
-    &lt;value&gt;$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*&lt;/value&gt;
-&lt;/property&gt;
-</code></pre>
-<p>修改etc/hadoop/yarn-site.xml</p>
-<pre><code class="shell">vi etc/hadoop/yarn-site.xml
-</code></pre>
-<pre><code class="shell">&lt;property&gt;
-  &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
-  &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
-&lt;/property&gt;
-&lt;property&gt;
-  &lt;name&gt;yarn.nodemanager.env-whitelist&lt;/name&gt;
-  &lt;value&gt;JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME&lt;/value&gt;
-&lt;/property&gt;
-</code></pre>
-<p>启动yarn</p>
-<pre><code class="shell"># 启动
-sbin/start-yarn.sh
-
-# 关闭
-sbin/stop-yarn.sh
-</code></pre>
-<h3 id="3、完全分布式"><a href="#3、完全分布式" class="headerlink" title="3、完全分布式"></a>3、完全分布式</h3><p>配置wokers（3.2.1之前的版本是slaves）</p>
-<pre><code class="shell">vi /etc/hadoop/workers
-# 将工作结点的ip或者ip别名放入workers文件即可
-192.168.0.202
-192.168.0.203
-</code></pre>
-<p>同步配置的其他服务器命令：</p>
-<pre><code class="shell">scp etc/hadoop/* yury@192.168.0.202:/home/yury/hadoop-3.3.0/etc/hadoop/
-scp etc/hadoop/* yury@192.168.0.203:/home/yury/hadoop-3.3.0/etc/hadoop/
-</code></pre>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>datanode没有显示在web界面中</p>
+	<h2 id="jetbrains系列IDE推荐设置"><a href="#jetbrains系列IDE推荐设置" class="headerlink" title="jetbrains系列IDE推荐设置"></a>jetbrains系列IDE推荐设置</h2><p>1、Editor - Files Encoding，修改为utf-8</p>
+<p>2、Editor - Code Style - 对应语言，设置tab size为4个空格</p>
+<p>3、Editor - Code Style，设置Line Separator为\n</p>
+<p>4、Appearance &amp; Behavior - System Settings，设置取消勾选Reopen projects on startup，并且设置在新窗口打开新项目。</p>
+<p>5、Build, Execution, Deployment - Build Tools - Maven/Gradle，设置自定义的maven设置（仅限java）</p>
 
 </div>
 
@@ -1030,16 +864,16 @@ scp etc/hadoop/* yury@192.168.0.203:/home/yury/hadoop-3.3.0/etc/hadoop/
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/java/java_JUC/Java_JUC-study">
+              <a href="/java/java%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  Java_JUC-study
+                  java
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/computer-science/Computer-Networking/Computer-Networking">
-                Computer-Networking
+              <a href="/database/mysql/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95">
+                database
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

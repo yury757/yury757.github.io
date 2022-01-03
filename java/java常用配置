@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+	
+	<!-- title -->
+	
+	<title>
+	
+		java常用配置 | 
+	 
+	Yury&#39;s Blog
+	</title>
+	
+	<!-- keywords,description -->
+	 
+		<meta name="description" content="blog of usual study" />
+	
+
+	<!-- favicon -->
+	
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+
+
+	<!-- search -->
+	<script>
+		var searchEngine = "https://www.google.com/search?q=";
+		if(typeof searchEngine == "undefined" || searchEngine == null || searchEngine == ""){
+			searchEngine = "https://www.google.com/search?q=";
+		}
+		var homeHost = "";
+		if(typeof homeHost == "undefined" || homeHost == null || homeHost == ""){
+			homeHost = window.location.host;
+		}
+	</script>
+
+
+	
+<link rel="stylesheet" href="/css/main.css">
+
+	
+<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/darcula.min.css">
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js"></script>
+
+	
+<script src="https://cdn.jsdelivr.net/npm/jquery-pjax@2.0.1/jquery.pjax.min.js"></script>
+
+	
+<script src="/js/main.js"></script>
+
+	
+		
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min.js"></script>
+
+		
+<script src="https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js"></script>
+
+	
+	
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Blog" type="application/atom+xml">
+</head>
+
+<body>
+	<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3efe99c287df5a1d6f0d02d187e403c1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<header id="header">
+    <a id="title" href="/" class="logo">Yury's Blog</a>
+
+	<ul id="menu">
+		<li class="menu-item">
+			<a href="/about" class="menu-item-link">ABOUT</a>
+		</li>
+	
+		<li class="menu-item">
+			<a href="/tags" class="menu-item-link">标签</a>
+		</li>
+	
+
+	
+		<li class="menu-item">
+			<a href="/categories" class="menu-item-link">分类</a>
+		</li>
+	
+
+		<li class="menu-item">
+			<a href="https://github.com/yury757" class="menu-item-link" target="_blank">
+				<i class="fa fa-github fa-2x"></i>
+			</a>
+		</li>
+	</ul>
+</header>
+
+	
+<div id="sidebar">
+	<button id="sidebar-toggle" class="toggle" ><i class="fa fa-arrow-right " aria-hidden="true"></i></button>
+	
+	<div id="site-toc">
+		<input id="search-input" class="search-input" type="search" placeholder="按回车全站搜索">
+		<div id="tree">
+			
+
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Git
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										learngit
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/Git/learngit/learn-git">
+										learn-git
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										bigdata
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										clickhouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/clickhouse/clickhouse">
+										clickhouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hadoop
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hadoop/hadoop-study">
+										hadoop-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										hbase
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/hbase/HBase-study">
+										HBase-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										kafka
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/kafka/kafka">
+										kafka
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										zookeeper
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/bigdata/zookeeper/zookeeper-study">
+										zookeeper-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										computer-science
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										Computer-Networking
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/computer-science/Computer-Networking/Computer-Networking">
+										Computer-Networking
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										database
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mysql
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL中的exists与in的使用
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8">
+										MySQL中的exists与in的使用
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL备份-Linux版
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E5%A4%87%E4%BB%BD-Linux%E7%89%88/MySQL%E5%A4%87%E4%BB%BD-linux%E7%89%88">
+										MySQL备份-linux版
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL日期格式化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96">
+										MySQL日期格式化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL查询执行计划详解-explain
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain">
+										MySQL查询执行计划详解-explain
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										MySQL迁移数据目录
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95">
+										MySQL迁移数据目录
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										《高性能MySQL》
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第1章-MySQL架构与历史
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+										第一章-MySQL架构与历史
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第2章-MySQL基准测试
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95">
+										第二章 MySQL基准测试
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第3章-服务器性能剖析
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90">
+										第三章-服务器性能剖析
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第4章-Schema与数据类型优化
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96">
+										第四章-Schema与数据类型优化
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										第5章-创建高性能的索引
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
+										第五章-创建高性能的索引
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										postgresql
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/database/postgresql/postgresql">
+										postgresql
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										JVM
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/JVM/jvm-1.8">
+										jvm-1.8
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										SSM-Build
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/SSM-Build/SSM-Build">
+										SSM-Build
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_JUC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_JUC/Java_JUC-study">
+										Java_JUC-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										java_NIO
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/java_NIO/Java_NIO-study">
+										Java_NIO-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="file active">
+									<a href="/java/java%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE">
+										java常用配置
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										mybatis
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/mybatis/mybatis-study">
+										mybatis-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springMVC
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springMVC/SpringMVC-Study">
+										SpringMVC-Study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										springboot
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/springboot/springboot-study">
+										springboot-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										spring
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/java/spring/Spring-study">
+										Spring-study
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/jetbrains%E7%B3%BB%E5%88%97IDE%E6%8E%A8%E8%8D%90%E8%AE%BE%E7%BD%AE">
+										jetbrains系列IDE推荐设置
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										linux
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/linux/linux%E5%91%BD%E4%BB%A4">
+										linux命令
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										operating-support
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										docker
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/operating-support/docker/docker">
+										docker
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										project
+									</a>
+									
+							<ul>
+								<li class="directory">
+									<a href="#" class="directory">
+										<i class="fa fa-plus-square-o"></i>
+										flink_data_warehouse
+									</a>
+									
+							<ul>
+								<li class="file">
+									<a href="/project/flink_data_warehouse/flink_data_warehouse">
+										flink_data_warehouse
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+								</li>
+								
+							</ul>
+			
+		</div>
+	</div>
+</div>
+
+	<!-- 引入正文 -->
+	<div id="content">
+		<h1 id="article-title">
+
+	java常用配置
+</h1>
+<div class="article-meta">
+	
+	<span>Yury</span>
+	<span>2021-12-25 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true">
+                        <a href="/categories/java/">java</a>
+                        </i>
+                      
+                    </span>
+                
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
+</div>
+
+<div id="article-content">
+	<h2 id="1、pom"><a href="#1、pom" class="headerlink" title="1、pom"></a>1、pom</h2><pre><code class="xml">&lt;properties&gt;
+    &lt;maven.compiler.source&gt;8&lt;/maven.compiler.source&gt;
+    &lt;maven.compiler.target&gt;8&lt;/maven.compiler.target&gt;
+    &lt;java.version&gt;1.8&lt;/java.version&gt;
+    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;project.report.outputEncoding&gt;UTF-8&lt;/project.report.outputEncoding&gt;
+&lt;/properties&gt;
+
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;!-- jar包插件 --&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.2.0&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;excludes&gt; &lt;!-- 以下文件不打包 --&gt;
+                    &lt;exclude&gt;*.properties&lt;/exclude&gt;
+                    &lt;exclude&gt;*.xml&lt;/exclude&gt;
+                    &lt;exclude&gt;*.yml&lt;/exclude&gt;
+                    &lt;exclude&gt;*.yaml&lt;/exclude&gt;
+                    &lt;exclude&gt;*.config&lt;/exclude&gt;
+                &lt;/excludes&gt;
+                &lt;archive&gt;
+                    &lt;manifest&gt;
+                        &lt;addClasspath&gt;true&lt;/addClasspath&gt; &lt;!-- 是否要把依赖jar包加入到manifest中 --&gt;
+                        &lt;classpathPrefix&gt;lib/&lt;/classpathPrefix&gt; &lt;!-- 指定依赖jar包从classpath下指定路径查找 --&gt;
+                        &lt;mainClass&gt;net.yury.Test&lt;/mainClass&gt;
+                    &lt;/manifest&gt;
+                    &lt;manifestEntries&gt;
+                        &lt;Class-Path&gt;config/&lt;/Class-Path&gt; &lt;!-- 指定配置文件从classpath下的指定路径查找 --&gt;
+                    &lt;/manifestEntries&gt;
+                &lt;/archive&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+        &lt;!-- 下面两个插件配置，可以执行一次，将所有jar包和配置文件拿到，部署到服务器后，就可以删掉了 --&gt;
+        &lt;!-- 将依赖jar包从maven仓库复制到指定目录的插件 --&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.2.0&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;copy-lib&lt;/id&gt;
+                    &lt;phase&gt;package&lt;/phase&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;copy-dependencies&lt;/goal&gt;
+                    &lt;/goals&gt;
+                    &lt;configuration&gt;
+                        &lt;outputDirectory&gt;target/lib&lt;/outputDirectory&gt;
+                        &lt;excludeTransitive&gt;false&lt;/excludeTransitive&gt;
+                        &lt;stripVersion&gt;false&lt;/stripVersion&gt;
+                        &lt;includeScope&gt;runtime&lt;/includeScope&gt;
+                    &lt;/configuration&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+        &lt;!-- 将配置文件从类文件中复制到指定目录的插件 --&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-resources-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.2.0&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;copy-config-file&lt;/id&gt;
+                    &lt;phase&gt;process-resources&lt;/phase&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;copy-resources&lt;/goal&gt;
+                    &lt;/goals&gt;
+                    &lt;configuration&gt;
+                        &lt;outputDirectory&gt;$&#123;basedir&#125;/target/config/&lt;/outputDirectory&gt;
+                        &lt;resources&gt;
+                            &lt;resource&gt;
+                                &lt;directory&gt;$&#123;basedir&#125;/src/main/resources/&lt;/directory&gt;
+                                &lt;includes&gt;
+                                    &lt;include&gt;*.properties&lt;/include&gt;
+                                    &lt;include&gt;*.xml&lt;/include&gt;
+                                    &lt;include&gt;*.yml&lt;/include&gt;
+                                    &lt;include&gt;*.yaml&lt;/include&gt;
+                                    &lt;include&gt;*.config&lt;/include&gt;
+                                &lt;/includes&gt;
+                            &lt;/resource&gt;
+                        &lt;/resources&gt;
+                    &lt;/configuration&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
+</code></pre>
+<h2 id="2、springboot"><a href="#2、springboot" class="headerlink" title="2、springboot"></a>2、springboot</h2><pre><code class="yaml">server:
+  port: 8888
+spring:
+  resources:
+    static-locations: classpath:/static,classpath:/public,classpath:/resources,classpath:/META-INF/resources
+  mvc:
+    static-path-pattern: /resources/*.html
+  datasource:
+    # database
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/flinkcdc?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true&amp;serverTimezone=UTC
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
+    # druid
+    druid:
+      max-wait: 60000 # 最大等待时间，配置获取连接等待超时，时间单位都是毫秒ms
+      max-active: 3 # 最大活跃连接
+      min-idle: 1 # 最小空闲连接
+      initial-size: 1 # 初始化大小
+      min-evictable-idle-time-millis: 60000 # 配置一个连接在池中最小生存的时间
+      time-between-eviction-runs-millis: 300000 # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20 # 最大PSCache连接
+      use-global-data-source-stat: true
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500 # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      filter: # 配置监控统计拦截的filters，去掉后监控界面sql无法统计
+        stat:
+          enabled: true
+        wall: # wall用于防火墙
+          enabled: true
+        log4j2:
+          enabled: true
+      web-stat-filter: # 配置StatFilter
+        enabled: true # 默认为false，设置为true启动
+        exclusions: &quot;*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*&quot;
+      stat-view-servlet: # 配置StatViewServlet
+        enabled: true
+        url-pattern: &quot;/druid/*&quot;
+        allow: localhost # ip白名单
+        deny: 192.168.141.141 # ip黑名单
+        login-username: root # 账号密码
+        login-password: root
+        reset-enable: true # 是否可以重置
+  kafka:
+    bootstrap-servers: 192.168.141.141:9092,192.168.141.142:9092,192.168.141.143:9092
+    producer:
+      retries: 3 # 发送失败时，重试的次数
+      batch-size: 16384 # 批量发送时的大小，byte，默认16k
+      buffer-memory: 33554432 # 缓冲区大小，byte，默认32M
+      acks: 1 # 生产者确定服务器接收消息的策略
+    consumer:
+      group-id: default-group # 组id
+      enable-auto-commit: false # 自动提交
+      auto-offset-reset: earliest
+      max-poll-records: 10 # 批量提取提取时，一次性提取的大小
+
+# mybatis
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: net.yury.pojo
+
+---
+# 开发环境
+spring:
+  profiles: dev
+mysql:
+  ipPort: localhost:3306
+
+---
+# 测试环境
+spring:
+  profiles: test
+mysql:
+  ipPort: 192.168.141.141:3306
+
+---
+# 生产环境
+spring:
+  profiles: prod
+mysql:
+  ipPort: xxxx:xxxx
+# 启动时指定对应环境：java -jar test.jar --spring.profiles.active=test
+</code></pre>
+<h2 id="2、spring-mybatis"><a href="#2、spring-mybatis" class="headerlink" title="2、spring-mybatis"></a>2、spring-mybatis</h2><pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd&quot;&gt;
+
+    &lt;!-- 1.关联数据库配置文件 --&gt;
+    &lt;context:property-placeholder location=&quot;classpath:database.properties&quot;/&gt;
+
+    &lt;!-- 2.配置数据库连接池 --&gt;
+    &lt;bean id=&quot;dataSource&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot; destroy-method=&quot;close&quot;&gt;
+        &lt;!-- 数据库基本信息配置 --&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;$&#123;jdbc.driver&#125;&quot; /&gt;
+        &lt;property name=&quot;url&quot; value=&quot;$&#123;jdbc.url&#125;&quot; /&gt;
+        &lt;property name=&quot;username&quot; value=&quot;$&#123;jdbc.username&#125;&quot; /&gt;
+        &lt;property name=&quot;password&quot; value=&quot;$&#123;jdbc.password&#125;&quot; /&gt;
+        &lt;property name=&quot;filters&quot; value=&quot;$&#123;filters&#125;&quot; /&gt;
+        &lt;!-- 最大并发连接数 --&gt;
+        &lt;property name=&quot;maxActive&quot; value=&quot;$&#123;maxActive&#125;&quot; /&gt;
+        &lt;!-- 初始化连接数量 --&gt;
+        &lt;property name=&quot;initialSize&quot; value=&quot;$&#123;initialSize&#125;&quot; /&gt;
+        &lt;!-- 配置获取连接等待超时的时间 --&gt;
+        &lt;property name=&quot;maxWait&quot; value=&quot;$&#123;maxWait&#125;&quot; /&gt;
+        &lt;!-- 最小空闲连接数 --&gt;
+        &lt;property name=&quot;minIdle&quot; value=&quot;$&#123;minIdle&#125;&quot; /&gt;
+        &lt;!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 --&gt;
+        &lt;property name=&quot;timeBetweenEvictionRunsMillis&quot; value=&quot;$&#123;timeBetweenEvictionRunsMillis&#125;&quot; /&gt;
+        &lt;!-- 配置一个连接在池中最小生存的时间，单位是毫秒 --&gt;
+        &lt;property name=&quot;minEvictableIdleTimeMillis&quot; value=&quot;$&#123;minEvictableIdleTimeMillis&#125;&quot; /&gt;
+        &lt;property name=&quot;validationQuery&quot; value=&quot;$&#123;validationQuery&#125;&quot; /&gt;
+        &lt;property name=&quot;testWhileIdle&quot; value=&quot;$&#123;testWhileIdle&#125;&quot; /&gt;
+        &lt;property name=&quot;testOnBorrow&quot; value=&quot;$&#123;testOnBorrow&#125;&quot; /&gt;
+        &lt;property name=&quot;testOnReturn&quot; value=&quot;$&#123;testOnReturn&#125;&quot; /&gt;
+        &lt;property name=&quot;maxOpenPreparedStatements&quot; value=&quot;$&#123;maxOpenPreparedStatements&#125;&quot; /&gt;
+        &lt;!-- 打开removeAbandoned功能 --&gt;
+        &lt;property name=&quot;removeAbandoned&quot; value=&quot;$&#123;removeAbandoned&#125;&quot; /&gt;
+        &lt;!-- 1800秒，也就是30分钟 --&gt;
+        &lt;property name=&quot;removeAbandonedTimeout&quot; value=&quot;$&#123;removeAbandonedTimeout&#125;&quot; /&gt;
+        &lt;!-- 关闭abanded连接时输出错误日志 --&gt;
+        &lt;property name=&quot;logAbandoned&quot; value=&quot;$&#123;logAbandoned&#125;&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 3.配置sqlSessionFactory --&gt;
+    &lt;bean id=&quot;sqlSessionFactory&quot; class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+        &lt;property name=&quot;configLocation&quot; value=&quot;classpath:mybatis-config.xml&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 4.配置dao接口扫描，动态生成接口的实现类（动态代理自动生成，不用自己写实现类），并注入IOC容器中 --&gt;
+    &lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
+        &lt;!-- 注入sqlSessionFactory，这里不能用ref，因为他要注入的是一个string，而不是一个sqlSessionFactory对象 --&gt;
+        &lt;property name=&quot;sqlSessionFactoryBeanName&quot; value=&quot;sqlSessionFactory&quot;/&gt;
+        &lt;!-- 要扫描的包 --&gt;
+        &lt;property name=&quot;basePackage&quot; value=&quot;net.yury.dao&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 5.声明式事务管理 --&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 6.结合AOP实现事务织入 --&gt;
+    &lt;!-- 配置事务通知的的类：需要导入tx命名空间 --&gt;
+    &lt;tx:advice id=&quot;txAdvisor&quot; transaction-manager=&quot;transactionManager&quot;&gt;
+        &lt;!-- name：给哪些方法配置事务，propagation：配置事务的传播特性 --&gt;
+        &lt;tx:attributes&gt;
+            &lt;tx:method name=&quot;add*&quot; propagation=&quot;REQUIRED&quot;/&gt;
+            &lt;tx:method name=&quot;delete*&quot; propagation=&quot;REQUIRED&quot;/&gt;
+            &lt;tx:method name=&quot;update*&quot; propagation=&quot;REQUIRED&quot;/&gt;
+            &lt;tx:method name=&quot;select*&quot; read-only=&quot;true&quot;/&gt;
+        &lt;/tx:attributes&gt;
+    &lt;/tx:advice&gt;
+
+    &lt;!-- 7.配置事务的切入点 --&gt;
+    &lt;aop:config&gt;
+        &lt;aop:pointcut id=&quot;txPointCut&quot; expression=&quot;execution(* net.yury.dao.*.*(..))&quot;/&gt;
+        &lt;aop:advisor advice-ref=&quot;txAdvisor&quot; pointcut-ref=&quot;txPointCut&quot;/&gt;
+    &lt;/aop:config&gt;
+&lt;/beans&gt;
+</code></pre>
+<h2 id="4、spring-mvc"><a href="#4、spring-mvc" class="headerlink" title="4、spring-mvc"></a>4、spring-mvc</h2><pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;
+       xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd&quot;&gt;
+
+    &lt;!-- 开启映射器和适配器的注解支持 --&gt;
+    &lt;!-- 并添加Jackson支持，它可以自动把RestController方法返回的对象封装成json字符串，并解决json乱码问题--&gt;
+    &lt;mvc:annotation-driven&gt;
+        &lt;mvc:message-converters&gt;
+            &lt;bean class=&quot;org.springframework.http.converter.StringHttpMessageConverter&quot;&gt;
+                &lt;constructor-arg value=&quot;UTF-8&quot;/&gt;
+            &lt;/bean&gt;
+            &lt;bean class=&quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&quot;&gt;
+                &lt;property name=&quot;objectMapper&quot;&gt;
+                    &lt;bean class=&quot;org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean&quot;&gt;
+                        &lt;property name=&quot;failOnEmptyBeans&quot; value=&quot;false&quot;/&gt;
+                    &lt;/bean&gt;
+                &lt;/property&gt;
+            &lt;/bean&gt;
+        &lt;/mvc:message-converters&gt;
+    &lt;/mvc:annotation-driven&gt;
+
+    &lt;!-- 静态资源过滤 --&gt;
+    &lt;mvc:default-servlet-handler/&gt;
+    &lt;!-- 扫描包 --&gt;
+    &lt;context:component-scan base-package=&quot;net.yury.controller&quot;/&gt;
+    &lt;context:component-scan base-package=&quot;net.yury.service&quot;/&gt;
+
+    &lt;!-- 视图解析器 --&gt;
+    &lt;bean class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;
+        &lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/jsp/&quot;/&gt;
+        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 登录拦截器 --&gt;
+    &lt;mvc:interceptors&gt;
+        &lt;mvc:interceptor&gt;
+            &lt;mvc:mapping path=&quot;/**&quot;/&gt;
+            &lt;bean class=&quot;net.yury.interceptor.LoginInterceptor&quot;/&gt;
+        &lt;/mvc:interceptor&gt;
+    &lt;/mvc:interceptors&gt;
+
+    &lt;!-- 文件上传配置 --&gt;
+    &lt;bean id=&quot;multipartResolver&quot; class=&quot;org.springframework.web.multipart.commons.CommonsMultipartResolver&quot;&gt;
+        &lt;!-- 编码 --&gt;
+        &lt;property name=&quot;defaultEncoding&quot; value=&quot;utf-8&quot;/&gt;
+        &lt;!-- 最大上传大小，单位为b（字节），10485760b = 10Mb --&gt;
+        &lt;property name=&quot;maxUploadSize&quot; value=&quot;10485760&quot;/&gt;
+        &lt;!-- 编码 --&gt;
+        &lt;property name=&quot;maxInMemorySize&quot; value=&quot;40960&quot;/&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;
+</code></pre>
+<h2 id="5、log4j2"><a href="#5、log4j2" class="headerlink" title="5、log4j2"></a>5、log4j2</h2><pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Configuration status=&quot;info&quot; name=&quot;RoutingTest&quot;&gt;
+    &lt;Properties&gt;
+        &lt;Property name=&quot;logFilename&quot;&gt;D:/tmp/test.log&lt;/Property&gt;
+        &lt;Property name=&quot;filePattern&quot;&gt;D:/tmp/test-%d&#123;MM-dd-yy&#125;-%i.log&lt;/Property&gt;
+        &lt;Property name=&quot;logPattern&quot;&gt;%d&#123;yyyy-MM-dd HH:mm:ss&#125; [%-5p] [%t] [%l] - %m%n&lt;/Property&gt;
+    &lt;/Properties&gt;
+    &lt;ThresholdFilter level=&quot;info&quot;/&gt;
+
+    &lt;Appenders&gt;
+        &lt;Console name=&quot;STDOUT&quot;&gt;
+            &lt;PatternLayout pattern=&quot;$&#123;logPattern&#125;&quot;/&gt;
+            &lt;ThresholdFilter level=&quot;info&quot;/&gt;
+        &lt;/Console&gt;
+        &lt;Routing name=&quot;Routing&quot;&gt;
+            &lt;Routes pattern=&quot;$$&#123;sd:type&#125;&quot;&gt;
+                &lt;Route&gt;
+                    &lt;RollingFile name=&quot;Rolling-$&#123;sd:type&#125;&quot;
+                                 fileName=&quot;$&#123;logFilename&#125;&quot;
+                                 filePattern=&quot;$&#123;filePattern&#125;&quot;&gt;
+                        &lt;PatternLayout&gt;
+                            &lt;pattern&gt;$&#123;logPattern&#125;&lt;/pattern&gt;
+                            &lt;charset&gt;UTF-8&lt;/charset&gt;
+                        &lt;/PatternLayout&gt;
+                        &lt;policies&gt;
+                            &lt;SizeBasedTriggeringPolicy size=&quot;25 MB&quot; /&gt;
+                            &lt;TimeBasedTriggeringPolicy interval=&quot;1&quot;/&gt;
+                        &lt;/policies&gt;
+                    &lt;/RollingFile&gt;
+                &lt;/Route&gt;
+                &lt;Route ref=&quot;STDOUT&quot; key=&quot;Audit&quot;/&gt;
+            &lt;/Routes&gt;
+        &lt;/Routing&gt;
+    &lt;/Appenders&gt;
+
+    &lt;Loggers&gt;
+        &lt;Root level=&quot;info&quot;&gt;
+            &lt;AppenderRef ref=&quot;Routing&quot;/&gt;
+            &lt;AppenderRef ref=&quot;STDOUT&quot;/&gt;
+        &lt;/Root&gt;
+    &lt;/Loggers&gt;
+&lt;/Configuration&gt;
+</code></pre>
+<h2 id="6、springboot-logback"><a href="#6、springboot-logback" class="headerlink" title="6、springboot-logback"></a>6、springboot-logback</h2><pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;include resource=&quot;org/springframework/boot/logging/logback/defaults.xml&quot;/&gt;
+    &lt;property name=&quot;LOG_PATH&quot; value=&quot;$&#123;BASE_DIR&#125;/logs&quot;/&gt;
+    &lt;property name=&quot;LOG_FILE&quot; value=&quot;$&#123;LOG_PATH&#125;/project-name.log&quot;/&gt;
+    &lt;property name=&quot;LOG_PATTERN&quot; value=&quot;%d&#123;yyyy-MM-dd HH:mm:ss&#125; [%-5p] [%t] [%l] - %m%n&quot;/&gt;
+    &lt;appender name=&quot;FILE&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;$&#123;LOG_PATTERN&#125;&lt;/pattern&gt;
+        &lt;/encoder&gt;
+        &lt;file&gt;$&#123;LOG_FILE&#125;&lt;/file&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy&quot;&gt;
+            &lt;fileNamePattern&gt;$&#123;LOG_FILE&#125;.%d&#123;yyyy-MM-dd&#125;.%i&lt;/fileNamePattern&gt;
+            &lt;maxFileSize&gt;20MB&lt;/maxFileSize&gt;
+            &lt;maxHistory&gt;30&lt;/maxHistory&gt;
+            &lt;totalSizeCap&gt;1GB&lt;/totalSizeCap&gt;
+        &lt;/rollingPolicy&gt;
+    &lt;/appender&gt;
+    &lt;appender name=&quot;CONSOLE&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;$&#123;LOG_PATTERN&#125;&lt;/pattern&gt;
+            &lt;charset&gt;utf8&lt;/charset&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+    &lt;root level=&quot;INFO&quot;&gt;
+        &lt;appender-ref ref=&quot;FILE&quot;/&gt;
+        &lt;appender-ref ref=&quot;CONSOLE&quot;/&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/jetbrains%E7%B3%BB%E5%88%97IDE%E6%8E%A8%E8%8D%90%E8%AE%BE%E7%BD%AE">
+                
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
+	</div>
+	<div id="footer">
+	<p>
+	©2019-<span id="footerYear"></span> 
+	
+	<br>
+	Theme <a href="//github.com/wujun234/hexo-theme-tree" target="_blank">Tree</a>
+	Powered by <a href="//hexo.io" target="_blank">Hexo</a>
+	</p>
+</div>
+<script type="text/javascript"> 
+	document.getElementById('footerYear').innerHTML = new Date().getFullYear() + '';
+</script>
+	<button id="totop-toggle" class="toggle"><i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+</body>
+</html>
