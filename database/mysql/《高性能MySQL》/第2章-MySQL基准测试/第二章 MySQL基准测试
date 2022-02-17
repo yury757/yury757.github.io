@@ -900,16 +900,16 @@ mysql&gt; SELECT BENCHMARK(1000000, SHA1(&#39;test&#39;));
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+              <a href="/computer-science/Computer-Networking/Computer-Networking">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  第一章-MySQL架构与历史
+                  
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90">
-                第三章-服务器性能剖析
+              <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+                第一章-MySQL架构与历史
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
