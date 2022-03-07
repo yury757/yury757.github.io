@@ -961,7 +961,7 @@ spring:
   datasource:
     # database
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/flinkcdc?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true&amp;serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/flinkcdc?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=true&amp;serverTimezone=GMT%2B8&amp;rewriteBatchedStatements=true
     username: root
     password: root
     type: com.alibaba.druid.pool.DruidDataSource
