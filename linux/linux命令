@@ -757,6 +757,15 @@ var _hmt = _hmt || [];
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/linux/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%9A%84%E7%BB%8F%E5%8E%86">
+										记一次服务器被挖矿的经历
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -1188,6 +1197,100 @@ w # 保存并退出
 <li><code>mount /dev/sda4 /disk4</code>，挂载</li>
 <li><code>df -hT</code>和<code>reboot</code>，查看磁盘情况并重启服务器</li>
 </ul>
+<h2 id="service、systemctl相关"><a href="#service、systemctl相关" class="headerlink" title="service、systemctl相关"></a>service、systemctl相关</h2><p>首先我们得搞清楚你的linux服务器的system manager是谁。一般有<code>SysVinit system manager</code>和<code>Systemd system manage</code>这两种。</p>
+<pre><code class="shell">pstree | head -n 5 # 运行这个命令，若输出`systemd`则说明是第二种，若输出`init`则说明是第一种。
+</code></pre>
+<h3 id="1、systemd系统"><a href="#1、systemd系统" class="headerlink" title="1、systemd系统"></a>1、systemd系统</h3><h4 id="（1）列举所有service"><a href="#（1）列举所有service" class="headerlink" title="（1）列举所有service"></a>（1）列举所有service</h4><pre><code class="shell">systemctl list-units --type=service # 查看所有正在运行、或者失败了的units service
+
+systemctl list-units --type=service --all # 查看所有untis service
+
+systemctl list-unit-files --type=service # 查看已安装了的所有service
+</code></pre>
+<p>list-units和list-unit-files的区别，linux中man命令对他们的解释如下：</p>
+<blockquote>
+<p>list-units：</p>
+<p>List units that systemd <strong>currently has in memory</strong>. This includes units that are either referenced directly or through a dependency, units that are pinned by applications programmatically, or units that were active in the past and have failed. By default only units which are active, have pending jobs, or have failed are shown; this can be changed with option –all. If one or more PATTERNs are specified, only units matching one of them are shown. The units that are shown are additionally filtered by –type= and –state= if those options are specified.</p>
+<p>list-unit-files：</p>
+<p>List unit files <strong>installed on the system</strong>, in combination with their enablement state (as reported by is-enabled). If one or more PATTERNs are specified, only unit files whose name matches one of them are shown (patterns matching unit file system paths are not supported).</p>
+</blockquote>
+<p>即一个是当前已经加载在内存中的，要么被直接引用或者依赖或者，被其他应用程序固定了，或者曾经启用过但是失败了。另外一个是系统中安装了的。</p>
+<p>linux系统在查找已安装了的service时，会按照以下路径加载service：</p>
+<pre><code class="shell">System Unit Search Path:
+/etc/systemd/system.control/*
+/run/systemd/system.control/*
+/run/systemd/transient/*
+/run/systemd/generator.early/*
+/etc/systemd/system/*
+/etc/systemd/systemd.attached/*
+/run/systemd/system/*
+/run/systemd/systemd.attached/*
+/run/systemd/generator/*
+...
+/lib/systemd/system/*
+/run/systemd/generator.late/*
+
+User Unit Search Path:
+~/.config/systemd/user.control/*
+$XDG_RUNTIME_DIR/systemd/user.control/*
+$XDG_RUNTIME_DIR/systemd/transient/*
+$XDG_RUNTIME_DIR/systemd/generator.early/*
+~/.config/systemd/user/*
+/etc/systemd/user/*
+$XDG_RUNTIME_DIR/systemd/user/*
+/run/systemd/user/*
+$XDG_RUNTIME_DIR/systemd/generator/*
+~/.local/share/systemd/user/*
+...
+/usr/lib/systemd/user/*
+$XDG_RUNTIME_DIR/systemd/generator.late/*
+</code></pre>
+<p>service的所有状态包括：active, inactive, activating, deactivating, failed, not-found, dead</p>
+<h4 id="（2）注册service"><a href="#（2）注册service" class="headerlink" title="（2）注册service"></a>（2）注册service</h4><p>注册service即只要在对应的加载路径下放入<code>xxx.service</code>脚本即可，然后启动这个脚本即可。这个路径一般就用<code>/etc/systemd/system/</code>或者<code>/lib/systemd/system/</code>下面，比如MySQL的service脚本就是放在后者路径下。</p>
+<pre><code class="shell">[Unit]
+Description=Grafana Server
+After=network-online.target
+
+[Service]
+Type=simple  # 服务类型，如果执行程序是linux的可运行文件，则填入simple；如果执行命令是shell脚本方式，则填入forking。
+User=yury    # 启动用户
+Group=yury   # 启用的用户组
+# Restart=on-failure # 重启策略
+# RestartSec=30      # 重启时间
+RuntimeDirectory=/disk4/grafana/grafana-8.4.5/
+# ExecStart为启动命令
+ExecStart=/disk4/grafana/grafana-8.4.5/bin/grafana-server --homepath=/disk4/grafana/grafana-8.4.5/
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>然后运行<code>systemctl enable grafana.service</code>就可以设置grafana开启服务器后自动启动。</p>
+<p>再比如zookeeper的.service脚本如下：</p>
+<pre><code class="shell">[Unit]
+Description=Zookeeper Server
+After=network-online.target
+
+[Service]
+Type=forking
+RuntimeDirectory=/disk4/zookeeper/zookeeper-3.6.3
+ExecStart=/disk4/zookeeper/zookeeper-3.6.3/bin/zkServer.sh start
+ExecStop=/disk4/zookeeper/zookeeper-3.6.3/bin/zkServer.sh stop
+ExecReload=/disk4/zookeeper/zookeeper-3.6.3/bin/zkServer.sh restart
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>但是这样的话，启动后就是以root用户运行，增加User又无法启动。所以目前暂时没找到以普通用户启动的方法。</p>
+<h3 id="2、SysVinit系统"><a href="#2、SysVinit系统" class="headerlink" title="2、SysVinit系统"></a>2、SysVinit系统</h3><h4 id="（1）列举所有service-1"><a href="#（1）列举所有service-1" class="headerlink" title="（1）列举所有service"></a>（1）列举所有service</h4><pre><code class="shell">service --status-all # 
+</code></pre>
+<p>输出内容左侧的符号意思如下：</p>
+<ul>
+<li><strong>+</strong> : means that the service is <strong>running</strong>;</li>
+<li><strong>–</strong> : means that the service is <strong>not running</strong> at all;</li>
+<li><strong>?</strong> : means that Ubuntu <strong>was not able to tell</strong> if the service is running or not.</li>
+</ul>
+<p>还一种列举所有service的方法是：</p>
+<pre><code class="shell">ls -l /etc/init.d/*
+</code></pre>
 
 </div>
 

