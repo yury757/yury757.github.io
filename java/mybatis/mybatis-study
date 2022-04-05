@@ -832,6 +832,15 @@ var _hmt = _hmt || [];
 								
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6%E7%AB%AF%E5%8F%A3%E5%8F%B7">
+										常用组件端口号
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 		</div>
 	</div>
 </div>
@@ -1316,16 +1325,16 @@ public class Teacher2 &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/bigdata/hbase/HBase-study">
+              <a href="/java/springMVC/SpringMVC-Study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  HBase-study
+                  SpringMVC-Study
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/springboot/springboot-study">
-                springboot-study
+              <a href="/java/spring/Spring-study">
+                Spring-study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
