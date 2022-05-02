@@ -291,6 +291,15 @@ var _hmt = _hmt || [];
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/computer-science/Computer-Networking/socket">
+										socket
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -1325,16 +1334,16 @@ public class Teacher2 &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/java/springMVC/SpringMVC-Study">
+              <a href="/bigdata/hbase/HBase-study">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  SpringMVC-Study
+                  HBase-study
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/java/spring/Spring-study">
-                Spring-study
+              <a href="/java/springboot/springboot-study">
+                springboot-study
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
