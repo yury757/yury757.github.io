@@ -8,6 +8,8 @@
 	<!-- title -->
 	
 	<title>
+	
+		java-文件IO常用操作对比 | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -627,7 +629,7 @@ var _hmt = _hmt || [];
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/java/java-%E6%96%87%E4%BB%B6IO%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E5%AF%B9%E6%AF%94">
 										java-文件IO常用操作对比
 									</a>
@@ -883,93 +885,406 @@ var _hmt = _hmt || [];
 
 	<!-- 引入正文 -->
 	<div id="content">
-		<div id="index">
+		<h1 id="article-title">
+
+	java-文件IO常用操作对比
+</h1>
+<div class="article-meta">
 	
-		<div class="index-li">
-			<a href="/java/java%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE">
-				<h2 class="index-title">
-					java常用配置
-				</h2>
-				<div class="index-brief">
-					1、pom&lt;properties&gt;
-    &lt;maven.compiler.source&gt;8&lt;/maven.compiler.source&gt;
-    &lt;maven.compiler.target&gt;8&lt;/maven.compiler.target&
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-12-25</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/java/">java</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/jetbrains%E7%B3%BB%E5%88%97IDE%E6%8E%A8%E8%8D%90%E8%AE%BE%E7%BD%AE">
-				<h2 class="index-title">
-					jetbrains系列IDE推荐设置
-				</h2>
-				<div class="index-brief">
-					jetbrains系列IDE推荐设置1、Editor - Files Encoding，修改为utf-8
-2、Editor - Code Style - 对应语言，设置tab size为4个空格
-3、Editor - Code Style，设置Line Separator为\n
-4、Appearan
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-12-21</span>
-                    
-                            
-                    
-                </div>
-		</div>	
-	
-		<div class="index-li">
-			<a href="/database/mysql/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95">
-				<h2 class="index-title">
-					MySQL迁移数据目录
-				</h2>
-				<div class="index-brief">
-					Linux版本：Ubuntu18.04
-MySQL版本：8.0.26
-1、配置文件首先要搞清楚MySQL的配置文件在哪里。
-MySQL :: MySQL 8.0 Reference Manual :: 4.2.2.2 Using Option Files
-大概意思是，说明了windows和Linux
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-				    <span>2021-12-11</span>
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/database/">database</a>
-										
-                                    </span>
-                                
-                            
-                    
-                </div>
-		</div>	
-	
-	
-	<div id="index-paginator">
-		
-	</div>
+	<span>Yury</span>
+	<span>2022-04-20 00:00:00</span>
+		<div id="article-categories">
+    
+		<span>Categories：</span>
+            
+    
+
+    
+		<span>Tags：</span>
+            
+    
+		</div>
+
 </div>
 
+<div id="article-content">
+	<p>文件IO中，常用的方法如下方代码中的readMethod1~8方法所示。</p>
+<p>测试了2.5M读100次、100M读3次、250M读1次三种情况，耗时（单位：毫秒）如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>2.5M读100次</th>
+<th>2.5M读100次</th>
+<th>100M读3次</th>
+<th>100M读3次</th>
+<th>250M读1次</th>
+<th>250M读1次</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>普通</td>
+<td>HDFS</td>
+<td>普通</td>
+<td>HDFS</td>
+<td>普通</td>
+<td>HDFS</td>
+</tr>
+<tr>
+<td>method1，一次性全部读取</td>
+<td>635</td>
+<td>1604</td>
+<td>976</td>
+<td>965</td>
+<td>1270</td>
+<td>482</td>
+</tr>
+<tr>
+<td>method2，ByteArrayOutputStream+byte[]</td>
+<td>616</td>
+<td>5759</td>
+<td>669</td>
+<td>5135</td>
+<td>843</td>
+<td>4375</td>
+</tr>
+<tr>
+<td>method3，InputStreamReader+char[8192]+StringWriter</td>
+<td>1236</td>
+<td>5097</td>
+<td>1454</td>
+<td>4370</td>
+<td>1167</td>
+<td>3976</td>
+</tr>
+<tr>
+<td>method4，InputStreamReader+BufferedReader(char[8192])</td>
+<td>1565</td>
+<td>4556</td>
+<td>1986</td>
+<td>4763</td>
+<td>1608</td>
+<td>3230</td>
+</tr>
+<tr>
+<td>method5，bufferedReader+stream</td>
+<td>1414</td>
+<td>4167</td>
+<td>62546</td>
+<td>140485</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>method6，bufferedReader+stream+parallel</td>
+<td>1941</td>
+<td>4526</td>
+<td>OOM</td>
+<td>OOM</td>
+<td>OOM</td>
+<td>OOM</td>
+</tr>
+<tr>
+<td>method7，Deque&lt;byte[8196]&gt;</td>
+<td>628</td>
+<td>5331</td>
+<td>761</td>
+<td>4456</td>
+<td>669</td>
+<td>3321</td>
+</tr>
+<tr>
+<td>method8，ByteBuffer(2048)+LineBuffer</td>
+<td>1910</td>
+<td>5325</td>
+<td>2310</td>
+<td>4426</td>
+<td>2300</td>
+<td>3575</td>
+</tr>
+</tbody></table>
+<p>个人思考：</p>
+<p>1、普通文件系统，使用char[]作为中间缓冲（method3~6），速度都比较慢，因为java的string底层是byte[]，先转成char[]，又转回byte[]，会消耗多余的时间。</p>
+<p>2、使用method6使用parallel并不能提升性能，因为底层InputStreamReader是加锁的，IO是不能并行的。</p>
+<p>3、HDFS不会用，使用最朴素的连接方式，肯定是那里有问题，才会导致IO速度这么慢。但是好像一次性全部读取HDFS的速度，会随着文件的增大而相对更快。</p>
+<p>4、最后method7是google guava库中的一种读取全部字符串的方法，脑洞大开，性能都还不错。</p>
+<p>5、method3、4、5、6、8都是一行一行读取的模式，适用于需要对每一行进行后续处理的情况。</p>
+<p>6、谨慎对读取全部字符串这种批作业使用流处理方式，速度很慢，parallel的甚至直接OOM。</p>
+<p>7、总结下来，如果是读取文件中全部字符串，method2 和 method7都是比较不错的方式；如果是需要一行一行处理，则可能还是method4的BufferedReader性能更好。</p>
+<pre><code class="java">package net.yury;
+
+import com.google.common.io.ByteStreams;
+import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.file.tfile.ByteArray;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+public class Test1 &#123;
+    public static FileSystem fileSystem;
+    static &#123;
+        Configuration configuration = new Configuration();
+        configuration.set(&quot;fs.defaultFS&quot;, &quot;hdfs://myubuntu1:8020&quot;);
+        try &#123;
+            fileSystem = FileSystem.get(configuration);
+        &#125; catch (IOException e) &#123;
+            e.printStackTrace();
+        &#125;
+    &#125;
+
+    public static void main(String[] args) throws Exception &#123;
+        System.out.println(&quot;测试普通文件系统：&quot;);
+        testReadMethod(new InputStreamBuilder(&quot;NORMAL&quot;, &quot;C:/Users/yury/Desktop/size100M.txt&quot;), 3);
+        System.out.println(&quot;=====================================&quot;);
+        System.out.println(&quot;测试HDFS文件系统：&quot;);
+        testReadMethod(new InputStreamBuilder(&quot;HDFS&quot;, &quot;/test1/size100M.txt&quot;), 3);
+    &#125;
+
+    public static class InputStreamBuilder &#123;
+        private String type;
+        private String fileName;
+        public InputStreamBuilder(String type, String fileName) &#123;
+            this.type = type;
+            this.fileName = fileName;
+        &#125;
+        public InputStream getInputStream () throws Exception &#123;
+            switch (type) &#123;
+                case &quot;NORMAL&quot;:
+                    return new FileInputStream(fileName);
+                case &quot;HDFS&quot;:
+                    return fileSystem.open(new Path(fileName));
+                default:
+                    throw new Exception(&quot;unkonw file system&quot;);
+            &#125;
+        &#125;
+    &#125;
+
+    public static void testReadMethod(InputStreamBuilder builder, int n) throws Exception &#123;
+        long time1 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod1(builder.getInputStream());
+        &#125;
+        long time2 = System.currentTimeMillis();
+        System.out.println(&quot;method1，耗时：&quot; + (time2 - time1) + &quot; 直接读取&quot;);
+
+        long time3 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod2(builder.getInputStream());
+        &#125;
+        long time4 = System.currentTimeMillis();
+        System.out.println(&quot;method2，耗时：&quot; + (time4 - time3) + &quot; ByteArrayOutputStream+byte[]&quot;);
+
+        long time5 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod3(builder.getInputStream());
+        &#125;
+        long time6 = System.currentTimeMillis();
+        System.out.println(&quot;method3，耗时：&quot; + (time6 - time5) + &quot; InputStreamReader+char[8192]+StringWriter&quot;);
+
+        long time7 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod4(builder.getInputStream());
+        &#125;
+        long time8 = System.currentTimeMillis();
+        System.out.println(&quot;method4，耗时：&quot; + (time8 - time7) + &quot; InputStreamReader+BufferedReader(char[8192])&quot;);
+
+        long time9 = System.currentTimeMillis();
+        for (int i = 0; i &lt; 100; i++) &#123;
+            readMethod5(builder.getInputStream());
+        &#125;
+        long time10 = System.currentTimeMillis();
+        System.out.println(&quot;method5，耗时：&quot; + (time10 - time9) + &quot; bufferedReader+stream&quot;);
+
+        long time11 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod6(builder.getInputStream());
+        &#125;
+        long time12 = System.currentTimeMillis();
+        System.out.println(&quot;method6，耗时：&quot; + (time12 - time11) + &quot; bufferedReader+stream+parallel&quot;);
+
+        long time13 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod7(builder.getInputStream());
+        &#125;
+        long time14 = System.currentTimeMillis();
+        System.out.println(&quot;method7，耗时：&quot; + (time14 - time13) + &quot; Deque&lt;byte[8196]&gt;&quot;);
+
+        long time15 = System.currentTimeMillis();
+        for (int i = 0; i &lt; n; i++) &#123;
+            readMethod8(builder.getInputStream());
+        &#125;
+        long time16 = System.currentTimeMillis();
+        System.out.println(&quot;method8，耗时：&quot; + (time16 - time15) + &quot; ByteBuffer(2048)+LineBuffer&quot;);
+    &#125;
+
+    /**
+     * 一次性全部读取
+     * 不建议使用
+     */
+    public static String readMethod1(InputStream inputStream) throws Exception &#123;
+        byte[] bytes = new byte[inputStream.available()];
+        int size = inputStream.read(bytes);
+        String s = new String(bytes, 0, size, StandardCharsets.UTF_8);
+//        System.out.println(s.length());
+        inputStream.close();
+        return s;
+    &#125;
+
+    /**
+     * 使用ByteArrayOutputStream+自定义缓冲区，缓冲区大小可以依据文件大小而定
+     * 本质：ByteArrayOutputStream在write数据时，会检测容量是否满足需求，若不满足需求则会扩容，直到InputStream读取完毕
+     * 最佳实践：可以使用new ByteArrayOutputStream(inputStream.available()); 这样可以避免扩容时产生的时间损耗；同时按照大小调整缓冲区大小。
+     */
+    public static String readMethod2(InputStream inputStream)throws Exception &#123;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(inputStream.available());
+        byte[] buffer = new byte[1024 * 1024];
+        int len = 0;
+        while ((len = inputStream.read(buffer)) &gt; 0) &#123;
+            byteArrayOutputStream.write(buffer, 0, len);
+        &#125;
+        String s = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+//        System.out.println(s.length());
+        byteArrayOutputStream.close();
+        inputStream.close();
+        return s;
+    &#125;
+
+    /**
+     * 使用StringWriter+org.apache.commons.io.IOUtils.copy
+     * 本质：该copy方法使用的InputStreamReader，每次读取char[8192]作为缓冲区，然后while循环写入StringBuffer
+     * InputStreamReader是将字节流按照编码转换为字符流，read方法是按编码来读取字符，而不是读取字节。
+     * StringWriter底层是StringBuffer，StringBuffer底层还是byte[]，若超过初始设定的长度，则进行扩容
+     * 关键代码：AbstractStringBuilder的683行append(char str[], int offset, int len)方法
+     */
+    public static String readMethod3(InputStream inputStream) throws Exception &#123;
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(inputStream, writer, StandardCharsets.UTF_8);
+        String s = writer.toString();
+//        System.out.println(s.length());
+        writer.close();
+        inputStream.close();
+        return s;
+    &#125;
+
+    /**
+     * 使用BufferedReader+while
+     * 本质：BufferedReader是建立再InputStreamReader之上，读取char[8192]作为缓冲区
+     * readLine()方法则是将缓冲区上的字符按换行符处理成一行字符串后返回，若缓冲区读完了还没有换行符则继续读取下一批char[8192]
+     * BufferedReader.readLine()适用于一行一行，并有后续操作的需求，而不是读取整个文件到字符串中
+     */
+    public static String readMethod4(InputStream inputStream) throws Exception &#123;
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        String s;
+        StringBuilder sb = new StringBuilder();
+        while ((s = bufferedReader.readLine()) != null) &#123;
+            sb.append(s).append(&quot;\n&quot;);
+        &#125;
+        s = sb.toString();
+//        System.out.println(s.length());
+        bufferedReader.close();
+        reader.close();
+        inputStream.close();
+        return s;
+    &#125;
+
+    /**
+     * 使用bufferedReader+stream
+     * 本质：lines()方法返回一个Stream，该流的数据由迭代器生成，迭代器方法还是readList()
+     */
+    public static String readMethod5(InputStream inputStream) throws Exception &#123;
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        String s = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
+//        System.out.println(s.length());
+        bufferedReader.close();
+        reader.close();
+        inputStream.close();
+        return s;
+    &#125;
+
+    /**
+     * 使用bufferedReader+stream+parallel
+     * 同上，只是使用parallel并行计算
+     */
+    public static String readMethod6(InputStream inputStream) throws Exception &#123;
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        String s = bufferedReader.lines().parallel().collect(Collectors.joining(System.lineSeparator()));
+//        System.out.println(s.length());
+        bufferedReader.close();
+        reader.close();
+        inputStream.close();
+        return s;
+    &#125;
+
+    /**
+     * 使用google的guava
+     * 本质：独树一帜，不使用缓冲区，而是使用Deque&lt;byte[8196]&gt;作为接收byte的数据区，等全部接收完毕后，再整合成一个完整的byte[]
+     * 注意guava 27.0版本的该方法还是beta方法，可能会存在潜在风险
+     */
+    public static String readMethod7(InputStream inputStream) throws Exception &#123;
+        String s = new String(ByteStreams.toByteArray(inputStream), StandardCharsets.UTF_8);
+        return s;
+    &#125;
+
+    /**
+     * 使用google的guava的CharStreams.readLines()方法
+     * 本质：以ByteBuffer(2048)为缓冲区读取字符流，并使用LineBuffer作为行缓冲，底层是StringBuilder
+     */
+    public static String readMethod8(InputStream inputStream) throws Exception &#123;
+        InputStreamReader reader = new InputStreamReader(inputStream);
+        List&lt;String&gt; stringList = CharStreams.readLines(reader);
+        StringBuilder sb = new StringBuilder();
+        for (String s : stringList) &#123;
+            sb.append(s).append(&quot;\n&quot;);
+        &#125;
+        String s = sb.toString();
+//        System.out.println(s.length());
+        reader.close();
+        inputStream.close();
+        return s;
+&#125;
+</code></pre>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/database/redis/redis%E5%91%BD%E4%BB%A4">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  redis
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/computer-science/Computer-Networking/socket">
+                Computer-Networking
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+
+<script>
+	
+	
+</script>
 	</div>
 	<div id="footer">
 	<p>
