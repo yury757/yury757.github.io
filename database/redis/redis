@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		redis命令 | 
+		redis | 
 	 
 	Yury&#39;s Blog
 	</title>
@@ -566,8 +566,8 @@ var _hmt = _hmt || [];
 									
 							<ul>
 								<li class="file active">
-									<a href="/database/redis/redis%E5%91%BD%E4%BB%A4">
-										redis命令
+									<a href="/database/redis/redis">
+										redis
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -887,7 +887,7 @@ var _hmt = _hmt || [];
 	<div id="content">
 		<h1 id="article-title">
 
-	redis命令
+	redis
 </h1>
 <div class="article-meta">
 	
@@ -1125,15 +1125,198 @@ publish &lt;channel&gt; &lt;message&gt;          # 向一个频道发布消息
 # 订阅者
 subscribe &lt;channel&gt; [&lt;channel&gt;...]   # 打开某个频道，接收后续消息
 </code></pre>
-<h2 id="六、Jedis"><a href="#六、Jedis" class="headerlink" title="六、Jedis"></a>六、Jedis</h2><p>jedis基本是完全模拟redis-cli的命令实现的java端的redis客户端。其方法和redis-cli命令基本一致。</p>
+<h2 id="六、持久化"><a href="#六、持久化" class="headerlink" title="六、持久化"></a>六、持久化</h2><h3 id="1、RDB"><a href="#1、RDB" class="headerlink" title="1、RDB"></a>1、RDB</h3><p>RDB（Redis Database），在指定时间间隔将数据集快照存储到硬盘中，类似于MySQL的dump all操作。</p>
+<pre><code class="shell">save              # 立即阻塞式执行持久化，会阻塞其他客户端的操作，不建议使用
+bgsave            # 立即在后台执行持久化，生成子进程执行持久化最后向父进程返回消息
+</code></pre>
+<p>触发后台进行持久化的redis.conf配置参数，若以下save配置被注释则不会自动持久化，只要有任意配置生效就会按规则自动持久化。</p>
+<pre><code class="shell">save 900 1       # 900秒（15分钟）内至少1个key值改变，则进行持久化
+save 300 10      # 300秒（5分钟）内至少10个key值改变，则进行持久化
+save 60 10000    # 60秒（1分钟）内至少10000个key值改变，则进行持久化
+
+stop-writes-on-bgsave-error yes    # 后台持久化发生异常时则会拒绝执行写命令，这样做是为了让用户感知到这里发生了异常
+rdbcompression yes                 # rdb文件是否进行压缩
+rdbchecksum yes                    # 从第5个版本开始，rdb文件末尾放了一个CRC64的校验码，用于校验数据文件的完整性
+dbfilename dump.rdb                # 备份的文件名，当redis启动时，会自动加载这个备份数据文件并加载到内存中。
+</code></pre>
+<p>优点：</p>
+<p>1、适合大规模的数据恢复。</p>
+<p>2、如果业务对数据完整性和一致性要求不高，RDB是很好的选择。</p>
+<p>缺点：</p>
+<p>1、数据的完整性和一致性不高，因为RDB可能在最后一次备份时宕机了。</p>
+<p>2、备份时占用内存，因为Redis 在备份时会独立创建一个子进程，将数据写入到一个临时文件（此时内存中的数据是原来的两倍哦），最后再将临时文件替换之前的备份文件。</p>
+<h3 id="2、AOF"><a href="#2、AOF" class="headerlink" title="2、AOF"></a>2、AOF</h3><p>AOF（Append Only File），记录所有服务器接收到的写操作，并在服务器重新启动时重放这些操作，以重新构建数据集，类似于MySQL的binlog日志。</p>
+<p>redis默认不开启AOF，需要手动开启。AOF相关配置如下：</p>
+<pre><code class="shell">appendonly yes                     # 设置为yes开发AOF
+appendfilename &quot;appendonly.aof&quot;    # aof日志文件名，redis启动时会自动加载该文件中的操作日志并在服务器中重放，生成数据。
+
+# appendfsync always        # 记录时机，always表示每次写操作执行后都持久化，会损耗性能
+appendfsync everysec        # everysec表示每秒进行一次持久化操作
+# appendfsync no            # no又操作系统决定什么时候进行持久化
+                            # 使用everysec或always时，redis会启动一个子进程在后台进行磁盘IO操作。
+
+no-appendfsync-on-rewrite no    # 自动重写aof文件机制。当aof文件增长一定大小的百分比时，就会调用BGREWRITEAOF重写日志文件
+auto-aof-rewrite-percentage 100 # 需要达到的增长百分比
+auto-aof-rewrite-min-size 64mb  # 增长百分比的基数
+</code></pre>
+<h3 id="3、比较和建议"><a href="#3、比较和建议" class="headerlink" title="3、比较和建议"></a>3、比较和建议</h3><p>1、RDB适合用于冷备份，即每周、每月定时执行一次全量备份这种，可以不开启；而AOF类似于MySQL的binlog，最好开启并设置持久化时机为everysec，既能保证性能又可以保证较高的数据一致性，最多丢失1秒内的数据。</p>
+<p>2、当dump.rdb文件和appendonly.aof文件同时存在时，redis启动时会加载aof文件</p>
+<h2 id="七、java编程"><a href="#七、java编程" class="headerlink" title="七、java编程"></a>七、java编程</h2><h3 id="1、jedis"><a href="#1、jedis" class="headerlink" title="1、jedis"></a>1、jedis</h3><p>jedis基本是完全模拟redis-cli的命令实现的java端的redis客户端。其方法和redis-cli命令基本一致。jedis的使用略。</p>
 <p>注意点：</p>
 <p>1、jedis客户端是线程不安全的，意味着如果有多个线程通过同一个jedis客户端访问时，会出现socket和IO流方面的异常。因为在jedis底层一个jedis对象代表一个socket和一个IO流，多个线程使用同一个jedis代表多个线程使用同一个socket和同一个IO流，肯定会出现异常。因此应该使用<code>JedisPool</code>或<code>lettuce</code>。</p>
-<h2 id="七、事务"><a href="#七、事务" class="headerlink" title="七、事务"></a>七、事务</h2><p>redis的事务是一个单独的隔离操作：事务中的所有命令都会被序列化，按顺序地执行，在执行过程中不会被其他命令打断。主要用处是将多个命令串联在一起，防止被别的命令插队修改数据导致无法实现预期的操作。</p>
+<h3 id="2、spring-data-redis"><a href="#2、spring-data-redis" class="headerlink" title="2、spring-data-redis"></a>2、spring-data-redis</h3><h4 id="（1）配置"><a href="#（1）配置" class="headerlink" title="（1）配置"></a>（1）配置</h4><pre><code class="xml">&lt;!-- springboot --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot&lt;/artifactId&gt;
+    &lt;version&gt;2.6.4&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- springboot redis --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
+    &lt;version&gt;2.6.7&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;!-- springboot集成redis pool需要这个依赖 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+    &lt;artifactId&gt;commons-pool2&lt;/artifactId&gt;
+    &lt;version&gt;2.11.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<pre><code class="properties">spring.redis.host=192.168.141.141
+spring.redis.port=6379
+spring.redis.password=root
+spring.redis.database=0
+spring.redis.timeout=1800000
+spring.redis.lettuce.pool.max-active=10
+spring.redis.lettuce.pool.max-wait=100ms
+spring.redis.lettuce.pool.max-idle=5
+spring.redis.lettuce.pool.min-idle=0
+</code></pre>
+<h4 id="（2）简单使用"><a href="#（2）简单使用" class="headerlink" title="（2）简单使用"></a>（2）简单使用</h4><p>redisTemplate对redis的几种数据类型分别封装了几种操作类型，如下：</p>
+<table>
+<thead>
+<tr>
+<th>redisTemplate方法</th>
+<th>redis类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>opsForValue</td>
+<td>String</td>
+</tr>
+<tr>
+<td>opsForHash</td>
+<td>Hash</td>
+</tr>
+<tr>
+<td>opsForCluster</td>
+<td>对集群的操作</td>
+</tr>
+<tr>
+<td>opsForList</td>
+<td>List</td>
+</tr>
+<tr>
+<td>opsForSet</td>
+<td>Set</td>
+</tr>
+<tr>
+<td>opsForGeo</td>
+<td>Geo地理位置数据类型</td>
+</tr>
+<tr>
+<td>opsForHyperLogLog</td>
+<td>HyperLogLog</td>
+</tr>
+<tr>
+<td>opsForStream</td>
+<td>对流进行操作</td>
+</tr>
+<tr>
+<td>opsForZSet</td>
+<td>ZSet</td>
+</tr>
+</tbody></table>
+<pre><code class="java">@SpringBootApplication
+public class Demo4SpringBoot implements CommandLineRunner &#123;
+
+    @Qualifier(&quot;redisTemplate&quot;)
+    @Autowired
+    private RedisTemplate template;
+
+    public static void main(String[] args) &#123;
+        SpringApplication.run(Demo4SpringBoot.class, args);
+    &#125;
+
+    @Override
+    public void run(String[] args) &#123;
+        template.opsForValue().set(&quot;k1&quot;, &quot;v1&quot;);
+        String v1 = (String)template.opsForValue().get(&quot;k1&quot;);
+        System.out.println(v1);
+    &#125;
+&#125;
+</code></pre>
+<h4 id="（3）序列化"><a href="#（3）序列化" class="headerlink" title="（3）序列化"></a>（3）序列化</h4><p>redisTemplate需要四个序列化器：</p>
+<ul>
+<li>keySerializer</li>
+<li>valueSerializer</li>
+<li>hashKeySerializer</li>
+<li>hashValueSerializer</li>
+</ul>
+<p>若我们没指定序列化方式时，redisTemplate的四个序列化器都会使用默认的<code>JdkSerializationRedisSerializer</code>来进行序列化。</p>
+<p><code>JdkSerializationRedisSerializer</code>的作用是将java对象序列化为二进制字节，基本无法在业务中使用，因此建议使用<code>StringRedisSerializer</code>，将所有key和value都手动序列化成string，然后由<code>StringRedisTemplate</code>写入redis。读取时，从redis读取到的所有value都是string，然后手动反序列化成自己想要的类型。</p>
+<pre><code class="java">@SpringBootApplication
+class Demo4SpringBoot2 implements CommandLineRunner &#123;
+
+    @Resource(name=&quot;stringRedisTemplate&quot;)
+    private RedisTemplate template;
+
+    public static void main(String[] args) &#123;
+        SpringApplication.run(Demo4SpringBoot.class, args);
+    &#125;
+
+    @Override
+    public void run(String[] args) throws JsonProcessingException &#123;
+        ObjectMapper mapper = new ObjectMapper();
+
+        int v = 12;
+        template.opsForValue().set(&quot;k1&quot;, String.valueOf(v));
+        String v1 = (String)template.opsForValue().get(&quot;k1&quot;);
+        System.out.println(v1);
+
+        template.opsForValue().set(&quot;k2&quot;, &quot;v2&quot;);
+        String v2 = (String)template.opsForValue().get(&quot;k2&quot;);
+        System.out.println(v2);
+
+        User user = new User(&quot;小明&quot;, 20L);
+        template.opsForValue().set(&quot;k3&quot;, mapper.writeValueAsString(user));
+        String v3 = (String)template.opsForValue().get(&quot;k3&quot;);
+        User user2 = mapper.readValue(v3, User.class);
+        System.out.println(user2);
+
+        template.opsForHash().put(&quot;k4&quot;, &quot;f1&quot;, &quot;v1&quot;);
+        template.opsForHash().put(&quot;k4&quot;, &quot;f2&quot;, &quot;v2&quot;);
+        template.opsForHash().put(&quot;k4&quot;, &quot;f3&quot;, &quot;v3&quot;);
+        Map&lt;Object, Object&gt; k4 = template.opsForHash().&lt;String, String&gt;entries(&quot;k4&quot;);
+        System.out.println(k4);
+    &#125;
+&#125;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+class User &#123;
+    private String name;
+    private long age;
+&#125;
+</code></pre>
+<h2 id="八、并发"><a href="#八、并发" class="headerlink" title="八、并发"></a>八、并发</h2><h3 id="1、事务介绍"><a href="#1、事务介绍" class="headerlink" title="1、事务介绍"></a>1、事务介绍</h3><p>redis的事务是一个单独的隔离操作：事务中的所有命令都会被序列化，按顺序地执行，在执行过程中不会被其他命令打断。主要用处是将多个命令串联在一起，防止被别的命令插队修改数据导致无法实现预期的操作。</p>
 <p>类似于将多个命令按顺序打包成一个命令。</p>
 <pre><code class="shell"># redis-cli命令如下
-multi      # 开启事务，开启后该客户端发送给服务器的命令会按顺序被打包起来，并不直接执行
-exec       # 执行事务，将打包的命令依次执行，执行期间其他任何命令都会被阻塞
-discard    # 抛弃事务，主动抛弃所有打包的命令
+multi      # 开启事务，相当于begin，开启后该客户端发送给服务器的命令会按顺序被打包起来，并不直接执行
+exec       # 执行事务，先当与commit，将打包的命令依次执行，执行期间其他任何命令都会被阻塞
+discard    # 抛弃事务，相当于rollback，主动抛弃所有打包的命令
 </code></pre>
 <pre><code class="java">// java代码如下
     public static void test1() &#123;
@@ -1159,7 +1342,260 @@ discard    # 抛弃事务，主动抛弃所有打包的命令
 </code></pre>
 <p>出现异常时的几种情况：</p>
 <p>1、multi后打包命令时出现异常（相当于编译时异常）：multi会自动结束，相当于手动调用了discard命令</p>
-<p>2、exec执行中某个命令异常（相当于运行时异常）：出现异常的命令返回对应的异常值，不影响其他命令的执行。这一点和关系型数据库的事务差别很大，如在postgres中，在默认事务隔离级别下，事务在执行过程中若出现异常，后续语句都会被忽略，整个事务会自动回滚。</p>
+<p>2、exec执行中某个命令异常（相当于运行时异常）：<strong>出现异常的命令返回对应的异常值，不影响其他命令的执行</strong>。这一点和关系型数据库的事务差别很大，如在postgres中，在默认事务隔离级别下，事务在执行过程中若出现异常，后续语句都会被忽略，整个事务会自动回滚。</p>
+<p>和关系型数据库的差异：</p>
+<p>1、单独的隔离操作，所有命令依次执行，中间不会被别人打断。而关系型数据库的事务可以穿插执行，只是不同sql的锁机制不一样。</p>
+<p>2、没有隔离级别的概念，redis事务执行exec之前不会实际执行，只有exec后才会真正执行。</p>
+<p>3、不保证原子性，若一条命令运行失败，不影响其他被打包的命令。而关系型是数据库的事务是保证原子性的，要么全部成功，要么全部失败。</p>
+<h3 id="2、并发冲突"><a href="#2、并发冲突" class="headerlink" title="2、并发冲突"></a>2、并发冲突</h3><p>redis中有一个key为10000元，一共有10000个消费线程，每个线程判断金额是否大于等于10元，若满足则消费10元，否则不消费。</p>
+<p>如下，预期最后redis的key应该为0，但是若没有任何对redis进行加锁的机制，则这个程序运行的结果大概率是小于0的（也称“<strong>超卖问题</strong>”）。</p>
+<p>解决方案：乐观锁或lua脚本</p>
+<pre><code class="java">    public static void test2 () &#123;
+        class MyConsumer implements Runnable&#123;
+            @Override
+            public void run() &#123;
+                Jedis jedis = getJedis();
+                String a = jedis.get(&quot;a&quot;);
+                Integer v = Integer.valueOf(a);
+                if (v &gt;= 10) &#123;
+                    jedis.decrBy(&quot;a&quot;, 10L);
+                &#125;
+                jedis.close();
+            &#125;
+        &#125;
+        for (int i = 0; i &lt; 10000; i++) &#123;
+            new Thread(new MyConsumer()).start();
+        &#125;
+    &#125;
+</code></pre>
+<h3 id="3、连接超时"><a href="#3、连接超时" class="headerlink" title="3、连接超时"></a>3、连接超时</h3><p>在高并发情况下，连接redis的客户端很多，但是redis有一个max_client，超过该数量时新客户端会进入等待状态，若等待超过一定时间就会超时。</p>
+<p>解决方案：使用连接池。</p>
+<h3 id="4、乐观锁和悲观锁"><a href="#4、乐观锁和悲观锁" class="headerlink" title="4、乐观锁和悲观锁"></a>4、乐观锁和悲观锁</h3><p>乐观锁是指：读加共享锁，对写进行CAS写。</p>
+<p>悲观锁是指：读写都加排他锁，每次对这个key进行操作的只可能有一个客户端。</p>
+<p>redis无法实现悲观锁，只能实现乐观锁，乐观锁是通过watch + multi组合实现的。</p>
+<p><strong>乐观锁的实现</strong></p>
+<p>watch命令：可以监控某些key，当事务在这些key上进行写操作时，若该key被其他命令修改，则该事务会被打断，事务执行exec时返回null或异常。</p>
+<p>unwatch命令：取消对某些key的监控。</p>
+<p>原理：watch命令会获取key的版本号，事务中对key进行的操作会对比watch时的版本号和现在的版本号，若不一样则事务会被打断。</p>
+<pre><code class="shell">watch a
+multi
+decrby a 10
+exec
+</code></pre>
+<h3 id="5、秒杀案例实现"><a href="#5、秒杀案例实现" class="headerlink" title="5、秒杀案例实现"></a>5、秒杀案例实现</h3><h4 id="（1）通过乐观锁实现秒杀"><a href="#（1）通过乐观锁实现秒杀" class="headerlink" title="（1）通过乐观锁实现秒杀"></a>（1）通过乐观锁实现秒杀</h4><p>案例介绍：模拟2000个用户抢购1000个商品。java代码如下。</p>
+<pre><code class="java">package net.yury;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Transaction;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+/**
+ * 商品秒杀案例
+ */
+public class Demo6SecKill &#123;
+    public final static String redisHost = &quot;192.168.141.141&quot;;
+    public final static int redisPort = 6379;
+    public final static String passWord = &quot;root&quot;;
+    private final static JedisPool pool;
+    static&#123;
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(200);                      // 最大连接数量
+        config.setBlockWhenExhausted(true);           // 当连接池没有连接可用时，是否等待
+        config.setMaxWait(Duration.ofSeconds(10));    // 从连接池中获取连接时等待时间
+        config.setMaxIdle(32);                        // 连接池中的连接最大空闲数量
+        config.setTestOnBorrow(true);                 // 从连接池中获取连接时测试连接是否有效
+        pool = new JedisPool(new JedisPoolConfig(), redisHost, redisPort, 60000, passWord);
+    &#125;
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException &#123;
+        long time1 = System.currentTimeMillis();
+        doSecKill();
+        System.out.println((System.currentTimeMillis() - time1) + &quot;ms&quot;);
+    &#125;
+
+    public static void doSecKill() &#123;
+        // 模拟2000个人来进行秒杀
+        List&lt;Thread&gt; list = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; 2000; i++) &#123;
+            list.add(new Thread(new SecKillThread(&quot;user&quot; + i)));
+        &#125;
+        for (Thread thread : list) &#123;
+            thread.start();
+        &#125;
+    &#125;
+
+    private static class SecKillThread implements Runnable&#123;
+        public SecKillThread(String userID) &#123;
+            this.userID = userID;
+        &#125;
+        private final String userID;    // 用户id
+
+        // 执行秒杀的动作
+        @Override
+        public void run() &#123;
+            final Jedis jedis = pool.getResource();
+
+            // 1、监控库存
+            jedis.watch(&quot;a&quot;);
+
+            // 2、判断库存是否为null或小于等于0
+            String total = jedis.get(&quot;a&quot;);
+            if (total == null || Integer.parseInt(total) &lt;= 0) &#123;
+                pool.returnResource(jedis);
+                System.out.println(userID + &quot; 秒杀已结束&quot;);
+                return;
+            &#125;
+
+            // 3、判断用户是否重复秒杀，每个用户只能秒杀一次
+            if (jedis.sismember(&quot;exists&quot;, userID)) &#123;
+                pool.returnResource(jedis);
+                System.out.println(userID + &quot; 已经秒杀过一次了，不能秒杀第二次了&quot;);
+                return;
+            &#125;
+
+            // 4、秒杀过程
+            Transaction multi = jedis.multi();
+            multi.decrBy(&quot;a&quot;, 1);
+            multi.sadd(&quot;exists&quot;, userID);
+            List&lt;Object&gt; results = multi.exec();
+            if (results == null || results.size() == 0) &#123;
+                pool.returnResource(jedis);
+                System.out.println(userID + &quot; 秒杀失败&quot;);
+                return;
+            &#125;
+            System.out.println(userID + &quot; 秒杀成功&quot;);
+            pool.returnResource(jedis);
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>存在的问题：<strong>库存遗留问题</strong>。即一些用户第一次因为并发问题抢购失败，但是方法直接return了，当因为并发问题抢购失败的用户 &gt; 总商品数量 - 抢购成功的用户时，可能会存在部分商品没有卖掉的情况。</p>
+<p>一种解决方案是，在外层套一个while循环，当没有抢购成功时，进行重试，代码如下。这种性能很差，不建议使用。</p>
+<p>另一种解决方案就是使用lua脚本。</p>
+<pre><code class="java">    private static class SecKillThread2 implements Runnable&#123;
+        public SecKillThread2(String userID) &#123;
+            this.userID = userID;
+        &#125;
+        private final String userID;    // 用户id
+
+        // 执行秒杀的动作
+        @Override
+        public void run() &#123;
+            int n = 0;
+            final Jedis jedis = pool.getResource();
+
+            while (true)&#123;
+                // 1、监控库存
+                jedis.watch(&quot;a&quot;);
+
+                // 2、判断库存是否为null或小于等于0
+                String total = jedis.get(&quot;a&quot;);
+                if (total == null || Integer.parseInt(total) &lt;= 0) &#123;
+                    System.out.println(userID + &quot; 秒杀已结束&quot;);
+                    return;
+                &#125;
+
+                // 3、判断用户是否重复秒杀，每个用户只能秒杀一次
+                if (jedis.sismember(&quot;exists&quot;, userID)) &#123;
+                    System.out.println(userID + &quot; 已经秒杀过一次了，不能秒杀第二次了&quot;);
+                    return;
+                &#125;
+
+                // 4、秒杀过程
+                Transaction multi = jedis.multi();
+                multi.decrBy(&quot;a&quot;, 1);
+                multi.sadd(&quot;exists&quot;, userID);
+                List&lt;Object&gt; results = multi.exec();
+                if (results == null || results.size() == 0) &#123;
+                    System.out.println(userID + &quot; 秒杀失败，进行第&quot; + ++n + &quot;次重试&quot;);
+                    continue;
+                &#125;
+                System.out.println(userID + &quot; 秒杀成功&quot;);
+                pool.returnResource(jedis);
+                return;
+            &#125;
+        &#125;
+    &#125;
+</code></pre>
+<h4 id="（2）通过lua脚本实现秒杀"><a href="#（2）通过lua脚本实现秒杀" class="headerlink" title="（2）通过lua脚本实现秒杀"></a>（2）通过lua脚本实现秒杀</h4><p>lua脚本其实就是另外一种事务的实现，lua脚本内的命令都是一组打包好的命令。</p>
+<p>通过lua脚本实现秒杀代码如下。</p>
+<pre><code class="java">    private static class SecKillThread3 implements Runnable&#123;
+        public final static String secKillScripts = &quot;local function secKill(userID)\n&quot; +
+                &quot;    local exists = redis.call(\&quot;sismember\&quot;, \&quot;exists\&quot;, userID);\n&quot; +
+                &quot;    if tonumber(exists) == 1 then return 3 end;\n&quot; +
+                &quot;    local current = redis.call(\&quot;get\&quot;, \&quot;a\&quot;);\n&quot; +
+                &quot;    if current == nil then return 2 end;\n&quot; +
+                &quot;    if tonumber(current) &lt;= 0 then return 0 end;\n&quot; +
+                &quot;    redis.call(\&quot;decr\&quot;, \&quot;a\&quot;);\n&quot; +
+                &quot;    redis.call(\&quot;sadd\&quot;, \&quot;exists\&quot;, userID);\n&quot; +
+                &quot;    return 1;\n&quot; +
+                &quot;end\n&quot; +
+                &quot;return secKill(KEYS[1]);&quot;;
+        public SecKillThread3(String userID) &#123;
+            this.userID = userID;
+        &#125;
+        private final String userID;    // 用户id
+
+        @Override
+        public void run() &#123;
+            final Jedis jedis = pool.getResource();
+
+            String sha1 = jedis.scriptLoad(secKillScripts);
+            Object r = jedis.evalsha(sha1, 1, userID);
+            String result = String.valueOf(r);
+            if (&quot;0&quot;.equals(result)) &#123;
+                System.out.println(userID + &quot; 秒杀失败&quot;);
+            &#125;else if (&quot;1&quot;.equals(result)) &#123;
+                System.out.println(userID + &quot; 秒杀成功&quot;);
+            &#125;else if (&quot;2&quot;.equals(result)) &#123;
+                System.out.println(userID + &quot; 秒杀已结束&quot;);
+            &#125;else if (&quot;3&quot;.equals(result))&#123;
+                System.out.println(userID + &quot; 已经秒杀过一次了，不能秒杀第二次&quot;);
+            &#125;else &#123;
+                System.out.println(userID + &quot; 秒杀返回值异常&quot;);
+            &#125;
+            pool.returnResource(jedis);
+        &#125;
+    &#125;
+</code></pre>
+<h2 id="九、缓存相关问题"><a href="#九、缓存相关问题" class="headerlink" title="九、缓存相关问题"></a>九、缓存相关问题</h2><h3 id="1、缓存穿透"><a href="#1、缓存穿透" class="headerlink" title="1、缓存穿透"></a>1、缓存穿透</h3><p>用户恶意访问一个不存在的key，redis中不存在，数据库也不存在，因此每次查询都会将请求穿透到数据库层，对数据库造成压力。</p>
+<p>解决方案：</p>
+<ul>
+<li>为不存在的key也在redis中缓存一个null value，并设置TTL，表示不存在该key，防止请求穿透到数据库</li>
+<li>在访问数据之前加一层布隆过滤器。我们将数据库key按照一定的hash算法计算对应的byte放入布隆过滤器中，这样布隆过滤器可以快速判断该key是否存在，当存在则放行，当不存在则拒绝请求。</li>
+</ul>
+<p>布隆过滤器是基于概率的判断，当它认为这个key存在时，其实是大概率存在，而不是一定存在，当它认为这个key不存在时，则一定不存在。</p>
+<h3 id="2、缓存雪崩"><a href="#2、缓存雪崩" class="headerlink" title="2、缓存雪崩"></a>2、缓存雪崩</h3><p>redis服务在同一段时间大量key同时失效，或者redis宕机，导致所有请求都打到数据库层，对数据库造成压力。</p>
+<p>解决方案：</p>
+<ul>
+<li>对不同的key的失效时间加一个随机值，让这些key在一段时间内慢慢失效，而不是同时失效。</li>
+<li>使用redis集群提高服务的可用性</li>
+<li>给缓存业务添加降级限流策略</li>
+<li>给业务添加多层缓存</li>
+</ul>
+<h3 id="3、缓存击穿"><a href="#3、缓存击穿" class="headerlink" title="3、缓存击穿"></a>3、缓存击穿</h3><p>客户端在访问一个热点key时，该key突然失效，导致这些处理线程都去数据库获取数据重建缓存，从而对数据库造成压力。</p>
+<p>解决方案：</p>
+<ul>
+<li>互斥锁，即对重建缓存这个过程进行加锁，只能有一个线程来执行这个操作，其他线程必须等待那个线程完成。</li>
+</ul>
+<p>互斥锁工作流程：</p>
+<ul>
+<li>0ms，线程1，查询redis未命中，获取互斥锁成功</li>
+<li>0ms，线程2，查询redis未命中，获取互斥锁失败，等待50ms</li>
+<li>0ms，线程1，查询数据库，重建缓存。</li>
+<li>50ms，线程2，等待结束，重试查询redis，仍然未命中，获取互斥锁依然失败，等待50ms</li>
+<li>100ms，线程2，等待结束，重试查询redis，仍然未命中，获取互斥锁依然失败，等待50ms</li>
+<li>150ms，线程2，等待结束，重试查询redis，仍然未命中，获取互斥锁依然失败，等待50ms</li>
+<li>200ms，线程1，重建redis缓存成功，返回数据。耗时200ms</li>
+<li>200ms，线程2，等待结束，重试查询redis，命中缓存，返回数据。</li>
+</ul>
+<p>互斥锁实现：使用setnx实现。</p>
 
 </div>
 

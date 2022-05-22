@@ -564,8 +564,8 @@ var _hmt = _hmt || [];
 									
 							<ul>
 								<li class="file">
-									<a href="/database/redis/redis%E5%91%BD%E4%BB%A4">
-										redis命令
+									<a href="/database/redis/redis">
+										redis
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -886,14 +886,16 @@ var _hmt = _hmt || [];
 		<div id="index">
 	
 		<div class="index-li">
-			<a href="/java/springboot/springboot-study">
+			<a href="/java/springMVC/SpringMVC-Study">
 				<h2 class="index-title">
-					springboot-study
+					SpringMVC-Study
 				</h2>
 				<div class="index-brief">
-					约定大于配置！！
-版本：SpringBoot-2.4.3
-一、springboot使用简介（1）pom.xmlpom.xml的依赖都在父工程中spring-boot-dependencies中，我们在引入一些springboot依赖时，可以不需要指定版本，因为父工程中指定了建议的版本。也可以写版本号
+					一、回顾Servlet// 转发，forward
+request.getRequestDispatcher(&quot;/WEB-INF/jsp/hello.jsp&quot;).forward(request, response);
+
+// 重定向，redirect
+response.sendRe
 					...
 				</div>
 			</a>
@@ -1028,21 +1030,18 @@ C++太
 		</div>	
 	
 		<div class="index-li">
-			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
+			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95">
 				<h2 class="index-title">
-					第一章-MySQL架构与历史
+					第二章 MySQL基准测试
 				</h2>
 				<div class="index-brief">
-					1.1 MySQL逻辑架构
-第一层：连接、线程处理、授权认证、安全等
+					基准测试：是针对系统设计的一种压力测试。
+2.1 为什么需要基准测试基准测试可以观察系统中在不同压力下的行为。有很多用处的可测试点，详见书中。
+2.2 基准测试的策略略
+2.2.1 测试何种指标
+吞吐量：是指单位时间内事务的处理数。
 
-第二层：缓存、解析器、优化器等。第一层 + 第二层 = 服务器层？？？
-
-第三层：存储引擎，负责MySQL数据的存储和提取。
-
-
-
-1.1.1 连接管理与安全性每个客户端连接都会在服务器中有一个线程，这个连接的查询只会在这个单独
+响应时间或延迟：用于测试任务所需的整体时间。根据不同的时间单位可
 					...
 				</div>
 			</a>
@@ -1063,18 +1062,21 @@ C++太
 		</div>	
 	
 		<div class="index-li">
-			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95">
+			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2">
 				<h2 class="index-title">
-					第二章 MySQL基准测试
+					第一章-MySQL架构与历史
 				</h2>
 				<div class="index-brief">
-					基准测试：是针对系统设计的一种压力测试。
-2.1 为什么需要基准测试基准测试可以观察系统中在不同压力下的行为。有很多用处的可测试点，详见书中。
-2.2 基准测试的策略略
-2.2.1 测试何种指标
-吞吐量：是指单位时间内事务的处理数。
+					1.1 MySQL逻辑架构
+第一层：连接、线程处理、授权认证、安全等
 
-响应时间或延迟：用于测试任务所需的整体时间。根据不同的时间单位可
+第二层：缓存、解析器、优化器等。第一层 + 第二层 = 服务器层？？？
+
+第三层：存储引擎，负责MySQL数据的存储和提取。
+
+
+
+1.1.1 连接管理与安全性每个客户端连接都会在服务器中有一个线程，这个连接的查询只会在这个单独
 					...
 				</div>
 			</a>
@@ -1126,13 +1128,13 @@ C++太
 		</div>	
 	
 		<div class="index-li">
-			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
+			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96">
 				<h2 class="index-title">
-					第五章-创建高性能的索引
+					第四章-Schema与数据类型优化
 				</h2>
 				<div class="index-brief">
-					〇、索引的本质索引本质就是一个排好序的数据结构，实现这种快速排序、插入、查找等操作的数据结构有：平衡二叉树、红黑树、多路查找树（其中平衡的多路查找树就是B-Tree）等。
-一、索引的类型1、B-Tree索引B-Tree，即平衡的多路查找树。具体解释参考其他文章。B-Tree适用于全键值、键值范围、键
+					4.1 选择优化的数据类型1、应该尽量使用可以正确存储存储数据的最小数据类型。如能使用tinyint就不要使用int，能使用varchar(20)，就不要使用varchar(100)。
+2、应该尽量使用尽可能简单的数据类型，如日期类型尽量使用date、time、datetime，而不是使用varch
 					...
 				</div>
 			</a>
@@ -1153,13 +1155,13 @@ C++太
 		</div>	
 	
 		<div class="index-li">
-			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96">
+			<a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95">
 				<h2 class="index-title">
-					第四章-Schema与数据类型优化
+					第五章-创建高性能的索引
 				</h2>
 				<div class="index-brief">
-					4.1 选择优化的数据类型1、应该尽量使用可以正确存储存储数据的最小数据类型。如能使用tinyint就不要使用int，能使用varchar(20)，就不要使用varchar(100)。
-2、应该尽量使用尽可能简单的数据类型，如日期类型尽量使用date、time、datetime，而不是使用varch
+					〇、索引的本质索引本质就是一个排好序的数据结构，实现这种快速排序、插入、查找等操作的数据结构有：平衡二叉树、红黑树、多路查找树（其中平衡的多路查找树就是B-Tree）等。
+一、索引的类型1、B-Tree索引B-Tree，即平衡的多路查找树。具体解释参考其他文章。B-Tree适用于全键值、键值范围、键
 					...
 				</div>
 			</a>

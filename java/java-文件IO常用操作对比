@@ -566,8 +566,8 @@ var _hmt = _hmt || [];
 									
 							<ul>
 								<li class="file">
-									<a href="/database/redis/redis%E5%91%BD%E4%BB%A4">
-										redis命令
+									<a href="/database/redis/redis">
+										redis
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -1262,7 +1262,7 @@ public class Test1 &#123;
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/database/redis/redis%E5%91%BD%E4%BB%A4">
+              <a href="/database/redis/redis">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
                   redis
               </a>
