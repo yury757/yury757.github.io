@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="安装1、刚安装好后的root用户的密码是随机的，需要修改密码： 1234sudo passwd[sudo] paasword for yury: # 然后输入当前用户yury的密码New password: # 输入root用户的新密码Retype new password: # 重新输入  2、修改主机名（如需要的话） 1sudo vi &#x2F;etc&#x2F;hostname  3、用户相关 1234567">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux命令">
+<meta property="og:url" content="https://yury757.github.io/linux/linux%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="安装1、刚安装好后的root用户的密码是随机的，需要修改密码： 1234sudo passwd[sudo] paasword for yury: # 然后输入当前用户yury的密码New password: # 输入root用户的新密码Retype new password: # 重新输入  2、修改主机名（如需要的话） 1sudo vi &#x2F;etc&#x2F;hostname  3、用户相关 1234567">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yury757.github.io/images/%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84.png">
+<meta property="article:published_time" content="2021-10-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-04-04T18:48:32.464Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yury757.github.io/images/%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84.png">
+  
+  
+  
+  <title>Linux命令 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Linux命令"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-11-01 00:00" pubdate>
+          November 1, 2021 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          11k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          93 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux命令</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1、刚安装好后的root用户的密码是随机的，需要修改密码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo passwd<br>[sudo] paasword for yury: # 然后输入当前用户yury的密码<br>New password: # 输入root用户的新密码<br>Retype new password: # 重新输入<br></code></pre></td></tr></table></figure>
+
+<p>2、修改主机名（如需要的话）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo vi /etc/hostname<br></code></pre></td></tr></table></figure>
+
+<p>3、用户相关</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 切换到root用户</span><br>su<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 新增一个名为XXX的用户</span><br>useradd XXX<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 为XXX用户设置密码</span><br>passwd XXX<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 退出root用户</span><br>exit<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 删除用户xxx</span><br>sudo deluser xxx<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 删除用户xxx及其home里面的文件夹</span><br>sudo deluser --remove-home xxx<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 修改用户名的流程很复杂，且容易使系统奔溃，因此在不是精通linux的情况下最好别修改用户名</span><br><br></code></pre></td></tr></table></figure>
+
+<p>4、关机重启</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 重启</span><br>reboot<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 关机</span><br>poweroff<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 关闭系统，不关闭电源</span><br>halt<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 或者使用</span><br>shutdown --[reboot | halt | poweroff] [now | 20:35 | 10]<br><span class="hljs-meta">#</span><span class="bash"> now是指立即操作，20:35是指在这个时间点操作，10是指10分钟后操作</span><br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 取消定时关机</span><br>shutdown -c<br></code></pre></td></tr></table></figure>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>1、sudo表示用管理员模式执行</p>
+<p>2、命令后面若带有参数，一般短参数前加“-”，长参数前加“–”，但有些例外，看语言风格。</p>
+<p>3、apt软件包默认下载路径为：/var/cache/apt/archives。apt软件包默认安装路径为：/usr/share</p>
+<p>4、常用命令：</p>
+<ul>
+<li>clear</li>
+<li>sudo：允许本用户以其他用户（默认为超级管理员用户）的安全权限来运行某个命令或程序，即superuser do</li>
+</ul>
+<h2 id="shell语法"><a href="#shell语法" class="headerlink" title="shell语法"></a>shell语法</h2><p>1、读取文本文件，循环每一行数据，将数据作为参数执行命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 方法1</span><br>for a in `cat hello.txt`; do echo &quot;$&#123;a&#125; 123&quot;; done;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 方法2</span><br>while read a; do echo &quot;$&#123;a&#125; 123&quot;; done &lt; hello.txt;<br><br>while read user_id; do echo &quot;$&#123;user_id&#125;&quot;; clickhouse-client -m -h 192.168.141.141 --port 9003 --query &quot;insert into test_score_mv select user_id, subject, argMax(score, create_time) as score, argMax(isvalid, create_time) as isvalid, max(create_time) as ctime from test_score where user_id = $&#123;user_id&#125; and create_time &lt;= &#x27;2021-12-11 15:01:00&#x27; group by user_id, subject&quot;; done &lt; test_score.csv;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="系统相关信息"><a href="#系统相关信息" class="headerlink" title="系统相关信息"></a>系统相关信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> cpu和内存使用情况</span><br>top<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看内存</span><br>free<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看系统时区</span><br>timedatectl status<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 设置系统时区</span><br>timedatectl set-timezone &quot;Asia/Shanghai&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看linux内核版本</span><br>cat /proc/version<br>uname -a<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看linux系统版本</span><br>lsb_release -a<br>cat /etc/issue<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="apt相关"><a href="#apt相关" class="headerlink" title="apt相关"></a>apt相关</h2><p>apt search XXX：搜索软件包</p>
+<p>apt show XXX：显示软件包详情</p>
+<p>apt install XXX：安装某个软件</p>
+<p>apt depends XXX：查询该包使用的依赖包</p>
+<p>apt rdepends XXX：查看该包被哪些包依赖</p>
+<p>apt remove XXX：卸载某个软件（保留配置文件）</p>
+<p>apt –purge remove XXX：卸载某个软件（删除配置文件）</p>
+<p>apt autoremove XXX：自动清理不再使用的依赖和库文件</p>
+<p>apt list –upgradeable：显示可升级的软件包</p>
+<p>apt list –installed：显示已安装的软件包</p>
+<p>apt update：<font color="Red">更新apt仓库包索引</font></p>
+<p>apt upgrade：<font color="Red">更新已安装的软件到最新版本</font></p>
+<p>apt dist-upgrade：升级系统到最新版本</p>
+<h2 id="软件源镜像"><a href="#软件源镜像" class="headerlink" title="软件源镜像"></a>软件源镜像</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 备份软件源配置</span><br>sudo cp -v /etc/apt/sources.list /etc/apt/sources.list.backup<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 修改权限使得这个文件可以编辑</span><br>sudo chmod 777 /etc/apt/sources.list<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 修改sources.list文件，可以把里面的内容删光，重新写入以下内容即可</span><br>deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse<br>deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse<br>deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse<br>deb http://archive.ubuntu.com/ubuntu/ focal-proposed main restricted universe multiverse<br></code></pre></td></tr></table></figure>
+
+<p>注意不同的ubuntu版本，sources.list里面的内容不一样，如ubuntu 20是focal，18和16又是另外的。</p>
+<p>最后更新一下软件源仓库即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt update<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装openssh-server</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt install openssh-server<br></code></pre></td></tr></table></figure>
+
+<p>安装了这个后就可以通过其他主机使用ssh命令远程连接这个服务器。</p>
+<h2 id="用户、主机相关"><a href="#用户、主机相关" class="headerlink" title="用户、主机相关"></a>用户、主机相关</h2><h2 id="恢复模式"><a href="#恢复模式" class="headerlink" title="恢复模式"></a>恢复模式</h2><p>重启服务器，进入系统的时候按住shift，即可进入一个选项界面，依次选择：</p>
+<ol>
+<li><p>Unbuntu高级选项</p>
+</li>
+<li><p>recovery mode</p>
+</li>
+</ol>
+<p>进入恢复菜单后，可以根据需要选择。</p>
+<blockquote>
+<p> 修改root用户密码</p>
+</blockquote>
+<p>先选择<code>grub</code>，进入之后按enter，然后回到这个界面，再选择<code>root</code>，进入root的shell命令行后，使用<code>passwd root</code>命令即可修改root用户的密码。</p>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><p>Ubuntu 17.10及以后的版本使用Netplan（<code>/etc/netplan</code>）作为网络管理工具。以前的版本使用ifconfig和<code>/etc/network/interfaces</code>这个配置文件配置网络。以下对Netplan进行配置。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 进入到配置文件夹</span><br>cd /etc/netplan<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 进入后可能有一个或多个yaml文件，文件名视系统版本不定，我这里只有一个文件，因此直接配置这一个文件即可，如下</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># this is the network written by &#x27;subiquity&#x27;</span><br><span class="hljs-attr">network:</span><br>  <span class="hljs-attr">ethernets:</span><br>    <span class="hljs-attr">ens33:</span><br>      <span class="hljs-attr">addresses:</span><br>        <span class="hljs-bullet">-</span> <span class="hljs-number">192.168</span><span class="hljs-number">.141</span><span class="hljs-number">.142</span><span class="hljs-string">/24</span><br>      <span class="hljs-attr">gateway4:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.141</span><span class="hljs-number">.1</span><br>      <span class="hljs-attr">nameservers:</span><br>        <span class="hljs-attr">addresses:</span> [<span class="hljs-number">223.5</span><span class="hljs-number">.5</span><span class="hljs-number">.5</span>, <span class="hljs-number">223.6</span><span class="hljs-number">.6</span><span class="hljs-number">.6</span>] <span class="hljs-comment"># 阿里域名服务器</span><br>        <span class="hljs-attr">search:</span> []<br>  <span class="hljs-attr">version:</span> <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>属性解释</p>
+</blockquote>
+<ul>
+<li>version：版本</li>
+<li>renderer：设备类型（如networkd），以上我这里没有出现</li>
+<li>ethernets：配置网络，在我这里只有一个网络<code>ens33</code>，这是默认的网络。每个网络可以设置以下属性：<ul>
+<li>dhcp4：使用dhcp服务器自动分配ip和dns，可以填<code>yes</code>或<code>no</code>，使用dhcp服务器后这里再设置ip好像就没用了，没试过</li>
+<li>addresses：静态局域网地址，可以配置多个</li>
+<li>gateway4：默认网关</li>
+<li>nameservers：域名服务器，可以在这个属性下面的addresses属性里面设置多个域名服务器。search属性shows your search domains，不是很明白，可以不用设置。</li>
+</ul>
+</li>
+</ul>
+<p>保存后，应用修改。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo netplan apply<br></code></pre></td></tr></table></figure>
+
+<h2 id="环境变量相关"><a href="#环境变量相关" class="headerlink" title="环境变量相关"></a>环境变量相关</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 列出所有已设置的环境变量</span><br>env<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 引用变量名为XXX的变量值，最好加上大括号，好习惯</span><br><span class="hljs-meta">$</span><span class="bash">&#123;XXX&#125;</span><br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看变量XXX的值</span><br>echo $&#123;XXX&#125;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 设置环境变量，在相应的profile文件中添加环境变量</span><br><span class="hljs-meta">#</span><span class="bash"> 1、设置用户环境变量，在对应的用户文件夹下的profile</span><br>vi /home/yury/.profile<br><span class="hljs-meta">#</span><span class="bash"> 在最下面增加以下代码，设置一个变量名为AAA1的环境变量，其值为BBB1</span><br>export AAA1=BBB1<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 2、设置系统环境变量，在/etc/profile下</span><br>vi /etc/profile<br>export AAA2=BBB2<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 在环境变量中使用引用，将这个路径添加到PATH环境变量末尾</span><br>export PATH=$&#123;PATH&#125;:$&#123;JAVA_HOME&#125;/bin<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 最后，重新加载用户或系统环境变量，即不需要重启就可以使环境变量生效</span><br>source /home/yury/.profile<br>source /etc/profile<br></code></pre></td></tr></table></figure>
+
+<h2 id="文件与目录相关"><a href="#文件与目录相关" class="headerlink" title="文件与目录相关"></a>文件与目录相关</h2><p>cd /：跳转到根目录</p>
+<p>cd /XXX：跳转到/XXX目录，父目录为root，而不是当前目录</p>
+<p>cd XXX：跳转到当前目录下的XXX目录中</p>
+<p>cd <del>：跳转到</del>目录，~为/home/AAA，AAA为你的用户名</p>
+<p>ls：列出该目录下的所有文件夹和文件</p>
+<p>touch AAA.TXT：创建AAA.TXT文件</p>
+<p>mkdir AAA：在当前目录下继续创建/AAA目录，创建目录时不能写成/AAA，而可以写成AAA/；且只能创建一层目录，不能mkdir AAA/BBB这样创建多层目录</p>
+<p>rm AAA.TXT：删除AAA.TXT文件</p>
+<p>rmdir AAA：删除AAA文件夹</p>
+<p>rm -rf AAA：强制删除AAA文件夹</p>
+<h2 id="java相关（版本jdk8）"><a href="#java相关（版本jdk8）" class="headerlink" title="java相关（版本jdk8）"></a>java相关（版本jdk8）</h2><p>使用apt安装java后安装路径：/usr/lib/jvm/java-8-openjdk-amd64（8为你的java版本，该文件夹名根据你安装的java包名来定）。注：把java安装文件放到/usr/local下面并设置好环境变量，则所有用户都可以使用这个java环境。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 配置JAVA_HOME环境变量</span><br>export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 配置PATH环境变量</span><br>export PATH=$PATH:$JAVA_HOME/bin<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 使环境变量马上生效，不需要重启</span><br>source ~/.bashrc<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 切换java版本</span><br>update-alternatives --config java<br></code></pre></td></tr></table></figure>
+
+<h2 id="下载、解压"><a href="#下载、解压" class="headerlink" title="下载、解压"></a>下载、解压</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> curl和wget都可以下载，可这样简单区分使用：curl用于较复杂的不仅仅是下载的web场景，而wget适用于快速且不用担心其他参数的下载</span><br>curl https://github.com/ziyaddin/xampp/archive/master.zip -L -o MyFilename.zip<br>wget https://github.com/ziyaddin/xampp/archive/master.zip<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 解压</span><br>tar xzvf xxxxxxxxx.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h2 id="服务管理"><a href="#服务管理" class="headerlink" title="服务管理"></a>服务管理</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 查看所有服务</span><br>systemctl statuc<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看某个服务的状态</span><br>systemctl status mysql.service<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 禁止开机启动</span><br>d<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 停止已启动的服务</span><br>sudo systemctl stop mysql.service<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 启动服务</span><br>systemctl start mysql.service<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 关闭防火墙</span><br>systemctl stop firewalld.service<br></code></pre></td></tr></table></figure>
+
+<h2 id="磁盘相关"><a href="#磁盘相关" class="headerlink" title="磁盘相关"></a>磁盘相关</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 查看磁盘情况</span><br>df -hT<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 进入磁盘分区情况</span><br>fdisk -l<br><br>Disk /dev/fd0: 1.4 MiB, 1474560 bytes, 2880 sectors<br>Units: sectors of 1 * 512 = 512 bytes<br>Sector size (logical/physical): 512 bytes / 512 bytes<br>I/O size (minimum/optimal): 512 bytes / 512 bytes<br>Disklabel type: dos<br>Disk identifier: 0x90909090<br><br>Device     Boot      Start        End    Sectors  Size Id Type<br>/dev/fd0p1      2425393296 4850786591 2425393296  1.1T 90 unknown<br>/dev/fd0p2      2425393296 4850786591 2425393296  1.1T 90 unknown<br>/dev/fd0p3      2425393296 4850786591 2425393296  1.1T 90 unknown<br>/dev/fd0p4      2425393296 4850786591 2425393296  1.1T 90 unknown<br><br><br>Disk /dev/sda: 60 GiB, 64424509440 bytes, 125829120 sectors<br>Units: sectors of 1 * 512 = 512 bytes<br>Sector size (logical/physical): 512 bytes / 512 bytes<br>I/O size (minimum/optimal): 512 bytes / 512 bytes<br>Disklabel type: gpt<br>Disk identifier: A006A120-A37D-4375-8C47-BF69799EA710<br><br>Device        Start       End  Sectors Size Type<br>/dev/sda1      2048      4095     2048   1M BIOS boot<br>/dev/sda2      4096   2101247  2097152   1G Linux filesystem<br>/dev/sda3   2101248  41940991 39839744  19G Linux filesystem<br>/dev/sda4  41940992 125829086 83888095  40G Linux filesystem<br><br><br>Disk /dev/mapper/ubuntu--vg-ubuntu--lv: 19 GiB, 20396900352 bytes, 39837696 sectors<br>Units: sectors of 1 * 512 = 512 bytes<br>Sector size (logical/physical): 512 bytes / 512 bytes<br>I/O size (minimum/optimal): 512 bytes / 512 bytes<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 对某个分区进行管理</span><br>fdisk /dev/sda4<br></code></pre></td></tr></table></figure>
+
+<h3 id="1、磁盘管理下的常用命令"><a href="#1、磁盘管理下的常用命令" class="headerlink" title="1、磁盘管理下的常用命令"></a>1、磁盘管理下的常用命令</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">m # 显示帮助页面<br>p # 查看分区列表<br>d # 删除分区<br>n # 新建分区<br>q # 不保存直接退出<br>w # 保存并退出<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、磁盘基本知识"><a href="#2、磁盘基本知识" class="headerlink" title="2、磁盘基本知识"></a>2、磁盘基本知识</h3><p><img src="/images/%E7%A3%81%E7%9B%98%E7%BB%93%E6%9E%84.png" srcset="/img/loading.gif" lazyload></p>
+<p>platter：盘片，即图中一个个的盘，一个盘片有上下两个盘面</p>
+<p>head：磁头，即图中在盘片上滑动的磁头，一个盘片有上下两个盘面，因此对应两个磁头</p>
+<p>sector：扇区，相当于图中的一条一条的弧，<font color="Red">是磁盘存取的基本单位</font>，1个sector可以是512个byte或4096个byte。</p>
+<p>track：磁道，相当于图中的一个圆</p>
+<p>cylinder：磁柱，相当于图中的一个圆柱形（不同盘片同一磁道组成的圆柱形），磁柱数等于一个盘面上的磁道数。</p>
+<p>block：数据块，<font color="Red">是文件系统存取的最小单位</font>，在Windows下如NTFS等文件系统中叫做簇；在Linux下如Ext4等文件系统中叫做块（block）。每个簇或者块可以包括2、4、8、16、32、64…2的n次方个扇区。</p>
+<p>一个block最多仅能容纳一个文件（即不存在多个文件同一个block的情况）。如果一个文件比block小，他也会占用一个block，因而block中空余的空间会浪费掉。而一个大文件，可以占多个甚至数十个成百上千万的block。</p>
+<p><font color="Red">磁盘容量 = 磁头数 * 磁柱（磁道）数 * 每个磁道的扇区数 * 每个扇区的字节数</font></p>
+<h3 id="3、新建分区流程"><a href="#3、新建分区流程" class="headerlink" title="3、新建分区流程"></a>3、新建分区流程</h3><p>本流程适用于vmware station对服务器进行扩容。</p>
+<ul>
+<li>关闭服务器，在vmware station上的服务器设置中，将硬盘扩展到你需要的大小。</li>
+<li>重新进入服务器，<code>fdisk -l</code>命令查看分区列表，找到磁盘<code>/dev/sda</code>，<code>fdisk /dev/sda</code>命令对该磁盘设备进行管理。</li>
+<li>键入<code>n</code>命令新建分区，后面如果提示选择extended或者primary partition，则选择primary partition。</li>
+<li>然后提示输入分区编号，一般使用提示的默认编号，或者直接回车。</li>
+<li>然后提示输入First cylinder（或sector），即新建的分区的起始cylinder（或sector）编号为多少，一般使用默认（最小）即可。</li>
+<li>最后提示输入Last cylinder（或sector），即新建的分区的截止cylinder（或sector）编号为多少，一般使用默认（最大）即可。</li>
+<li>以上三步有需要可以按自己的需求来选择</li>
+<li>键入<code>w</code>命令保存设置</li>
+<li><code>fdisk -l</code>，查看新分区是否生成：</li>
+<li><code>mkfs.ext4 /dev/sda4</code>，命令格式化（格式化会清除数据）分区，sda4为你之前输入的新分区编号，ext4为文件系统类型</li>
+<li><code>mkdir disk4</code>，在根目录下创建一个空文件夹，<code>mount /dev/sda4 /disk4</code>，将新分区挂载到新建的文件夹下</li>
+<li><code>echo &#39;/dev/sda4 /disk4 ext4 defaults 0 0&#39; &gt;&gt; /etc/fstab</code>，将这个挂载动作写入一个文件中，保证每次启动服务器时会自动将这个分区挂载到这个disk4目录。</li>
+<li><code>reboot</code>，重启服务器，<code>df -hT</code>，查看磁盘情况</li>
+</ul>
+<h3 id="4、分区扩容流程"><a href="#4、分区扩容流程" class="headerlink" title="4、分区扩容流程"></a>4、分区扩容流程</h3><p>不建议在Linux系统盘所在分区进行扩容，小心丢失数据。且必须有未分区的磁盘用于扩容。</p>
+<ul>
+<li><code>df –hT</code>和<code>fdisk -l</code>命令查看磁盘情况和分区情况</li>
+<li><code>umount /dev/sda4</code>，卸载需要扩容的磁盘挂载的分区</li>
+<li><code>fdisk /dev/sda4</code>，对需要扩容的磁盘分区进行管理</li>
+<li><code>d</code>，删除分区</li>
+<li><code>n</code>，新建分区，然后按新建分区的流程设置分区大小</li>
+<li><code>w</code>，保存设置</li>
+<li><code>e2fsck -f /dev/sda4</code>，检查扩容的分区是否ok</li>
+<li><code>resize2fs /dev/sda4</code>，扩容</li>
+<li><code>mount /dev/sda4 /disk4</code>，挂载</li>
+<li><code>df -hT</code>和<code>reboot</code>，查看磁盘情况并重启服务器</li>
+</ul>
+<h2 id="service、systemctl相关"><a href="#service、systemctl相关" class="headerlink" title="service、systemctl相关"></a>service、systemctl相关</h2><p>首先我们得搞清楚你的linux服务器的system manager是谁。一般有<code>SysVinit system manager</code>和<code>Systemd system manage</code>这两种。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pstree | head -n 5 # 运行这个命令，若输出`systemd`则说明是第二种，若输出`init`则说明是第一种。<br></code></pre></td></tr></table></figure>
+
+<h3 id="1、systemd系统"><a href="#1、systemd系统" class="headerlink" title="1、systemd系统"></a>1、systemd系统</h3><h4 id="（1）列举所有service"><a href="#（1）列举所有service" class="headerlink" title="（1）列举所有service"></a>（1）列举所有service</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">systemctl list-units --type=service # 查看所有正在运行、或者失败了的units service<br><br>systemctl list-units --type=service --all # 查看所有untis service<br><br>systemctl list-unit-files --type=service # 查看已安装了的所有service<br></code></pre></td></tr></table></figure>
+
+<p>list-units和list-unit-files的区别，linux中man命令对他们的解释如下：</p>
+<blockquote>
+<p>list-units：</p>
+<p>List units that systemd <strong>currently has in memory</strong>. This includes units that are either referenced directly or through a dependency, units that are pinned by applications programmatically, or units that were active in the past and have failed. By default only units which are active, have pending jobs, or have failed are shown; this can be changed with option –all. If one or more PATTERNs are specified, only units matching one of them are shown. The units that are shown are additionally filtered by –type= and –state= if those options are specified.</p>
+<p>list-unit-files：</p>
+<p>List unit files <strong>installed on the system</strong>, in combination with their enablement state (as reported by is-enabled). If one or more PATTERNs are specified, only unit files whose name matches one of them are shown (patterns matching unit file system paths are not supported).</p>
+</blockquote>
+<p>即一个是当前已经加载在内存中的，要么被直接引用或者依赖或者，被其他应用程序固定了，或者曾经启用过但是失败了。另外一个是系统中安装了的。</p>
+<p>linux系统在查找已安装了的service时，会按照以下路径加载service：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs shell">System Unit Search Path:<br>/etc/systemd/system.control/*<br>/run/systemd/system.control/*<br>/run/systemd/transient/*<br>/run/systemd/generator.early/*<br>/etc/systemd/system/*<br>/etc/systemd/systemd.attached/*<br>/run/systemd/system/*<br>/run/systemd/systemd.attached/*<br>/run/systemd/generator/*<br>...<br>/lib/systemd/system/*<br>/run/systemd/generator.late/*<br><br>User Unit Search Path:<br>~/.config/systemd/user.control/*<br><span class="hljs-meta">$</span><span class="bash">XDG_RUNTIME_DIR/systemd/user.control/*</span><br><span class="hljs-meta">$</span><span class="bash">XDG_RUNTIME_DIR/systemd/transient/*</span><br><span class="hljs-meta">$</span><span class="bash">XDG_RUNTIME_DIR/systemd/generator.early/*</span><br>~/.config/systemd/user/*<br>/etc/systemd/user/*<br><span class="hljs-meta">$</span><span class="bash">XDG_RUNTIME_DIR/systemd/user/*</span><br>/run/systemd/user/*<br><span class="hljs-meta">$</span><span class="bash">XDG_RUNTIME_DIR/systemd/generator/*</span><br>~/.local/share/systemd/user/*<br>...<br>/usr/lib/systemd/user/*<br><span class="hljs-meta">$</span><span class="bash">XDG_RUNTIME_DIR/systemd/generator.late/*</span><br></code></pre></td></tr></table></figure>
+
+<p>service的所有状态包括：active, inactive, activating, deactivating, failed, not-found, dead</p>
+<h4 id="（2）注册service"><a href="#（2）注册service" class="headerlink" title="（2）注册service"></a>（2）注册service</h4><p>注册service即只要在对应的加载路径下放入<code>xxx.service</code>脚本即可，然后启动这个脚本即可。这个路径一般就用<code>/etc/systemd/system/</code>或者<code>/lib/systemd/system/</code>下面，比如MySQL的service脚本就是放在后者路径下。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs shell">[Unit]<br>Description=Grafana Server<br>After=network-online.target<br><br>[Service]<br>Type=simple  # 服务类型，如果执行程序是linux的可运行文件，则填入simple；如果执行命令是shell脚本方式，则填入forking。<br>User=yury    # 启动用户<br>Group=yury   # 启用的用户组<br><span class="hljs-meta">#</span><span class="bash"> Restart=on-failure <span class="hljs-comment"># 重启策略</span></span><br><span class="hljs-meta">#</span><span class="bash"> RestartSec=30      <span class="hljs-comment"># 重启时间</span></span><br>RuntimeDirectory=/disk4/grafana/grafana-8.4.5/<br><span class="hljs-meta">#</span><span class="bash"> ExecStart为启动命令</span><br>ExecStart=/disk4/grafana/grafana-8.4.5/bin/grafana-server --homepath=/disk4/grafana/grafana-8.4.5/<br><br>[Install]<br>WantedBy=multi-user.target<br></code></pre></td></tr></table></figure>
+
+<p>然后运行<code>systemctl enable grafana.service</code>就可以设置grafana开启服务器后自动启动。</p>
+<p>再比如zookeeper的.service脚本如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell">[Unit]<br>Description=Zookeeper Server<br>After=network-online.target<br><br>[Service]<br>Type=forking<br>RuntimeDirectory=/disk4/zookeeper/zookeeper-3.6.3<br>ExecStart=/disk4/zookeeper/zookeeper-3.6.3/bin/zkServer.sh start<br>ExecStop=/disk4/zookeeper/zookeeper-3.6.3/bin/zkServer.sh stop<br>ExecReload=/disk4/zookeeper/zookeeper-3.6.3/bin/zkServer.sh restart<br><br>[Install]<br>WantedBy=multi-user.target<br></code></pre></td></tr></table></figure>
+
+<p>但是这样的话，启动后就是以root用户运行，增加User又无法启动。所以目前暂时没找到以普通用户启动的方法。</p>
+<h3 id="2、SysVinit系统"><a href="#2、SysVinit系统" class="headerlink" title="2、SysVinit系统"></a>2、SysVinit系统</h3><h4 id="（1）列举所有service-1"><a href="#（1）列举所有service-1" class="headerlink" title="（1）列举所有service"></a>（1）列举所有service</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service --status-all # <br></code></pre></td></tr></table></figure>
+
+<p>输出内容左侧的符号意思如下：</p>
+<ul>
+<li><strong>+</strong> : means that the service is <strong>running</strong>;</li>
+<li><strong>–</strong> : means that the service is <strong>not running</strong> at all;</li>
+<li><strong>?</strong> : means that Ubuntu <strong>was not able to tell</strong> if the service is running or not.</li>
+</ul>
+<p>还一种列举所有service的方法是：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ls -l /etc/init.d/*<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/linux/" class="category-chain-item">linux</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Linux命令</div>
+      <div>https://yury757.github.io/linux/linux命令/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>November 1, 2021</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/bigdata/kafka/kafka/" title="kafka">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">kafka</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/project/flink_data_warehouse/flink_data_warehouse/" title="flink_data_warehouse">
+                        <span class="hidden-mobile">flink_data_warehouse</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

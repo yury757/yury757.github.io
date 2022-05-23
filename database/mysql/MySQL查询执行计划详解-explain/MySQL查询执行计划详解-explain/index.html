@@ -1,0 +1,964 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、前言本文来自官方文档 explain用于解释优化器在执行select、update、delete、insert、replace语句时的执行计划，即它解释了MySQL如何处理SQL语句，包括表如何连接、表的连接顺序、用了哪些索引等。（replace是MySQL对于标准SQL语句的扩展，其他数据库可能没有，replace的使用见这里） 本文使用的表结构和数据如下： 1234567891011121">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL查询执行计划详解-explain">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain/MySQL%E6%9F%A5%E8%AF%A2%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E8%AF%A6%E8%A7%A3-explain/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="一、前言本文来自官方文档 explain用于解释优化器在执行select、update、delete、insert、replace语句时的执行计划，即它解释了MySQL如何处理SQL语句，包括表如何连接、表的连接顺序、用了哪些索引等。（replace是MySQL对于标准SQL语句的扩展，其他数据库可能没有，replace的使用见这里） 本文使用的表结构和数据如下： 1234567891011121">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-09-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:25:18.496Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MySQL查询执行计划详解-explain - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL查询执行计划详解-explain"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-10-01 00:00" pubdate>
+          October 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          27k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          228 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL查询执行计划详解-explain</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>本文来自<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/using-explain.html">官方文档</a></p>
+<p>explain用于解释优化器在执行select、update、delete、insert、replace语句时的执行计划，即它解释了MySQL如何处理SQL语句，包括表如何连接、表的连接顺序、用了哪些索引等。（replace是MySQL对于标准SQL语句的扩展，其他数据库可能没有，replace的使用见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/replace.html">这里</a>）</p>
+<p>本文使用的表结构和数据如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs mysql">CREATE DATABASE test;<br><br>CREATE TABLE trb1 (<br>    id int auto_increment primary key,<br>    name varchar(50),<br>    purchased date<br>)<br>PARTITION BY RANGE (ID) (<br>    PARTITION p0 VALUES LESS THAN (3),<br>    PARTITION P1 VALUES LESS THAN (7),<br>    PARTITION P2 VALUES LESS THAN (9),<br>    PARTITION P3 VALUES LESS THAN (11)<br>);<br><br>INSERT INTO trb1 VALUES<br>(1, &#x27;desk organiser&#x27;, &#x27;2003-10-15&#x27;),<br>(2, &#x27;CD player&#x27;, &#x27;1993-11-05&#x27;),<br>(3, &#x27;TV set&#x27;, &#x27;1996-03-10&#x27;),<br>(4, &#x27;bookcase&#x27;, &#x27;1982-01-10&#x27;),<br>(5, &#x27;exercise bike&#x27;, &#x27;2004-05-09&#x27;),<br>(6, &#x27;sofa&#x27;, &#x27;1987-06-05&#x27;),<br>(7, &#x27;popcorn maker&#x27;, &#x27;2001-11-22&#x27;),<br>(8, &#x27;aquarium&#x27;, &#x27;1992-08-04&#x27;),<br>(9, &#x27;study desk&#x27;, &#x27;1984-09-16&#x27;),<br>(10, &#x27;lava lamp&#x27;, &#x27;1998-12-25&#x27;);<br><br>create table trb2(<br>    id2 int auto_increment primary key,<br>    id int<br>);<br><br>insert into trb2(id) values(3), (3), (4);<br><br>create table trb3(<br>    id3 int,<br>    name varchar(50),<br>    purchased date,<br>    primary key(id3, name),<br>    index trb3_index1(name, purchased)<br>);<br><br>insert into trb3 values<br>(1, &#x27;desk organiser&#x27;, &#x27;2003-10-15&#x27;),<br>(2, &#x27;CD player&#x27;, &#x27;1993-11-05&#x27;),<br>(3, &#x27;TV set&#x27;, &#x27;1996-03-10&#x27;),<br>(4, &#x27;bookcase&#x27;, &#x27;1982-01-10&#x27;),<br>(5, &#x27;exercise bike&#x27;, &#x27;2004-05-09&#x27;),<br>(6, &#x27;sofa&#x27;, &#x27;1987-06-05&#x27;),<br>(7, &#x27;popcorn maker&#x27;, &#x27;2001-11-22&#x27;),<br>(8, &#x27;aquarium&#x27;, &#x27;1992-08-04&#x27;),<br>(9, &#x27;study desk&#x27;, &#x27;1984-09-16&#x27;),<br>(10, &#x27;lava lamp&#x27;, &#x27;1998-12-25&#x27;);<br></code></pre></td></tr></table></figure>
+
+<p><strong>文章目录：</strong></p>
+<p>[toc]</p>
+<h2 id="二、explain输出格式解释"><a href="#二、explain输出格式解释" class="headerlink" title="二、explain输出格式解释"></a>二、explain输出格式解释</h2><p>EXPLAIN为SELECT语句中使用的每个表返回一行信息，按照MySQL在处理语句时读取它们的顺序列示。explain的输出列如下。</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>JSON Name</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>select_id</td>
+<td>查询的唯一标识，</td>
+</tr>
+<tr>
+<td>select_type</td>
+<td>None</td>
+<td>select类型</td>
+</tr>
+<tr>
+<td>table</td>
+<td>table_name</td>
+<td>表名，如设置了别名（alias）则展示别名</td>
+</tr>
+<tr>
+<td>partitions</td>
+<td>partitions</td>
+<td>查询计划匹配到的分区</td>
+</tr>
+<tr>
+<td>type</td>
+<td>access_type</td>
+<td>连接类型</td>
+</tr>
+<tr>
+<td>possible_keys</td>
+<td>possible_keys</td>
+<td>可能使用的索引</td>
+</tr>
+<tr>
+<td>key</td>
+<td>key</td>
+<td>实际使用的索引</td>
+</tr>
+<tr>
+<td>key_len</td>
+<td>key_length</td>
+<td>实际使用的索引的<font color="Blue">字节长度</font></td>
+</tr>
+<tr>
+<td>ref</td>
+<td>ref</td>
+<td>与索引比较的列</td>
+</tr>
+<tr>
+<td>rows</td>
+<td>rows</td>
+<td>估计要检查的行数量</td>
+</tr>
+<tr>
+<td>filtered</td>
+<td>filtered</td>
+<td>按表条件过滤的行百分比</td>
+</tr>
+<tr>
+<td>Extra</td>
+<td>None</td>
+<td>额外信息</td>
+</tr>
+</tbody></table>
+<h3 id="1、id"><a href="#1、id" class="headerlink" title="1、id"></a>1、id</h3><p>MySQL会给每一个查询分配一个id，归属同一个查询的行则该标识相同，不同的查询按序号顺序列示。<font color="Blue">注意并不是每有一个select就会有一个独立的id</font>，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb1 t1 where exists(select 1 from trb2 t2 where t2.id = t1.id); -- id相同<br>+----+-------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------------------------------------------------------------+<br>| id | select_type | table | partitions  | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra<br>                            |<br>+----+-------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------------------------------------------------------------+<br>|  1 | SIMPLE      | t2    | NULL        | ALL  | NULL          | NULL | NULL    | NULL |    3 |   100.00 | Start temporary<br>                            |<br>|  1 | SIMPLE      | t1    | p0,p1,p2,p3 | ALL  | NULL          | NULL | NULL    | NULL |   10 |    10.00 | Using where; End temporary; Using join buffer (Block Nested Loop) |<br>+----+-------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------------------------------------------------------------+<br>2 rows in set, 2 warnings (0.00 sec)<br><br>mysql&gt; explain select t1.*, (select t2.id2 from trb2 t2 where t2.id = t1.id limit 1) as id2 from trb1 t1; -- id不同<br>+----+--------------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------+<br>| id | select_type        | table | partitions  | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |<br>+----+--------------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------+<br>|  1 | PRIMARY            | t1    | p0,p1,p2,p3 | ALL  | NULL          | NULL | NULL    | NULL |   10 |   100.00 | NULL        |<br>|  2 | DEPENDENT SUBQUERY | t2    | NULL        | ALL  | NULL          | NULL | NULL    | NULL |    3 |    33.33 | Using where |<br>+----+--------------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------+<br>2 rows in set, 2 warnings (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、select-type"><a href="#2、select-type" class="headerlink" title="2、select_type"></a>2、select_type</h3><table>
+<thead>
+<tr>
+<th>select_type Value</th>
+<th>JSON Name</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIMPLE</td>
+<td>None</td>
+<td>简单的select语句，没使用union或子查询</td>
+</tr>
+<tr>
+<td>PRIMARY</td>
+<td>None</td>
+<td>最外层的select语句</td>
+</tr>
+<tr>
+<td>UNION</td>
+<td>None</td>
+<td>union中的第二个或更后面的select语句</td>
+</tr>
+<tr>
+<td>DEPENDENT UNION</td>
+<td>dependent (true)</td>
+<td>union中的第二个或更后面的select语句，依赖于外部查询（不理解）</td>
+</tr>
+<tr>
+<td>UNION RESULT</td>
+<td>union_result</td>
+<td>union的结果，把union查询当作一个临时表的结果</td>
+</tr>
+<tr>
+<td>SUBQUERY</td>
+<td>None</td>
+<td>子查询的第一个select语句</td>
+</tr>
+<tr>
+<td>DEPENDENT SUBQUERY</td>
+<td>dependent (true)</td>
+<td>子查询的第一个select语句，依赖于外部查询</td>
+</tr>
+<tr>
+<td>DERIVED</td>
+<td>None</td>
+<td>派生表，临时表</td>
+</tr>
+<tr>
+<td>DEPENDENT DERIVED</td>
+<td>dependent (true)</td>
+<td>依赖于另外一个表的临时表</td>
+</tr>
+<tr>
+<td>MATERIALIZED</td>
+<td>materialized_from_subquery</td>
+<td>物化子查询</td>
+</tr>
+<tr>
+<td>UNCACHEABLE SUBQUERY</td>
+<td>cacheable (false)</td>
+<td>一个无法缓存的子查询，外部查询的每一行都要重新执行子查询</td>
+</tr>
+<tr>
+<td>UNCACHEABLE UNION</td>
+<td>cacheable (false)</td>
+<td>属于一个uncacheable subquery的union查询的第二个或更后面的查询</td>
+</tr>
+</tbody></table>
+<p>看下面这个查询。</p>
+<p>id为1的是外部主查询，表名是<derived3>，即id为3的derived类型的表，即别名为b的表，explain中没把b展示出来。id为2的是一个临时表，其表名为table1，可能是因为使用了union，展示的union中的第一个表名。</derived3></p>
+<p>id为4的是一个uncacheable union，即无法被缓存的子查询，且存在于一个union中，处于union的第二个或更后面的位置。<font color="Blue">因为order by rand()，每次都要重新执行这次查询才能获取结果，因此无法被缓存。</font></p>
+<p>id为NULL的是一个union结果，表名为&lt;union3,4&gt;，即union了id为3和4两张表的结果。</p>
+<p>id为2的是一个UNCACHEABLE SUBQUERY，解释如id为4的一样。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; EXPLAIN select b.*, (SELECT table3.id as c from trb1 table3 order by rand() limit 1) AS c FROM ( (select table1.id as a from trb1 table1 order by rand() LIMIT 1) UNION (select table2.id as a from trb1 table2 order by rand() LIMIT 1) ) as b;<br>+----+----------------------+------------+-------------+------+---------------+------+---------+------+------+----------+---------------------------------+<br>| id | select_type          | table      | partitions  | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra<br>    |<br>+----+----------------------+------------+-------------+------+---------------+------+---------+------+------+----------+---------------------------------+<br>|  1 | PRIMARY              | &lt;derived3&gt; | NULL        | ALL  | NULL          | NULL | NULL    | NULL |    2 |   100.00 | NULL<br>    |<br>|  3 | DERIVED              | table1     | p0,p1,p2,p3 | ALL  | NULL          | NULL | NULL    | NULL |   10 |   100.00 | Using temporary; Using filesort |<br>|  4 | UNCACHEABLE UNION    | table2     | p0,p1,p2,p3 | ALL  | NULL          | NULL | NULL    | NULL |   10 |   100.00 | Using temporary; Using filesort |<br>| NULL | UNION RESULT         | &lt;union3,4&gt; | NULL        | ALL  | NULL          | NULL | NULL    | NULL | NULL |     NULL | Using temporary<br>      |<br>|  2 | UNCACHEABLE SUBQUERY | table3     | p0,p1,p2,p3 | ALL  | NULL          | NULL | NULL    | NULL |   10 |   100.00 | Using temporary; Using filesort |<br>+----+----------------------+------------+-------------+------+---------------+------+---------+------+------+----------+---------------------------------+<br>5 rows in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Blue">当子查询中依赖外部表来获取结果时，就会有一个dependent，如下。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select t1.*, (select t2.id2 from trb2 t2 where t2.id = t1.id limit 1) as id2 from trb1 t1;<br>+----+--------------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------+<br>| id | select_type        | table | partitions  | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |<br>+----+--------------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------+<br>|  1 | PRIMARY            | t1    | p0,p1,p2,p3 | ALL  | NULL          | NULL | NULL    | NULL |   10 |   100.00 | NULL        |<br>|  2 | DEPENDENT SUBQUERY | t2    | NULL        | ALL  | NULL          | NULL | NULL    | NULL |    3 |    33.33 | Using where |<br>+----+--------------------+-------+-------------+------+---------------+------+---------+------+------+----------+-------------+<br>2 rows in set, 2 warnings (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Blue">DEPENDENT SUBQUERY评估与UNCACHEABLE SUBQUERY评估不同</font>：对于DEPENDENT SUBQUERY，子查询仅针对其外部上下文中变量的<strong>每组不同值</strong>重新评估一次。对于UNCACHEABLE SUBQUERY，将为外部上下文的<strong>每一行</strong>重新评估子查询。即DEPENDENT SUBQUERY是有一部分缓存的。</p>
+<h3 id="3、table"><a href="#3、table" class="headerlink" title="3、table"></a>3、table</h3><p>table指的是表名或别名，或其他形式名称。（&lt;DERIVED**N**&gt;，&lt;UNION**M**,**N**&gt;，&lt;subquery**N**&gt;，加粗字母均为表对应的id。具体见上面的分析）</p>
+<h3 id="4、partition"><a href="#4、partition" class="headerlink" title="4、partition"></a>4、partition</h3><p>partition指的是该查询所使用到的表分区。关于表分区的解释见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/partitioning-info.html">官方文档</a>。如上面那个trb1表使用了所有的分区，又如下面这个查询只用到了p0、p1分区。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb1 where id &lt; 5;<br>+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+<br>| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |<br>+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+<br>|  1 | SIMPLE      | trb1  | p0,p1      | ALL  | NULL          | NULL | NULL    | NULL |    6 |    33.33 | Using where |<br>+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+-------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h3 id="5、type"><a href="#5、type" class="headerlink" title="5、type"></a><font color="Red">5、type</font></h3><p>type指的是join type，即表之间是如何连接的。下面从最优到最差的方式排序列出了各种连接方式。</p>
+<ul>
+<li><p>system：指表中只有一条记录，且符合const类型的查询。是一种特殊const类型。</p>
+</li>
+<li><p>const：指通过primary key或unique查询出来的数据，最多只有一条记录匹配。</p>
+</li>
+<li><p>eq_ref：指该表通过完整的primary key或uniqeu not null去和其他表相应字段连接时，则该表的join type为qe_ref，另外一张表的join type根据另外一张表的key去判断。这种情况下可以保证最多只能匹配出一条记录。如下，trb1表是eq_ref，而trb2表的join type是ALL，全表扫描。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb1, trb2 where trb1.id = trb2.id;<br>+----+-------------+-------+-------------+--------+---------------+---------+---------+--------------+------+----------+-------------+<br>| id | select_type | table | partitions  | type   | possible_keys | key     | key_len | ref          | rows | filtered | Extra       |<br>+----+-------------+-------+-------------+--------+---------------+---------+---------+--------------+------+----------+-------------+<br>|  1 | SIMPLE      | trb2  | NULL        | ALL    | NULL          | NULL    | NULL    | NULL         |    3 |   100.00 | Using where |<br>|  1 | SIMPLE      | trb1  | p0,P1,P2,P3 | eq_ref | PRIMARY       | PRIMARY | 4       | test.trb2.id |    1 |   100.00 | NULL        |<br>+----+-------------+-------+-------------+--------+---------------+---------+---------+--------------+------+----------+-------------+<br>2 rows in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>ref：指该表通过某个索引的<font color="Blue">最左前缀</font>的部分或完整字段或<font color="Blue">多字段主键中满足<font color="Blue">最左前缀</font>的部分字段</font>去和其他表字段连接时，则该表的join type为ref。这种情况下无法保证匹配出最多一条记录。如下：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb3 where id3 = 1;<br>+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+<br>| id | select_type | table | partitions | type | possible_keys | key     | key_len | ref   | rows | filtered | Extra |<br>+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+<br>|  1 | SIMPLE      | trb3  | NULL       | ref  | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |<br>+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select t3.*, t2.id2 from trb3 t3, trb2 t2 where t3.id3 = t2.id2;<br>+----+-------------+-------+------------+-------+---------------+---------+---------+-------------+------+----------+-------------+<br>| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref         | rows | filtered | Extra       |<br>+----+-------------+-------+------------+-------+---------------+---------+---------+-------------+------+----------+-------------+<br>|  1 | SIMPLE      | t2    | NULL       | index | PRIMARY       | PRIMARY | 4       | NULL        |    3 |   100.00 | Using index |<br>|  1 | SIMPLE      | t3    | NULL       | ref   | PRIMARY       | PRIMARY | 4       | test.t2.id2 |    1 |   100.00 | NULL        |<br>+----+-------------+-------+------------+-------+---------------+---------+---------+-------------+------+----------+-------------+<br>2 rows in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>fulltext：使用全文索引。大多业务使用较少，除非那种需要检索大量文本的业务。全文索引仅排在ref后面，说明全文索引的效率很高。<br>全文索引大概意思就是专门用于文本查询的一个索引，只能构建在char、varchar、text类型上，通过全文索引的查询有自己特殊的语法（match(index_column) again(‘xxxx’)），全文索引的检索有最小搜索长度和最大搜索长度限制（当然可以通过修改my.ini修改配置），表的行数量条件要求，以及各种殷勤和版本限制等。关于全文索引的具体介绍见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-fulltext-index.html">官方文档</a>。</p>
+</li>
+<li><p>ref_or_null：即在ref情况下，使用索引的后面一个或多个字段使用is null来匹配，如下。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT * FROM ref_table<br>  WHERE key_column=expr OR key_column IS NULL;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>index_merge：索引合并。索引合并大概意思就是查询使用了多个索引并且可以合并这些索引以查询数据。具体见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/index-merge-optimization.html">官方文档</a>。如下就是一个索引合并。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb3 where id3 = 1 or name = &#x27;CD player&#x27;;<br>+----+-------------+-------+------------+-------------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------------+<br>| id | select_type | table | partitions | type        | possible_keys       | key                 | key_len | ref  | rows | filtered | Extra<br>                                    |<br>+----+-------------+-------+------------+-------------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | index_merge | PRIMARY,trb3_index1 | trb3_index1,PRIMARY | 202,4   | NULL |    2 |   100.00 | Using sort_union(trb3_index1,PRIMARY); Using where |<br>+----+-------------+-------+------------+-------------+---------------------+---------------------+---------+------+------+----------+----------------------------------------------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>unique_subquery：官方文档说是这种是在IN子查询中使用索引覆盖，以提高效率，如下，但是本人实际测试中并未使用这种join type。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">value IN (SELECT primary_key FROM single_table WHERE some_expr)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>index_subquery：和上一个相似，区别是不用primary_key，而是使用普通的索引。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mysql">value IN (SELECT key_column FROM single_table WHERE some_expr)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>range：索引被用作范围查询时可能使用range类型，有以下几点值得注意：<ul>
+<li>join type为range时，key_len为使用的索引的最大长度</li>
+<li>join type为range时，ref字段为NULL</li>
+<li>=, &lt;&gt;, &gt;, &gt;=, &lt;, &lt;=, IS NULL, &lt;=&gt;, BETWEEN, LIKE, or IN() 都可能会使用range</li>
+<li>索引用作范围查询时并不一定使用range，也可能使用其他，优化器会根据实际情况选择。如下第一个SQL即使用了index。</li>
+<li>range也要满足<font color="Blue">最左前缀</font>原则，不满足则可能使用其他类型，如下方代码块中的最后一个SQL。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb3 where name &gt; &#x27;aa&#x27;;<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | index | trb3_index1   | trb3_index1 | 206     | NULL |   10 |   100.00 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from trb3 where name &gt; &#x27;sofa&#x27;;<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | range | trb3_index1   | trb3_index1 | 202     | NULL |    2 |   100.00 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from trb3 where name &gt; &#x27;sofa&#x27; and purchased &lt; &#x27;2020-01-01&#x27;;<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | range | trb3_index1   | trb3_index1 | 202     | NULL |    2 |    33.33 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from trb3 where purchased &lt; &#x27;2020-01-01&#x27;;<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | index | trb3_index1   | trb3_index1 | 206     | NULL |   10 |    33.33 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>index：虽然使用了索引中的字段进行查询，但是不满足最左前缀原则，则MySQL会在索引树中全树扫描，这就是index，如上面代码块中的第一个SQL和最后一个SQL。最后一个SQL使用index好理解，第一个SQL使用index个人认为是优化器发现索引树中的最小值 &gt; 查询条件’aa’，因此name &gt; ‘aa’就等于全树扫描，所以为index。如下当条件为name &gt; ‘ar’时，就使用了range，且任何条件大于索引树中的最小值的查询，都会使用range，而小于则全树扫描。<br>index的效率比ALL高一点点，毕竟扫描全树的IO事件比扫描全表的IO事件更少。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb3 where name &gt; &#x27;ar&#x27;;<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | range | trb3_index1   | trb3_index1 | 202     | NULL |    9 |   100.00 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>ALL：全表扫描，未走任何索引，效率最低。</li>
+</ul>
+<h3 id="6、possible-key"><a href="#6、possible-key" class="headerlink" title="6、possible key"></a>6、possible key</h3><p>可能使用的索引，没啥好讲的。</p>
+<h3 id="7、key"><a href="#7、key" class="headerlink" title="7、key"></a><font color="Red">7、key</font></h3><p>实际使用的索引，也没啥好讲。</p>
+<p>index hint是指，让MySQL按照我们的给定的索引去查询数据，主要有force index、use index和ignore index，也可以加上for join | order by | group by来指定索引使用的范围，如下SQL。具体使用见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/index-hints.html">官方文档</a>。</p>
+<p><font color="Blue">force index和use index的区别是：</font>force index会强制使用该索引，但use index是建议MySQL使用该索引，但是优化器还是会根据实际情况来选择是否要全表扫描。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb3 force index for order by (trb3_index1) where id3 &gt; 3 order by name;<br>+----+-------------+-------+------------+-------+---------------------+---------+---------+------+------+----------+-----------------------------+<br>| id | select_type | table | partitions | type  | possible_keys       | key     | key_len | ref  | rows | filtered | Extra                       |<br>+----+-------------+-------+------------+-------+---------------------+---------+---------+------+------+----------+-----------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | range | PRIMARY,trb3_index1 | PRIMARY | 4       | NULL |    7 |   100.00 | Using where; Using filesort |<br>+----+-------------+-------+------------+-------+---------------------+---------+---------+------+------+----------+-----------------------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h3 id="8、key-len"><a href="#8、key-len" class="headerlink" title="8、key_len"></a>8、key_len</h3><p>该字段指的是查询执行时实际使用的索引的总最大字节长度，当所有有多个字段时，可以通过这个来看一个查询具体使用了哪几个字段。int占用4个字节，varchar每一个字符占用4个字节和2个字符存储字符串长度（varchar中文实际上大部分占3个字节，少量才占用四个字节，这里按最大的算），因此varchar(50)占用202个字节。如下通过查看字节长度就可以发现使用了多字段索引中的哪几个字段。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb3 where id3 = 3;<br>+----+-------------+-------+------------+------+---------------------+---------+---------+-------+------+----------+-------+<br>| id | select_type | table | partitions | type | possible_keys       | key     | key_len | ref   | rows | filtered | Extra |<br>+----+-------------+-------+------------+------+---------------------+---------+---------+-------+------+----------+-------+<br>|  1 | SIMPLE      | trb3  | NULL       | ref  | PRIMARY,trb3_index1 | PRIMARY | 4       | const |    1 |   100.00 | NULL  |<br>+----+-------------+-------+------------+------+---------------------+---------+---------+-------+------+----------+-------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from trb3 where name &gt; &#x27;sdf&#x27;;<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | range | trb3_index1   | trb3_index1 | 202     | NULL |    5 |   100.00 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from trb3 where id3 = 3 and name &gt; &#x27;a&#x27;;<br>+----+-------------+-------+------------+-------+---------------------+---------+---------+------+------+----------+-------------+<br>| id | select_type | table | partitions | type  | possible_keys       | key     | key_len | ref  | rows | filtered | Extra       |<br>+----+-------------+-------+------------+-------+---------------------+---------+---------+------+------+----------+-------------+<br>|  1 | SIMPLE      | trb3  | NULL       | range | PRIMARY,trb3_index1 | PRIMARY | 206     | NULL |    1 |   100.00 | Using where |<br>+----+-------------+-------+------------+-------+---------------------+---------+---------+------+------+----------+-------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h3 id="9、ref"><a href="#9、ref" class="headerlink" title="9、ref"></a>9、ref</h3><p>该字段显示了用哪些列或常量来和索引字段去匹配以查询数据。当索引和一个常量匹配时，ref字段为const，当使用索引行进范围查询时，ref字段为NULL。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select * from trb2 where id2 in (select id from trb1 where name = &#x27;aquarium&#x27;);<br>+----+-------------+-------+-------------+--------+---------------+---------+---------+---------------+------+----------+-------------+<br>| id | select_type | table | partitions  | type   | possible_keys | key     | key_len | ref           | rows | filtered | Extra       |<br>+----+-------------+-------+-------------+--------+---------------+---------+---------+---------------+------+----------+-------------+<br>|  1 | SIMPLE      | trb2  | NULL        | ALL    | PRIMARY       | NULL    | NULL    | NULL          |    3 |   100.00 | NULL        |<br>|  1 | SIMPLE      | trb1  | p0,P1,P2,P3 | eq_ref | PRIMARY       | PRIMARY | 4       | test.trb2.id2 |    1 |    10.00 | Using where |<br>+----+-------------+-------+-------------+--------+---------------+---------+---------+---------------+------+----------+-------------+<br>2 rows in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from trb3 where id3 = if(id3 &gt; 3, 5, 2);<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>| id | select_type | table | partitions | type  | possible_keys | key         | key_len | ref  | rows | filtered | Extra                    |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>|  1 | SIMPLE      | trb3  | NULL       | index | NULL          | trb3_index1 | 206     | NULL |   12 |    10.00 | Using where; Using index |<br>+----+-------------+-------+------------+-------+---------------+-------------+---------+------+------+----------+--------------------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h3 id="10、rows"><a href="#10、rows" class="headerlink" title="10、rows"></a>10、rows</h3><p>rows列表示MySQL认为执行查询必须检查的行数。对于InnoDB表，此数字是估计值，可能并不总是准确的。</p>
+<h3 id="11、filtered"><a href="#11、filtered" class="headerlink" title="11、filtered"></a>11、filtered</h3><p>该列指的是按表条件过滤的表行的估计百分比。最大值为100，这表示未过滤行。值从100减小表示过滤量增加。rows × filtered的值表示与下表连接的行数。例如，如果行数为1000，过滤条件为50.00（50％），则与下表连接的行数为1000×50％= 500。</p>
+<h3 id="12、Extra"><a href="#12、Extra" class="headerlink" title="12、Extra"></a><font color="Red">12、Extra</font></h3><p>该列展示了SQL执行计划的额外信息，包括太多的内容，大部分是很少见的，以下主要解释几个重要的值得优化的内容：</p>
+<ul>
+<li><p>Using filesort：意为MySQL必须额外对检索出来的数据进行一次排序再输出这些数据。<br>排序是通过根据连接类型遍历所有行并存储与WHERE子句匹配的所有行的排序键和指向该行的指针来完成的。即排序会using filesort会遍历所有行，存储通过where条件筛选出的行的排序字段和指向该行的指针，再对排序字段值和指针进行排序，再按照指针顺序输出数据。<br>因此这种排序方式是特别慢的，排序优化见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/order-by-optimization.html">官方文档</a>。</p>
+</li>
+<li><p>Using index：仅使用索引树中的信息从表中检索列信息，而不必进行其他查找以读取实际行。</p>
+</li>
+<li><p>Using index condition：通过访问索引集并首先对其进行测试以确定是否需要读取完整的表。除非有必要整表扫描，否则索引信息将用于延迟（“下推push down”）再读取整个表行。<br>索引条件下推（Index Condition Pushdown）是针对MySQL使用using index从表中检索行的情况的一种优化。如果不使用ICP，则存储引擎将遍历索引以在基表中定位行，并将其返回给MySQL服务器，后者将评估这些行的WHERE条件。启用ICP后，如果仅可以使用索引中的列来评估WHERE条件的一部分，则MySQL服务器会将WHERE条件的这一部分下推到存储引擎。然后，存储引擎通过使用索引条目来评估推送的索引条件，并且只有在满足此条件的情况下，才从表中读取行。 ICP可以减少存储引擎必须访问基表的次数以及MySQL服务器必须访问存储引擎的次数。见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/index-condition-pushdown-optimization.html">官方文档</a>。</p>
+</li>
+<li><p>Using index for group-by：即有一个索引可以可用于检索GROUP BY或DISTINCT查询的所有列，类似于group by的索引覆盖。</p>
+</li>
+<li><p>Using temporary：使用临时表。</p>
+</li>
+<li><p>Using where：即存在where条件，且where字段不在任意一个索引中，不能使用索引树进行where匹配，而必须在检查所有行再把满足where条件的数据输出给客户端。</p>
+</li>
+</ul>
+<h2 id="三、explain的扩展输出格式"><a href="#三、explain的扩展输出格式" class="headerlink" title="三、explain的扩展输出格式"></a>三、explain的扩展输出格式</h2><p>explain输出列中的Extra列实际上并不是explain的，而是show warnings的结果，可以在使用explain后，可以紧跟着使用show warnings命令查看完整的extended information。</p>
+<p>8.0.12版本之前，show warnings只适用于select，8.0.12版本之后，它适用于select、delete、update、replace、insert。</p>
+<p>show warnings的message列显示了优化器如何限定select语句中的表名和列名，select语句在应用优化器的优化和重写之后的样子（会额外提供一些特殊标记，不一定是有效的SQL），以及其他与优化器处理有关的信息。如下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain select t1.id, t1.id in (select id from trb2) from trb1 t1;<br>+----+-------------+-------+-------------+-------+---------------+---------+---------+------+------+----------+-------------+<br>| id | select_type | table | partitions  | type  | possible_keys | key     | key_len | ref  | rows | filtered | Extra       |<br>+----+-------------+-------+-------------+-------+---------------+---------+---------+------+------+----------+-------------+<br>|  1 | PRIMARY     | t1    | p0,P1,P2,P3 | index | NULL          | PRIMARY | 4       | NULL |   10 |   100.00 | Using index |<br>|  2 | SUBQUERY    | trb2  | NULL        | ALL   | NULL          | NULL    | NULL    | NULL |    3 |   100.00 | NULL        |<br>+----+-------------+-------+-------------+-------+---------------+---------+---------+------+------+----------+-------------+<br>2 rows in set, 1 warning (0.00 sec)<br><br>mysql&gt; show warnings;<br>+-------+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+<br>| Level | Code | Message<br><br>                                                                                                                   |<br>+-------+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+<br>| Note  | 1003 | /* select#1 */ select `test`.`t1`.`ID` AS `id`,&lt;in_optimizer&gt;(`test`.`t1`.`ID`,`test`.`t1`.`ID` in ( &lt;materialize&gt; (/* select#2 */ select `test`.`trb2`.`id` from `test`.`trb2` where true having true ), &lt;primary_index_lookup&gt;(`test`.`t1`.`ID` in &lt;temporary table&gt; on &lt;auto_key&gt; where ((`test`.`t1`.`ID` = `materialized-subquery`.`id`))))) AS `t1.id in (select id from trb2)` from `test`.`trb1` `t1` |<br>+-------+------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+<br>1 row in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>show warnings中message列可能包含的特殊标记见<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/explain-extended.html">官方文档</a>，如下。</p>
+<ul>
+<li><p>&lt;auto_key&gt;<br>为临时表自动生成的索引。</p>
+</li>
+<li><p>&lt;cache&gt;(expr)<br>expr表达式执行一次，将结果保存在内存中备用。对于有很多个缓存值，MySQL会创建一个临时表，并显示&lt;temporary table&gt;。</p>
+</li>
+<li><p>&lt;exists&gt;(query fragment)<br>子查询将转换为EXISTS语句。和子查询优化有关，子查询优化有物化成临时表、semi join和转换成EXISTS语句等优化方法，其中如果使用转换成EXISTS这种优化方式时，可能就会有&lt;exists&gt;标记（盲猜的）。见官方文档<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/subquery-optimization.html">8.2.2 Optimizing Subqueries, Derived Tables, View References, and Common Table Expressions</a>。</p>
+</li>
+<li><p>&lt;in_optimizer&gt; (query fragment)<br>指这是一个内部优化器对象，对用户没有任何意义。</p>
+</li>
+<li><p>&lt;index_lookup&gt; (query fragment)<br>使用索引查找来处理查询片段以查找合格的行。</p>
+</li>
+<li><p>&lt;if&gt;(condition, expr1, expr2)<br>if条件，condition条件为真则执行expr1，否则执行expr2。</p>
+</li>
+<li><p>&lt;is_not_null_test&gt;(expr)<br>用于验证表达式是否为null的测试。</p>
+</li>
+<li><p>&lt;materialize&gt;(query fragment)<br>物化子查询，见&lt;exists&gt;。</p>
+</li>
+<li><p>`materialized-subquery`.col_name<br>一个子查询结果被物化成内部临时表后，这个临时表对某一列的引用。</p>
+</li>
+<li><p>&lt;primary_index_lookup&gt;(query fragment)<br>使用主键查找来处理查询片段以查找合格的行。</p>
+</li>
+<li><p>&lt;ref_null_helper&gt;(expr)<br>这是一个内部优化器对象，对用户没有任何意义。</p>
+</li>
+<li><p>/* select#N */ select_stmt<br>指与explain中对应的某一个SELECT语句，N即为explain中的id。</p>
+</li>
+<li><p>outer_tables semi join (inner_tables)<br>半联接操作。inner_tables显示未拉出的表。见&lt;exists&gt;。</p>
+</li>
+<li><p>&lt;temporary table&gt;(expr)<br>为缓存结果创建的一个临时表。</p>
+</li>
+</ul>
+<h2 id="四、explain的其他用法"><a href="#四、explain的其他用法" class="headerlink" title="四、explain的其他用法"></a>四、explain的其他用法</h2><h3 id="explain-for-connection"><a href="#explain-for-connection" class="headerlink" title="explain for connection"></a>explain for connection</h3><p>可以通过show processlist查看连接线程列表，或通过select connection_id()查看当前连接线程的id。</p>
+<p>explain for connection connection_id的用处是查看id为connection_id的线程当前正在执行的SQL语句的执行计划。如果那个线程当前没有执行SQL语句，则结果为空；如果那个线程当前执行的SQL语句不是select、update、replace、insert、delete中的任意一个，则会报错。如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; show processlist;<br>+-----+-----------------+-----------------+-------+---------+--------+------------------------+------------------+<br>| Id  | User            | Host            | db    | Command | Time   | State                  | Info             |<br>+-----+-----------------+-----------------+-------+---------+--------+------------------------+------------------+<br>|   4 | event_scheduler | localhost       | NULL  | Daemon  | 733424 | Waiting on empty queue | NULL             |<br>| 508 | root            | localhost:2004  | test  | Query   |      0 | starting               | show processlist |<br>| 509 | root            | localhost:1748  | xxxx | Sleep   |    275 |                        | NULL             |<br>| 510 | root            | localhost:5639  | xxxx | Sleep   |    275 |                        | NULL             |<br>| 515 | root            | localhost:13576 | xxxx   | Sleep   |  45170 |                        | NULL             |<br>| 516 | root            | localhost:13578 | xxxx   | Sleep   |  45170 |                        | NULL             |<br>+-----+-----------------+-----------------+-------+---------+--------+------------------------+------------------+<br>6 rows in set (0.00 sec)<br><br>mysql&gt; explain for connection 516;<br>Query OK, 0 rows affected (0.00 sec)<br><br>mysql&gt; explain for connection 508;<br>ERROR 3012 (HY000): EXPLAIN FOR CONNECTION command is supported only for SELECT/UPDATE/INSERT/DELETE/REPLACE<br></code></pre></td></tr></table></figure>
+
+<h3 id="explain-table-name"><a href="#explain-table-name" class="headerlink" title="explain table_name"></a>explain table_name</h3><p><code>explain table_name</code> = <code>show columns from table_name</code> = <code>describe table_name</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; explain trb1;<br>+-----------+-------------+------+-----+---------+----------------+<br>| Field     | Type        | Null | Key | Default | Extra          |<br>+-----------+-------------+------+-----+---------+----------------+<br>| ID        | int(11)     | NO   | PRI | NULL    | auto_increment |<br>| name      | varchar(50) | YES  |     | NULL    |                |<br>| purchased | date        | YES  |     | NULL    |                |<br>+-----------+-------------+------+-----+---------+----------------+<br>3 rows in set (0.01 sec)<br></code></pre></td></tr></table></figure>
+
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>explain的用处其实就是让MySQL告诉你某一个SQL查询执行时，优化器会怎么优化它，存储引擎会采用怎样的表连接方式，采用哪些索引，执行该SQL必须扫描的行数量（估计数），和其他可以用于SQL优化的信息。通过获取这些信息，我们就可以发现一个SQL语句执行慢的原因，并作出合理的优化。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL查询执行计划详解-explain</div>
+      <div>https://yury757.github.io/database/mysql/MySQL查询执行计划详解-explain/MySQL查询执行计划详解-explain/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>October 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/operating-support/docker/docker/" title="docker">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">docker</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/database/mysql/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/" title="MySQL日期格式化">
+                        <span class="hidden-mobile">MySQL日期格式化</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

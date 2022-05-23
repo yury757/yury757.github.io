@@ -1,0 +1,765 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="〇、索引的本质索引本质就是一个排好序的数据结构，实现这种快速排序、插入、查找等操作的数据结构有：平衡二叉树、红黑树、多路查找树（其中平衡的多路查找树就是B-Tree）等。 一、索引的类型1、B-Tree索引B-Tree，即平衡的多路查找树。具体解释参考其他文章。B-Tree适用于全键值、键值范围、键前缀查找。匹配原则如下（只列出了比较重要的）：  匹配最左前缀：where条件中的字段会先匹配索引最">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第五章-创建高性能的索引">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="〇、索引的本质索引本质就是一个排好序的数据结构，实现这种快速排序、插入、查找等操作的数据结构有：平衡二叉树、红黑树、多路查找树（其中平衡的多路查找树就是B-Tree）等。 一、索引的类型1、B-Tree索引B-Tree，即平衡的多路查找树。具体解释参考其他文章。B-Tree适用于全键值、键值范围、键前缀查找。匹配原则如下（只列出了比较重要的）：  匹配最左前缀：where条件中的字段会先匹配索引最">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yury757.github.io/images/MyISAM数据分布.png">
+<meta property="og:image" content="https://yury757.github.io/images/InnoDB和MyISAM的区别.PNg">
+<meta property="article:published_time" content="2020-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:37:14.359Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yury757.github.io/images/MyISAM数据分布.png">
+  
+  
+  
+  <title>第五章-创建高性能的索引 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第五章-创建高性能的索引"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-12-01 00:00" pubdate>
+          December 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.4k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          37 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第五章-创建高性能的索引</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="〇、索引的本质"><a href="#〇、索引的本质" class="headerlink" title="〇、索引的本质"></a>〇、索引的本质</h2><p>索引本质就是一个排好序的数据结构，实现这种快速排序、插入、查找等操作的数据结构有：平衡二叉树、红黑树、多路查找树（其中平衡的多路查找树就是B-Tree）等。</p>
+<h2 id="一、索引的类型"><a href="#一、索引的类型" class="headerlink" title="一、索引的类型"></a>一、索引的类型</h2><h3 id="1、B-Tree索引"><a href="#1、B-Tree索引" class="headerlink" title="1、B-Tree索引"></a>1、B-Tree索引</h3><p>B-Tree，即平衡的多路查找树。具体解释参考其他文章。B-Tree适用于<strong>全键值、键值范围、键前缀查找</strong>。匹配原则如下（只列出了比较重要的）：</p>
+<ul>
+<li><p>匹配最左前缀：<font color="Blue">where条件中的字段会先匹配索引最左边的字段，如果匹配则适用该索引，并依次匹配后面的字段，直到无效为止，<strong>前面匹配到的字段依然适用索引</strong>；若一开始最左边的字段就不匹配，则不适用于该索引。</font></p>
+</li>
+<li><p>匹配列前缀：在满足最左前缀的前提下，可以匹配某一列的值的开头部分。如某一个索引字段为（A, B）两个字段，如以下where都是可以使用该索引的。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">WHERE A = &#x27;a&#x27; AND B LIKE &#x27;b%&#x27;<br>WHERE A LIKE &#x27;a%&#x27; AND B = &#x27;b&#x27;<br>WHERE A LIKE &#x27;a%&#x27; AND B LIKE &#x27;b%&#x27;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>匹配范围值：这里所说的范围查询包括between、in、&gt;、&lt;。</p>
+</li>
+<li><p>精确匹配前一列，并范围匹配后面的列。</p>
+</li>
+<li><p>只访问索引的查询，即<strong>索引覆盖</strong>。</p>
+</li>
+<li><p>order by也可以使用索引，且where字段可以和order by字段拼接来匹配索引。</p>
+</li>
+</ul>
+<h3 id="2、hash索引"><a href="#2、hash索引" class="headerlink" title="2、hash索引"></a>2、hash索引</h3><p>在MySQL中，只有memory引擎显示支持hash索引。hash索引也是memory引擎的默认索引类型。hash索引有以下特征：</p>
+<ul>
+<li><p>对索引字段使用=，&lt;=&gt;，IN速度特别快，但不支持&gt;和&lt;。</p>
+</li>
+<li><p>无法使用hash索引来加快order by的速度，因为其不是按照哈希值顺序存储的。</p>
+</li>
+<li><p>无法使用like匹配前缀来加快查询速度。</p>
+</li>
+<li><p>hash索引只存储哈希值和行指针，不存储字段值。</p>
+</li>
+<li><p>当出现hash冲突时，必须遍历冲突值来获取匹配结果。</p>
+</li>
+</ul>
+<h4 id="自适应哈希索引"><a href="#自适应哈希索引" class="headerlink" title="自适应哈希索引"></a>自适应哈希索引</h4><p>InnoDB引擎有一个特殊的功能叫做“自适应哈希索引（adaptive hash index)”。当InnoDB注意到某些索引值被使用得非常频繁时，它会在内存中基于B-Tree索引之上再创建一个哈希索引，这样就让B-Tree索引也具有哈希索引的一些优点，比如快速的哈希查找。这是一个完全自动的、内部的行为，用户无法控制或者配置，不过如果有必要，完全可以关闭该功能。 </p>
+<h4 id="自定义哈希索引"><a href="#自定义哈希索引" class="headerlink" title="自定义哈希索引"></a>自定义哈希索引</h4><p>可以通过自定义哈希函数，将对应的字段值通过通过一个自定义哈希函数计算出哈希值列，将这些哈希值额外存在一个字段中。</p>
+<p>这样的好处就是，<font color="Red">当需要检索的那些字段很长时，需要的索引也很大，性能较低，而哈希值很短，索引也很小，性能较高。查询时需要查询匹配值的哈希值和匹配值两个字段，哈希值快速缩小范围，当出现冲突时，使用匹配值精确匹配。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs mysql">CREATE TABLE pseudohash(<br>    id int unsigned NOT NULL auto_increment,<br>    url varchar(255) NOT NULL,<br>    url_crc int unsigned NOT NULL DEFAULT 0,<br>    primary key(id)<br>);<br><br>DELIMITER //<br>CREATE TRIGGER pseudohash_crc_ins BEFORE INSERT ON pseudohash FOR EACH ROW BEGIN<br>SET NEW.url_crc = crc32(NEW.url);<br>END;<br>//<br>CREATE TRIGGER pseudohash_crc_upd BEFORE UPDATE ON pseudohash FOR EACH ROW BEGIN<br>SET NEW.url_crc = crc32(NEW.url);<br>END;<br>//<br>DELIMITER ;<br><br>insert into pseudohash(url) values (&#x27;http://www.mysql.com&#x27;);<br><br>select * from pseudohash where url_crc = CRC32(&#x27;http://www.mysql.com&#x27;) and url = &#x27;http://www.mysql.com&#x27;;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="3、空间数据索引（R-Tree）"><a href="#3、空间数据索引（R-Tree）" class="headerlink" title="3、空间数据索引（R-Tree）"></a>3、空间数据索引（R-Tree）</h3><p>MyISAM引擎支持R-Tree，可以用于存储空间相关数据，如地理数据。</p>
+<h3 id="4、全文索引（FULLTEXT）"><a href="#4、全文索引（FULLTEXT）" class="headerlink" title="4、全文索引（FULLTEXT）"></a>4、全文索引（FULLTEXT）</h3><p>全文索引是一种特殊类型的索引，它查找的是文本中的关键词，而不是直接比较索引中的值，更类似于搜索引擎做的事。</p>
+<p>简单介绍几个全文索引的特点，有需要去查看官方文档或其他文章。</p>
+<ul>
+<li>只能构建在char、varchar、text类型上</li>
+<li>通过全文索引的查询有自己特殊的语法<code>match(index_column) again(&#39;xxxx&#39;)</code></li>
+<li>全文索引的检索有最小搜索长度和最大搜索长度限制（可以通过修改my.ini修改配置），表的行数量条件要求，以及各种殷勤和版本限制等。</li>
+</ul>
+<h2 id="二、索引的优点"><a href="#二、索引的优点" class="headerlink" title="二、索引的优点"></a>二、索引的优点</h2><ul>
+<li>大大减少了服务器需要扫描的数据量</li>
+<li>帮助服务器避免了排序或临时表</li>
+<li>将随机IO变为顺序IO</li>
+</ul>
+<h3 id="额外的IO知识"><a href="#额外的IO知识" class="headerlink" title="额外的IO知识"></a>额外的IO知识</h3><ul>
+<li><p><font color="Blue">IO请求的时间主要有三块：寻道时间、旋转延迟、数据传输时间。寻道时间 &gt; 旋转延迟 &gt; 数据传输时间。</font></p>
+</li>
+<li><p><font color="Blue">顺序IO是指读写操作的访问地址连续，寻址时间极大减少，性能高。随机IO是指读写操作访问地址不连续，磁头需要不停的移动，时间都浪费在磁头寻址上了，所以性能较差。</font></p>
+</li>
+</ul>
+<p><font color="Blue">详见：<a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/05/19/about-desk-io.html">https://tech.meituan.com/2017/05/19/about-desk-io.html</a></font></p>
+<h2 id="三、高性能的索引策略"><a href="#三、高性能的索引策略" class="headerlink" title="三、高性能的索引策略"></a>三、高性能的索引策略</h2><h3 id="1、提高索引的选择性"><a href="#1、提高索引的选择性" class="headerlink" title="1、提高索引的选择性"></a>1、提高索引的选择性</h3><p><font color="Red">索引的选择性</font>，是指不重复的索引值和表的总记录数的比值，即count(distinct column) / count(1)的值。</p>
+<p>索引的选择性越高，则查询效率越高，因为选择性高的索引可以让MySQL在查询时过滤掉更多的行。对应的可以在explain中查看filtered字段，filtered越高说明通过索引过滤掉的行越多，索引效率越高。</p>
+<p>在char、varchar、text上可以构建前缀索引，即指定长度来对字符串的前几个字符构建索引。text必须使用<font color="Red">前缀索引</font>，varchar可以不指定前缀长度。然而varchar很长时，会导致索引很大效率低，构建一个较短的前缀索引还是有必要的。<font color="Red">关键在于，要使前缀索引对记录的过滤率（选择性）尽可能向完整长度索引对记录的过滤率（选择性）靠近。这样既达到了提高效率节省空间的作用，还实现了高效的数据查询。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs mysql">SELECT COUNT(DISTINCT city)/COUNT(*) FROM sakila.city_demo;<br><br>SELECT<br>COUNT(DISTINCT LEFT(city, 3))/COUNT(*) AS sel3，<br>COUNT(DISTINCT LEFT(city, 4))/COUNT(*) AS sel4，<br>COUNT(DISTINCT LEFT(city, 5))/COUNT(*) AS sel5，<br>COUNT(DISTINCT LEFT(city, 6))/COUNT(*) AS sel6，<br>COUNT(DISTINCT LEFT(city, 7))/COUNT(*) AS sel7<br>FROM sakila.city_demo；<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、多列索引"><a href="#2、多列索引" class="headerlink" title="2、多列索引"></a>2、多列索引</h3><p>应该构建合适的多列索引，而不是对每一列构建一个索引。</p>
+<h3 id="3、索引顺序"><a href="#3、索引顺序" class="headerlink" title="3、索引顺序"></a>3、索引顺序</h3><p><font color="Red">将选择性最高的索引放在索引最前列。</font></p>
+<h3 id="4、聚簇索引"><a href="#4、聚簇索引" class="headerlink" title="4、聚簇索引"></a>4、聚簇索引</h3><p><font color="Red">聚簇索引</font>：在B+Tree的基础上，每个叶子节点不仅有索引字段值，还有该索引字段对应的实际的数据行。因为无法把数据行放在两个不同的地方，因此一个表只能有一个聚簇索引，实际上聚簇索引“就是”表本身。<font color="Red">聚簇索引并不是一种基本索引类型，而是一种数据分布策略。</font></p>
+<p>对于InnoDB，如果有主键，则主键就是聚簇索引；如果未定义主键，则会使用unique键字段作为聚簇索引；如果都没有，则会隐式定义一个主键作为聚簇索引。</p>
+<p>二级索引定位行需要两次查找，第一次定位到二级索引上保存的即聚簇索引键，第二次通过聚簇索引键定位到实际的行数据。</p>
+<h3 id="5、InnoDB和MyISAM的数据分布对比"><a href="#5、InnoDB和MyISAM的数据分布对比" class="headerlink" title="5、InnoDB和MyISAM的数据分布对比"></a>5、InnoDB和MyISAM的数据分布对比</h3><h4 id="（1）MyISAM"><a href="#（1）MyISAM" class="headerlink" title="（1）MyISAM"></a>（1）MyISAM</h4><ul>
+<li>不支持聚簇索引，数据是按照插入顺序存储在磁盘中的。</li>
+<li>在数据之外还有一个行号，用于查找该行的指针。</li>
+<li><font color="Red">主键索引和二级索引没有本质区别，分布方式都是把索引列排序后加上行号，因此无论是主键索引还是二级索引，都要通过两次寻址才能获取数据。</font></li>
+</ul>
+<img src="/images/MyISAM数据分布.png" srcset="/img/loading.gif" lazyload style="zoom:50%;">
+
+<h4 id="（2）InnoDB"><a href="#（2）InnoDB" class="headerlink" title="（2）InnoDB"></a>（2）InnoDB</h4><ul>
+<li>数据是按照主键大小排序插入，若没有设置主键，则会给定一个隐式自增主键。这个主键代替MyISAM的行号。</li>
+<li>支持聚簇索引，聚簇索引已经包含了整个表的数据，且还包含了事务ID、用于事务和MVCC的回滚指针等其他数据。</li>
+<li>二级索引只有索引列和主键列。<font color="Red">因此通过主键查找行只要一次寻址，而通过二级索引还是需要两次寻址。</font></li>
+</ul>
+<img src="/images/InnoDB和MyISAM的区别.PNg" srcset="/img/loading.gif" lazyload style="zoom:50%;">
+
+<h4 id="（3）Tips"><a href="#（3）Tips" class="headerlink" title="（3）Tips"></a>（3）Tips</h4><p><font color="Red">在IO密集的应用中，最好避免使用随机的主键（如UUID）来做聚簇索引的主键，原因如下：。</font></p>
+<ul>
+<li>每次生成的UUID不一定比之前的大，所以InnoDB无法简单地将新行插入到索引的最后面，要找到合适的位置，就会导致大量的随机IO</li>
+<li>因为写入是乱序的，InnoDB不得不频繁地做页分裂操作，以便为新的行分配空间。页分裂会导致移动大量数据，一次插入最少需要修改三个页而不是一个页。</li>
+<li>由于频繁的页分裂，页会变得稀疏并被不规则地填充，所以最终数据会有碎片。</li>
+</ul>
+<h4 id="（4）auto-increment的缺点"><a href="#（4）auto-increment的缺点" class="headerlink" title="（4）auto_increment的缺点"></a>（4）auto_increment的缺点</h4><p>在高并发的情况下，在InnoDB中按主键顺序插入可能会造成明显的争用。一方面主键的上界会成为热点，因为所有的插入操作都在这里，高并发可能会导致<font color="Red">间隙锁</font>（简单来说就是主键键值之间的距离的锁，该锁可以阻塞insert操作，防止幻读）竞争。另一方面，auto_increment的锁机制也是一个热点。如果遇到插入争用问题，则可能需要考虑重新设计表结构或者应用，或者更改innodb_autoinc_lock_mode配置。</p>
+<h3 id="6、覆盖索引"><a href="#6、覆盖索引" class="headerlink" title="6、覆盖索引"></a>6、覆盖索引</h3><p>定义：如果一个索引包含（或者说覆盖）所有需要查询的字段，则称这个情况为“覆盖索引”。</p>
+<p>覆盖索引是针对某一个sql语句来判断的，所以只能称之为一种特殊情况。</p>
+<p>出现“覆盖索引”时，查询数据不需要回表，因为索引中已经有了我们需要的数据，因此覆盖索引的效率很高。</p>
+<h3 id="7、使用索引来优化排序"><a href="#7、使用索引来优化排序" class="headerlink" title="7、使用索引来优化排序"></a>7、使用索引来优化排序</h3><h4 id="Tips-1"><a href="#Tips-1" class="headerlink" title="Tips 1"></a>Tips 1</h4><p><font color="Red">出现“覆盖索引”时，在explain中的extra字段会出现“using index”值。而explain中的type字段中的“index”意思是访问数据的类型，例如全表扫描、范围扫描、索引扫描、常数引用等，对于索引扫描，意思是，访问数据只需要扫描索引，不需要回表查找数据。</font></p>
+<h4 id="Tips-2"><a href="#Tips-2" class="headerlink" title="Tips 2"></a>Tips 2</h4><p><font color="Red">如果查询需要关联多张表，则只有当order by子句引用的字段都是第一张表时，才能使用索引进行排序。</font></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第五章-创建高性能的索引</div>
+      <div>https://yury757.github.io/database/mysql/《高性能MySQL》/第5章-创建高性能的索引/第五章-创建高性能的索引/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>December 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/" title="第二章-MySQL基准测试">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第二章-MySQL基准测试</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/" title="第三章-服务器性能剖析">
+                        <span class="hidden-mobile">第三章-服务器性能剖析</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

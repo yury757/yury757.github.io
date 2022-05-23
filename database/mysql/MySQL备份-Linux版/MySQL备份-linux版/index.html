@@ -1,0 +1,881 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、该文档适用版本MySQL：8.0.22 Linux：18.04.5 LTS 二、MySQL在Linux上各种的默认路径   MySQL变量 路径 解释    datadir &#x2F;var&#x2F;lib&#x2F;mysql 存放数据文件、log_bin日志文件等   log-error &#x2F;var&#x2F;log&#x2F;mysql&#x2F;error.log 错误日志文件    &#x2F;etc&#x2F;mysql 存放MySQL配置文件   base">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL备份-Linux版">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/MySQL%E5%A4%87%E4%BB%BD-Linux%E7%89%88/MySQL%E5%A4%87%E4%BB%BD-linux%E7%89%88/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="一、该文档适用版本MySQL：8.0.22 Linux：18.04.5 LTS 二、MySQL在Linux上各种的默认路径   MySQL变量 路径 解释    datadir &#x2F;var&#x2F;lib&#x2F;mysql 存放数据文件、log_bin日志文件等   log-error &#x2F;var&#x2F;log&#x2F;mysql&#x2F;error.log 错误日志文件    &#x2F;etc&#x2F;mysql 存放MySQL配置文件   base">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:33:47.999Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MySQL备份-Linux版 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL备份-Linux版"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-12-01 00:00" pubdate>
+          December 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          11k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          88 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL备份-Linux版</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="一、该文档适用版本"><a href="#一、该文档适用版本" class="headerlink" title="一、该文档适用版本"></a>一、该文档适用版本</h2><p>MySQL：8.0.22</p>
+<p>Linux：18.04.5 LTS</p>
+<h2 id="二、MySQL在Linux上各种的默认路径"><a href="#二、MySQL在Linux上各种的默认路径" class="headerlink" title="二、MySQL在Linux上各种的默认路径"></a>二、MySQL在Linux上各种的默认路径</h2><table>
+<thead>
+<tr>
+<th>MySQL变量</th>
+<th>路径</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>datadir</td>
+<td>/var/lib/mysql</td>
+<td align="left">存放数据文件、log_bin日志文件等</td>
+</tr>
+<tr>
+<td>log-error</td>
+<td>/var/log/mysql/error.log</td>
+<td align="left">错误日志文件</td>
+</tr>
+<tr>
+<td></td>
+<td>/etc/mysql</td>
+<td align="left">存放MySQL配置文件</td>
+</tr>
+<tr>
+<td>basedir</td>
+<td>/usr/</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>character_sets_dir</td>
+<td>/usr/share/mysql-8.0/charsets/</td>
+<td align="left">字符集路径</td>
+</tr>
+<tr>
+<td>general_log_file</td>
+<td>/var/lib/mysql/yuyr757.log</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>lc_messages_dir</td>
+<td>/usr/share/mysql-8.0/</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>log_bin_basename</td>
+<td>/var/lib/mysql/binlog</td>
+<td align="left">bin_log日志文件路径和文件名前缀</td>
+</tr>
+<tr>
+<td>log_bin_index</td>
+<td>/var/lib/mysql/binlog.index</td>
+<td align="left">bin_log日志文件索引</td>
+</tr>
+<tr>
+<td>log_error</td>
+<td>/var/log/mysql/error.log</td>
+<td align="left">报错日志</td>
+</tr>
+<tr>
+<td>plugin_dir</td>
+<td>/usr/lib/mysql/plugin/</td>
+<td align="left">插件路径</td>
+</tr>
+<tr>
+<td>pid_file</td>
+<td>/var/run/mysqld/mysqld.pid</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>relay_log_basename</td>
+<td>/var/lib/mysql/yuyr757-relay-bin</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>relay_log_index</td>
+<td>/var/lib/mysql/yuyr757-relay-bin.index</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>secure_file_priv</td>
+<td>/var/lib/mysql-files/</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>slow_query_log_file</td>
+<td>/var/lib/mysql/yuyr757-slow.log</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>socket</td>
+<td>/var/run/mysqld/mysqld.sock</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>sql_log_off</td>
+<td>OFF</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td>tmpdir</td>
+<td>/tmp</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">/usr/bin                 客户端程序和脚本  <br>/usr/sbin                mysqld 服务器  <br>/var/lib/mysql           日志文件，数据文件<br>/usr/share/doc/packages  文档  <br>/usr/include/mysql       包含( 头) 文件  <br>/usr/lib/mysql           库  <br>/usr/share/mysql         错误消息和字符集文件  <br>/usr/share/sql-bench     基准程序 <br></code></pre></td></tr></table></figure>
+
+<h2 id="三、热备份（不需要关闭服务器）"><a href="#三、热备份（不需要关闭服务器）" class="headerlink" title="三、热备份（不需要关闭服务器）"></a>三、热备份（不需要关闭服务器）</h2><h3 id="1、mysqldump"><a href="#1、mysqldump" class="headerlink" title="1、mysqldump"></a>1、mysqldump</h3><p>mysqldump用法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">Usage: mysqldump [OPTIONS] database [tables]<br>OR     mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...]<br>OR     mysqldump [OPTIONS] --all-databases [OPTIONS]<br><br>Default options are read from the following files in the given order:<br>/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf<br></code></pre></td></tr></table></figure>
+
+<p>[OPTIONS]参数很多，和mysql命令参数差不多，有需要自行查看<code>mysqldump --help</code>，以下讲解常用参数。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell">-u, --user：用户名<br>-p, --password：密码，该参数不能带值<br>-h, --host：服务器地址<br>-P, --port：端口<br>-A, --all-databses：所有数据库<br>-S, --socket：用来连接服务器的socket文件<br>-B, --databses：指定要导出的数据库，默认情况下生成的sql文件是不带create database if not exists语句的，加上--database就会有创建数据库的语句。<br>-R, --routines：导出数据库中的procedures和functions<br>--triggers：导出对应表的触发器<br>-E, --events：导出所有事件<br>-w, --where：按照指定where条件下的数据<br>--single-transaction：通过开启一个事务导出所有表来创建一致的快照（个人理解为导出的一瞬间创建一个快照，然后导出的数据都是基于那个快照版本，可以保持数据一致性）。仅适用于存储在支持多版本的存储引擎中的表（当前仅InnoDB支持）；<br>-d, --no-data：不导出数据<br>-t, --no-create-info：不重建数据库和表结构，即不输出drop database并create database，drop table并create table语句<br></code></pre></td></tr></table></figure>
+
+<p>下面是对一个test数据库的全备份</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">mysqldump -u root -p --single-transaction --routines --events --triggers --databases test &gt; /tmp/test.sql<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、select-into-outfile"><a href="#2、select-into-outfile" class="headerlink" title="2、select into outfile"></a>2、select into outfile</h3><p><font color="Red">注意：如果<code>secure_file_priv</code>变量不为空，则outfile的文件只能导出到那个变量的文件夹。</font></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 在一个正常的select语句结束，加上以下语句到sql语句结尾，即可将select出来的数据导出到文件</span><br>INTO OUTFILE &#x27;/tmp/employee_data_1.txt&#x27;<br>FIELDS TERMINATED BY &#x27;,&#x27; OPTIONALLY ENCLOSED BY &#x27;&quot;&#x27; ESCAPED BY &#x27;\&#x27; LINES TERMINATED BY &#x27;\n&#x27;;<br><br>FIELDS TERMINATED BY # 字段分隔符<br>ENCLOSED BY          # 字段引用符，即字段左右两端会加上符号。OPTIONALLY即选择性，int和decimal不会被加上引用符，其他会。<br>LINES TERMINATED BY  # 行分隔符<br>ESCAPED BY           # 转义符，当文本中的符号和这里设置的符号冲突时，输出到csv时会自动给文本加上转义符，即表示转义符后面的这个符号是纯文本，不用做字段分隔，或字段引用，或行分隔符，或转义作用。<br><br>在Linux中，显示加上ESCAPED BY &#x27;\&#x27;时，sql语句没有任何响应。显示加上显示加上ESCAPED BY &#x27;\\&#x27;会报错。很迷，无所谓，反正默认为&#x27;\&#x27;。<br></code></pre></td></tr></table></figure>
+
+<p><strong>示例1</strong>（以下\t和\n都是手敲进去的，实际上查数据时\t和\n都会显示为缩进和换行）：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">mysql&gt;</span><span class="bash"> select * from test2;</span><br>+----+---------+------------+------------------------------+-------------------+<br>| id | value   | date       | text                         | decimal_value     |<br>+----+---------+------------+------------------------------+-------------------+<br>|  1 | &#x27;sfas1&#x27; | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |<br>|  2 | sfsa2   | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |<br>|  3 | sfsa3   | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |<br>|  4 | NULL    | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |<br>|  5 | _abcd_  | 2021-01-17 | sdfasdf&quot;asdf\tasdf&quot;as,df\as\nf | 436526.7780000000 |<br>+----+---------+------------+------------------------------+-------------------+<br>5 rows in set (0.00 sec)<br><span class="hljs-meta"></span><br><span class="hljs-meta">mysql&gt;</span><span class="bash"> select * from test2 into outfile <span class="hljs-string">&#x27;/var/lib/mysql-files/test.csv&#x27;</span> FIELDS TERMINATED BY <span class="hljs-string">&#x27;,&#x27;</span> OPTIONALLY ENCLOSED BY <span class="hljs-string">&#x27;&quot;&#x27;</span> lines terminated by <span class="hljs-string">&#x27;\n&#x27;</span>;</span><br>Query OK, 5 rows affected (0.00 sec)<br><br>vim /var/lib/mysql-files/test.csv<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 数据如下：</span><br>1,&quot;&#x27;sfas1&#x27;&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf asdf\&quot;as,df\\as\<br>f&quot;,436526.7780000000<br>2,&quot;sfsa2&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf   asdf\&quot;as,df\\as\<br>f&quot;,436526.7780000000<br>3,&quot;sfsa3&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf   asdf\&quot;as,df\\as\<br>f&quot;,436526.7780000000<br>4,\N,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf        asdf\&quot;as,df\\as\<br>f&quot;,436526.7780000000<br>5,&quot;_abcd_&quot;,&quot;2021-01-17&quot;,&quot;sdfasdf\&quot;asdf  asdf\&quot;as,df\\as\<br>f&quot;,436526.7780000000<br></code></pre></td></tr></table></figure>
+
+<p>解释：</p>
+<ul>
+<li><p><code>,</code>虽然为字段分隔符，但有字段引用符的存在，所以不需要转义。没有字段引用符的例子见后面</p>
+</li>
+<li><p> <code>\N</code>表示MySQL中的NULL</p>
+</li>
+<li><p><code>&quot;</code>需要转义，所以csv中表示为<code>\&quot;</code></p>
+</li>
+<li><p><code>\t</code>不需要被转义，因此在csv中表示为<code>\t</code>，用vim查看时即显示为若干个空格。</p>
+</li>
+<li><p><code>\n</code>需要转义，所以在csv中为<code>\\n</code>，用vim查看时即显示为<code>\</code>再换行。</p>
+</li>
+</ul>
+<p><strong>示例2：</strong>（不带字段引用符）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">mysql&gt;</span><span class="bash"> select * from test2 into outfile <span class="hljs-string">&#x27;/var/lib/mysql-files/test.csv&#x27;</span> FIELDS TERMINATED BY <span class="hljs-string">&#x27;,&#x27;</span> lines terminated by <span class="hljs-string">&#x27;\n&#x27;</span>;</span><br>Query OK, 5 rows affected (0.00 sec)<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 数据如下，可以看到text列中的逗号就带上了\，而双引号就没有带\</span><br><span class="bash">1,<span class="hljs-string">&#x27;sfas1&#x27;</span>,2021-01-17,sdfasdf<span class="hljs-string">&quot;asdf       asdf&quot;</span>as\,df\\as\</span><br><span class="bash">f,436526.7780000000</span><br>2,sfsa2,2021-01-17,sdfasdf&quot;asdf asdf&quot;as\,df\\as\<br>f,436526.7780000000<br>3,sfsa3,2021-01-17,sdfasdf&quot;asdf asdf&quot;as\,df\\as\<br>f,436526.7780000000<br>4,\N,2021-01-17,sdfasdf&quot;asdf    asdf&quot;as\,df\\as\<br>f,436526.7780000000<br>5,_abcd_,2021-01-17,sdfasdf&quot;asdf        asdf&quot;as\,df\\as\<br>f,436526.7780000000<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、percona的xtrabackup"><a href="#3、percona的xtrabackup" class="headerlink" title="3、percona的xtrabackup"></a>3、percona的xtrabackup</h3><p>percona是一个提供数据库工具一个第三方供应商，xtrabackup是他的一个用于数据库备份的产品，使用方法略，因为我也没用过。</p>
+<h2 id="四、冷备份（需要关闭服务器）"><a href="#四、冷备份（需要关闭服务器）" class="headerlink" title="四、冷备份（需要关闭服务器）"></a>四、冷备份（需要关闭服务器）</h2><p><font color="Red">本人在windows上使用8.0.17版本的MySQL在import tablespace时不要cfg文件，不知道是windows版本的原因，还是8.0.17版本的原因，懒得追究了。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs mysql"># 用一个test表来做测试<br>create table test(id int primary key);<br><br># 将该步骤确保所有对表的修改全部写入到二进制文件中，并将表加上锁，只允许读操作，不允许写操作<br>flush tables test for export;<br><br># 将test.ibd表空间文件和test.cfg元数据文件复制一份命名为tmp.ibd、tmp.cfg<br>cp test.ibd tmp.ibd<br>cp test.cfg tmp.cfg<br><br># 解除锁表<br>unlock tables;<br><br># 修改表名为你需要的复制的表<br>alter table test rename to test22;<br><br># 创建一张原表<br>create table test like test22;<br><br># 删除表空间<br>alter table test discard tablespace;<br><br># 将备份的表空间文件和元数据文件恢复<br>mv tmp.ibd test.ibd<br>mv tmp.cfg test.cfg<br><br># 更改文件的所属用户，否则会出现权限错误<br>chown -R mysql.mysql .<br><br># 恢复表空间<br>alter table test import tablespace;<br><br># 解除锁表<br>unlock tables;<br><br># 待所有恢复都成功了之后，再删除cfg文件<br>rm test.cfg<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="五、数据恢复"><a href="#五、数据恢复" class="headerlink" title="五、数据恢复"></a>五、数据恢复</h2><h3 id="1、MySQL中的source命令"><a href="#1、MySQL中的source命令" class="headerlink" title="1、MySQL中的source命令"></a>1、MySQL中的source命令</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 注意这个是MySQL的命令，而不是Linux命令</span><br>source /tmp/test.sql # 即执行test.sql中的全部语句<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、MySQL中的load-data命令"><a href="#2、MySQL中的load-data命令" class="headerlink" title="2、MySQL中的load data命令"></a>2、MySQL中的load data命令</h3><p>MySQL官网的load data命令语法如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs shell">LOAD DATA<br>    [LOW_PRIORITY | CONCURRENT] [LOCAL]<br>    INFILE &#x27;file_name&#x27;<br>    [REPLACE | IGNORE]<br>    INTO TABLE tbl_name<br>    [PARTITION (partition_name [, partition_name] ...)]<br>    [CHARACTER SET charset_name]<br>    [&#123;FIELDS | COLUMNS&#125;<br>        [TERMINATED BY &#x27;string&#x27;]<br>        [[OPTIONALLY] ENCLOSED BY &#x27;char&#x27;]<br>        [ESCAPED BY &#x27;char&#x27;]<br>    ]<br>    [LINES<br>        [STARTING BY &#x27;string&#x27;]<br>        [TERMINATED BY &#x27;string&#x27;]<br>    ]<br>    [IGNORE number &#123;LINES | ROWS&#125;]<br>    [(col_name_or_user_var<br>        [, col_name_or_user_var] ...)]<br>    [SET col_name=&#123;expr | DEFAULT&#125;<br>        [, col_name=&#123;expr | DEFAULT&#125;] ...]<br></code></pre></td></tr></table></figure>
+
+<p>基本用法和select into outfile一样，高阶用法具体查看MySQL文档。</p>
+<p>示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">mysql&gt;</span><span class="bash"> drop table test2;</span><br>Query OK, 0 rows affected (0.00 sec)<br><span class="hljs-meta"></span><br><span class="hljs-meta">mysql&gt;</span><span class="bash"> CREATE TABLE `test2` (</span><br>    -&gt;   `id` int NOT NULL AUTO_INCREMENT,<br>    -&gt;   `value` varchar(20) DEFAULT NULL,<br>    -&gt;   `date` date DEFAULT NULL,<br>    -&gt;   `text` text,<br>    -&gt;   `decimal_value` decimal(20,10) DEFAULT NULL,<br>    -&gt;   PRIMARY KEY (`id`)<br>    -&gt; ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;<br>Query OK, 0 rows affected (0.01 sec)<br><span class="hljs-meta"></span><br><span class="hljs-meta">mysql&gt;</span><span class="bash"> load data infile <span class="hljs-string">&#x27;/var/lib/mysql-files/test.csv&#x27;</span> into table test2  FIELDS TERMINATED BY <span class="hljs-string">&#x27;,&#x27;</span> lines terminated by <span class="hljs-string">&#x27;\n&#x27;</span>;</span><br>Query OK, 5 rows affected (0.01 sec)<br>Records: 5  Deleted: 0  Skipped: 0  Warnings: 0<br><span class="hljs-meta"></span><br><span class="hljs-meta">mysql&gt;</span><span class="bash"> select * from test2;</span><br>+----+---------+------------+------------------------------+-------------------+<br>| id | value   | date       | text                         | decimal_value     |<br>+----+---------+------------+------------------------------+-------------------+<br>|  1 | &#x27;sfas1&#x27; | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as<br>f | 436526.7780000000 |<br>|  2 | sfsa2   | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as<br>f | 436526.7780000000 |<br>|  3 | sfsa3   | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as<br>f | 436526.7780000000 |<br>|  4 | NULL    | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as<br>f | 436526.7780000000 |<br>|  5 | _abcd_  | 2021-01-17 | sdfasdf&quot;asdf      asdf&quot;as,df\as<br>f | 436526.7780000000 |<br>+----+---------+------------+------------------------------+-------------------+<br>5 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">注意：在做数据转移时一定要把以下符号记住，否则容易出现数据错误。</font></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell">[CHARACTER SET charset_name]<br>[&#123;FIELDS | COLUMNS&#125;<br>    [TERMINATED BY &#x27;string&#x27;]<br>    [[OPTIONALLY] ENCLOSED BY &#x27;char&#x27;]<br>    [ESCAPED BY &#x27;char&#x27;]<br>]<br>[LINES<br>    [STARTING BY &#x27;string&#x27;]<br>    [TERMINATED BY &#x27;string&#x27;]<br>]<br></code></pre></td></tr></table></figure>
+
+<h2 id="额外"><a href="#额外" class="headerlink" title="额外"></a>额外</h2><h3 id="1、禁用log-bin对insert速度的影响"><a href="#1、禁用log-bin对insert速度的影响" class="headerlink" title="1、禁用log_bin对insert速度的影响"></a>1、禁用log_bin对insert速度的影响</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; show master status;<br>+---------------+----------+--------------+------------------+-------------------+<br>| File          | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |<br>+---------------+----------+--------------+------------------+-------------------+<br>| binlog.000002 |      156 |              |                  |                   |<br>+---------------+----------+--------------+------------------+-------------------+<br>1 row in set (0.00 sec)<br><br># 查看binlog文件，因为刚重启了MySQL服务器，所以大小是156字节<br>root@yuyr757:/var/lib/mysql# ll binlog.000002<br>-rw-r----- 1 mysql mysql 156 1月  24 14:40 binlog.000002<br><br># 禁用log_bin<br>mysql&gt; set sql_log_bin = 0;<br>Query OK, 0 rows affected (0.00 sec)<br><br>mysql&gt; create table test3 like test;<br>Query OK, 0 rows affected (0.01 sec)<br><br>mysql&gt; select count(id) from test;<br>+-----------+<br>| count(id) |<br>+-----------+<br>|   3145728 |<br>+-----------+<br>1 row in set (0.99 sec)<br><br># 300万条数据插入约8.6秒。<br>mysql&gt; insert into test3(value) select value from test;<br>Query OK, 3145728 rows affected (8.62 sec)<br>Records: 3145728  Duplicates: 0  Warnings: 0<br><br># 再次查看binlog文件，还是156字节<br>root@yuyr757:/var/lib/mysql# ll binlog.000002<br>-rw-r----- 1 mysql mysql 156 1月  24 14:40 binlog.000002<br></code></pre></td></tr></table></figure>
+
+<p>下面重启MySQL服务器，不禁用log_bin，看看300万条数据插入需要花多少时间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs mysql">root@yuyr757:/home/yuyr757# systemctl restart mysql<br><br>root@yuyr757:/home/yuyr757# mysql -u root -p<br>mysql: [Warning] Using a password on the command line interface can be insecure.<br>Welcome to the MySQL monitor.  Commands end with ; or \g.<br>Your MySQL connection id is 8<br>Server version: 8.0.22 MySQL Community Server - GPL<br><br>Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.<br><br>Oracle is a registered trademark of Oracle Corporation and/or its<br>affiliates. Other names may be trademarks of their respective<br>owners.<br><br>Type &#x27;help;&#x27; or &#x27;\h&#x27; for help. Type &#x27;\c&#x27; to clear the current input statement.<br><br>mysql&gt; use test;<br>Reading table information for completion of table and column names<br>You can turn off this feature to get a quicker startup with -A<br><br>Database changed<br>mysql&gt; select count(1) from test;<br>+----------+<br>| count(1) |<br>+----------+<br>|  3145728 |<br>+----------+<br>1 row in set (1.12 sec)<br><br>mysql&gt; create table test4 like test;<br>Query OK, 0 rows affected (0.01 sec)<br><br># 约13.9秒<br>mysql&gt; insert into test4(value) select value from test;<br>Query OK, 3145728 rows affected (13.93 sec)<br>Records: 3145728  Duplicates: 0  Warnings: 0<br><br># 查看logbin文件，37911028字节<br>root@yuyr757:/var/lib/mysql# ll binlog.000003<br>-rw-r----- 1 mysql mysql 37911028 1月  24 14:49 binlog.000003<br></code></pre></td></tr></table></figure>
+
+<p>可见，禁用log_bin，insert速度从13.9秒缩短到了8.6秒。提高了38.13%的速度。即一些需要插入大量数据且允许适当禁用log_bin的情况时，可以适当禁用log_bin，来提高插入数据的速度。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL备份-Linux版</div>
+      <div>https://yury757.github.io/database/mysql/MySQL备份-Linux版/MySQL备份-linux版/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>December 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/" title="第四章-Schema与数据类型优化">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第四章-Schema与数据类型优化</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/operating-support/docker/docker/" title="docker">
+                        <span class="hidden-mobile">docker</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

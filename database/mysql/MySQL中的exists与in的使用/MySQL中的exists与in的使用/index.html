@@ -1,0 +1,698 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="该文章总结各种博客文章，再加上自己的理解形成的。 结论： 子查询表大的用exists，子查询表小的用in。 1、exists的用法。 （1）exists子语句返回的是true或者false，当exists中子语句能查询出任意记录行时返回true，查不到任何记录时返回false。exists子语句查询出来的记录行没有任何用，因此很多时候用select 1就行，只需要判断是否能查询出记录即可。 （2）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL中的exists与in的使用">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8/MySQL%E4%B8%AD%E7%9A%84exists%E4%B8%8Ein%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="该文章总结各种博客文章，再加上自己的理解形成的。 结论： 子查询表大的用exists，子查询表小的用in。 1、exists的用法。 （1）exists子语句返回的是true或者false，当exists中子语句能查询出任意记录行时返回true，查不到任何记录时返回false。exists子语句查询出来的记录行没有任何用，因此很多时候用select 1就行，只需要判断是否能查询出记录即可。 （2）">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-05-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:20:48.031Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MySQL中的exists与in的使用 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL中的exists与in的使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-06-01 00:00" pubdate>
+          June 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.3k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          53 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">MySQL中的exists与in的使用</h1>
+            
+            <div class="markdown-body">
+              
+              <p>该文章总结各种博客文章，再加上自己的理解形成的。</p>
+<p><font color="Red">结论：</font></p>
+<p><font color="Red">子查询表大的用exists，子查询表小的用in。</font></p>
+<p><strong>1、exists的用法。</strong></p>
+<p>（1）exists子语句返回的是true或者false，当exists中子语句能查询出任意记录行时返回true，查不到任何记录时返回false。exists子语句查询出来的记录行没有任何用，因此很多时候用select 1就行，只需要判断是否能查询出记录即可。</p>
+<p>（2）对于外表查询出来的记录，每条记录都会当作exists的条件去查询exists中的子语句，当exists子语句为false时，该条数据则会被丢弃。因此exists子语句中可以有外表的字段和表名。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select * FROM MYSQL.help_keyword where help_keyword_id &lt; 5;<br>+-----------------+--------------+<br>| help_keyword_id | name         |<br>+-----------------+--------------+<br>|               0 | HELP_DATE    |<br>|               1 | HELP_VERSION |<br>|               2 | DEFAULT      |<br>|               3 | SERIAL       |<br>|               4 | VALUE        |<br>+-----------------+--------------+<br>5 rows in set (0.00 sec)<br>-- 首先help_keyword表查询出来的5条记录<br><br>mysql&gt; select * from mysql.help_keyword hk where hk.help_keyword_id &lt; 5 and exists(select 1 from mysql.help_relation hr where hr.help_keyword_id = hk.help_keyword_id);<br>+-----------------+--------------+<br>| help_keyword_id | name         |<br>+-----------------+--------------+<br>|               0 | HELP_DATE    |<br>|               1 | HELP_VERSION |<br>|               2 | DEFAULT      |<br>|               3 | SERIAL       |<br>|               4 | VALUE        |<br>+-----------------+--------------+<br>5 rows in set (0.00 sec)<br>-- 加上exists语句后，每条记录都要当作exists的条件去执行select 1 from mysql.help_relation hr where hr.help_keyword_id = hk.help_keyword_id。如第一条记录hk.help_keyword_id = 0，则查询select 1 from mysql.help_relation hr where hr.help_keyword_id = 0，如下。可以查询出数据，因此exists返回true，因此在help_keyword表中help_keyword_id = 0的这条记录是合法的。<br>mysql&gt; select 1 from mysql.help_relation hr where hr.help_keyword_id = 0;<br>+---+<br>| 1 |<br>+---+<br>| 1 |<br>+---+<br>1 row in set (0.00 sec)<br><br>-- 同样对于剩余四条记录都要执行exists子语句，都能查询出记录，因此这四条记录都是合法的。<br>-- 若将exists子语句中的条件修改为如下的100000，而不是外表的字段值，则exists子语句永远不能查出记录，exists子语句返回false，因此这五条记录都会被过滤掉。<br>mysql&gt; select * from mysql.help_keyword hk where hk.help_keyword_id &lt; 5 and exists(select 1 from mysql.help_relation hr where hr.help_keyword_id = 100000);<br>Empty set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>（3）not exists和exists正好相反。当子语句能查询出任意记录时，exists返回true，此时not exists就是false；当子语句不能查询出任意记录时，exists返回false，而not exists就是true；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">-- 还是上面那个例子，换成not exists后，对于每条外表查询出来的数据，not exists都为false，则外表五条记录都会被过滤掉。<br>mysql&gt; select * from mysql.help_keyword hk where hk.help_keyword_id &lt; 5 and not exists(select 1 from mysql.help_relation hr where hr.help_keyword_id = hk.help_keyword_id);<br>Empty set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>（4）从以上可以看出，外表查询出来的记录条数即为exists子语句的查询次数。</p>
+<p><strong>2、in的用法</strong></p>
+<p>（1）in和exists一样返回true或者false，用于判断某个或某几个字段是否存在于in的子语句查询记录中。如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select * from mysql.help_keyword hk where hk.help_keyword_id &lt; 5 and hk.help_keyword_id in (select hr.help_keyword_id from mysql.help_relation hr);<br>+-----------------+--------------+<br>| help_keyword_id | name         |<br>+-----------------+--------------+<br>|               0 | HELP_DATE    |<br>|               1 | HELP_VERSION |<br>|               2 | DEFAULT      |<br>|               3 | SERIAL       |<br>|               4 | VALUE        |<br>+-----------------+--------------+<br>5 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>（2）in和exists不一样的地方在于，无论外表查询记录为多少条，in子语句只会查询一次，并将结果缓存起来，然后对于遍历外表查询出来的记录，判断in语句是否成立。如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select hr.help_keyword_id from mysql.help_relation hr; -- 首先会把该条语句查询出来的记录缓存起来<br>+-----------------+<br>| help_keyword_id |<br>+-----------------+<br>|               0 |<br>|               1 |<br>......<br>|             710 |<br>|             710 |<br>+-----------------+<br>1635 rows in set (0.00 sec)<br>-- 然后遍历外表查询出来的五条数据，依次判断hk.help_keyword_id是否存在于缓存记录中。<br></code></pre></td></tr></table></figure>
+
+<p>（3）in相当于用or连接的=判断。<font color="Red">因此in前面的字段是可以使用索引的。</font>如下key字段都为primarykey。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs mysql">-- mysql.help_category表有如下索引<br>mysql&gt; show index from mysql.help_category;<br>+---------------+------------+----------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+<br>| Table         | Non_unique | Key_name | Seq_in_index | Column_name      | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |<br>+---------------+------------+----------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+<br>| help_category |          0 | PRIMARY  |            1 | help_category_id | A         |          44 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |<br>| help_category |          0 | name     |            1 | name             | A         |          44 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |<br>+---------------+------------+----------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+<br>2 rows in set (0.00 sec)<br><br>-- 因此以下两条语句都使用了key_name为name的索引。<br>mysql&gt; explain select * from mysql.help_category hc where hc.name in (&#x27;Contents&#x27;, &#x27;Help Metadata&#x27;, &#x27;Data Types&#x27;);<br>+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-------------+<br>| id | select_type | table | partitions | type  | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |<br>+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-------------+<br>|  1 | SIMPLE      | hc    | NULL       | range | name          | name | 192     | NULL |    3 |   100.00 | Using where |<br>+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-------------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; explain select * from mysql.help_category hc where hc.name = &#x27;Contents&#x27; or hc.name = &#x27;Help Metadata&#x27; or hc.name = &#x27;Data Types&#x27;;<br>+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-------------+<br>| id | select_type | table | partitions | type  | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |<br>+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-------------+<br>|  1 | SIMPLE      | hc    | NULL       | range | name          | name | 192     | NULL |    3 |   100.00 | Using where |<br>+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-------------+<br>1 row in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>3、exists和in的区别</strong></p>
+<p>区别在于：in子语句只查询了一次，但是in的子语句会遍历整张help_relation表（遍历了1635次）；exists子语句会查询五次，但是每次查询都有where条件，where条件中<strong>可能</strong>会使用到索引，因此每次查询可能不用遍历整张表。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs mysql">-- 前提假设：假设true<br>-- 情景1：<br>-- 假设A表：一共100条记录，有主键字段aid，通过主键aid查询记录只需要遍历索引树1次。<br>-- 假设B表：一共10000000条记录，有主键bid，字段aid，字段aid设置了索引，假设通过该索引进行查询时平均需要遍历索引树10次。<br>select * from A where exists (select 1 from B where B.aid = A.aid);<br>-- exists子语句遍历次数：100 * 10 = 1000，整条语句遍历次数：1000 + 100（判断100次ture or false） = 1100。<br>select * from A where aid in (select aid from B);<br>-- in子语句遍历次数：10000000，整条语句遍历次数：10000000 + 1（通过主键aid只需要遍历1次） = 10000001。<br><br>-- 情景2：<br>-- 假设A表：一共10000000条记录，有主键字段aid，通过主键aid查询记录只需要遍历索引树10次。<br>-- 假设B表：一共100条记录，有主键bid，字段aid，字段aid设置了索引，假设通过该索引进行查询时平均需要遍历索引树2次。<br>select * from A where exists (select 1 from B where B.aid = A.aid);<br>-- exists子语句遍历次数：10000000 * 2 = 20000000，整条语句遍历次数：20000000 + 10000000（判断这么多次true or false）<br>select * from A where aid in (select aid from B);<br>-- in子语句遍历次数：100，整条语句遍历次数：100 + 10（通过主键aid只需要遍历10次） = 110。<br></code></pre></td></tr></table></figure>
+
+<p>情景1可以发现in语句虽然只查询一次，但是会遍历整张表，当B表很大时，in的效率会非常低，也更占用空间。情景2可以发现当A表很大时，虽然exists子语句只需要遍历2次，但是由于外表很大，导致整个查询过程中exists会遍历很多次，导致exists的效率很低。因此，当子查询表远大于外表时用exists，子查询表远小于外表时用in。无论时外表还是子查询里面的内表都要善用索引。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL中的exists与in的使用</div>
+      <div>https://yury757.github.io/database/mysql/MySQL中的exists与in的使用/MySQL中的exists与in的使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>June 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/mysql/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/MySQL%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%E5%8C%96/" title="MySQL日期格式化">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MySQL日期格式化</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/Git/learngit/learn-git/" title="learn-git">
+                        <span class="hidden-mobile">learn-git</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

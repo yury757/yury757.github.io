@@ -1,0 +1,770 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、Zookeeper介绍1、简介zookeeper是一个分布式数据一致性解决方案，致力于为分布式应用提供一个高性能、高可能，且具有严格顺序访问控制能力的分布式协调存储服务。提供的功能包括：配置维护、域名服务、分布式同步、组服务等。 zookeeper是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。 二、下载安装地址：Index of &#x2F;apache&#x2F;zookee">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zookeeper-study">
+<meta property="og:url" content="https://yury757.github.io/bigdata/zookeeper/zookeeper-study/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="一、Zookeeper介绍1、简介zookeeper是一个分布式数据一致性解决方案，致力于为分布式应用提供一个高性能、高可能，且具有严格顺序访问控制能力的分布式协调存储服务。提供的功能包括：配置维护、域名服务、分布式同步、组服务等。 zookeeper是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。 二、下载安装地址：Index of &#x2F;apache&#x2F;zookee">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yury757.github.io/images/CAP%E7%90%86%E8%AE%BA.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E4%B8%80%E8%87%B4%E6%80%A7.png">
+<meta property="article:published_time" content="2021-08-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:41:55.328Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yury757.github.io/images/CAP%E7%90%86%E8%AE%BA.png">
+  
+  
+  
+  <title>zookeeper-study - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="zookeeper-study"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-08-28 00:00" pubdate>
+          August 28, 2021 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">zookeeper-study</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="一、Zookeeper介绍"><a href="#一、Zookeeper介绍" class="headerlink" title="一、Zookeeper介绍"></a>一、Zookeeper介绍</h2><h3 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h3><p>zookeeper是一个分布式数据一致性解决方案，致力于为分布式应用提供一个高性能、高可能，且具有严格顺序访问控制能力的分布式<strong>协调</strong>存储服务。提供的功能包括：<strong>配置维护、域名服务、分布式同步、组服务</strong>等。</p>
+<p>zookeeper是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。</p>
+<h2 id="二、下载安装"><a href="#二、下载安装" class="headerlink" title="二、下载安装"></a>二、下载安装</h2><p>地址：<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/">Index of /apache/zookeeper (tsinghua.edu.cn)</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd /home/yury<br>wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.6.3/apache-zookeeper-3.6.3-bin.tar.gz<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 解压</span><br>tar xzvf apache-zookeeper-3.6.3-bin.tar.gz<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 将文件夹重命名为zookeeper-3.6.3-bin方便使用</span><br>mkdir zookeeper-3.6.3-bin/<br>mv -f apache-zookeeper-3.6.3-bin/* zookeeper-3.6.3-bin/<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 使用这个目录作为根目录</span><br>cd zookeeper-3.6.3-bin<br></code></pre></td></tr></table></figure>
+
+<p>将以下配置写入一个新建的文件：<code>vi /conf/zoo.cfg</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> ZooKeeper使用的基本时间单位（毫秒）。 它用于做心跳，并且最小会话超时将是tickTime的两倍。</span><br>tickTime=2000<br><span class="hljs-meta">#</span><span class="bash"> 除非另有说明，否则存储内存中数据库快照的位置以及数据库更新的事务日志</span><br>dataDir=/home/yury/zookeeper-3.6.3-bin/zookeeper-data<br><span class="hljs-meta">#</span><span class="bash"> 客户端访问的端口</span><br>clientPort=2181<br></code></pre></td></tr></table></figure>
+
+<h2 id="三、单机模式"><a href="#三、单机模式" class="headerlink" title="三、单机模式"></a>三、单机模式</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 启动</span><br>bin/zkServer.sh start<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 查看运行状态</span><br>bin/zkServer.sh status<br><span class="hljs-meta">#</span><span class="bash"> ZooKeeper JMX enabled by default</span><br><span class="hljs-meta">#</span><span class="bash"> Using config: /home/yury/zookeeper-3.6.3-bin/bin/../conf/zoo.cfg</span><br><span class="hljs-meta">#</span><span class="bash"> Client port found: 2181. Client address: localhost. Client SSL: <span class="hljs-literal">false</span>.</span><br><span class="hljs-meta">#</span><span class="bash"> Mode: standalone</span><br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 使用命令行连接到服务器</span><br>bin/zkCli.sh -server localhost:2181<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> jps命令，需要手动安装jps</span><br>16722 Jps<br>16365 QuorumPeerMain<br></code></pre></td></tr></table></figure>
+
+<h2 id="四、分布式模式"><a href="#四、分布式模式" class="headerlink" title="四、分布式模式"></a>四、分布式模式</h2><p>官方文档建议使用奇数个服务器。 如果只有两台服务器，那么您将处于一种情况，如果其中一台服务器发生故障，则没有足够的计算机构成多数仲裁。由于存在两个单点故障，因此两个服务器本来就不如单个服务器稳定。因此我们创建3台服务器。</p>
+<p>修改之前创建的那个配置文件，新增以下内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> initLimit is timeouts ZooKeeper uses to <span class="hljs-built_in">limit</span> the length of time the ZooKeeper servers <span class="hljs-keyword">in</span> quorum have to connect to a leader.</span><br>initLimit=5<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> syncLimit limits how far out of date a server can be from a leader</span><br><span class="hljs-meta">#</span><span class="bash"> 这几个时间都是以上面那个tickTime为单位时间</span><br>syncLimit=2<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> server.N是指第N台服务器</span><br><span class="hljs-meta">#</span><span class="bash"> A=B:C:D，其中B位置是ip，或者ip的别名，在hosts中可以为ip设置别名解析</span><br><span class="hljs-meta">#</span><span class="bash"> 服务器使用前一个端口连接到其他服务器。ZooKeeper服务器使用此端口将follower连接到leader。当出现新的leader时，follower使用此端口打开与leader的TCP连接。由于leader选举时默认使用TCP，因此我们当前需要另一个端口来进行leader选举。这是配置中的第二个端口。</span><br>server.1=192.168.0.201:2888:3888<br>server.2=192.168.0.202:2888:3888<br>server.3=192.168.0.203:2888:3888<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 将配置文件拷贝到其他服务器</span><br>scp ./conf/* yury@192.168.141.142:/home/yury/zookeeper-3.6.3-bin/conf/<br>scp ./conf/* yury@192.168.141.143:/home/yury/zookeeper-3.6.3-bin/conf/<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">注意：最后还要在上面的<code>dataDir</code>目录下新建一个<code>myid</code>的文件，写入本台服务器的数字id，如第2台服务器，只需要放一个数字2进去即可。</font></p>
+<p>启动之后查看服务器状态，结果如下，其中141和142服务器的mode为follower，而143服务器的mode为leader，这是由分布式系统投票决定的，不是我们定义的。    </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">ZooKeeper JMX enabled by default<br>Using config: /home/yury/zookeeper-3.6.3-bin/bin/../conf/zoo.cfg<br>Client port found: 2181. Client address: localhost. Client SSL: false.<br>Mode: follower<br></code></pre></td></tr></table></figure>
+
+<p>搭好了之后，像上面一样用zkCli.sh命令连接随意连接一台服务器，创建节点，修改节点，会发现，三台服务器均会做相应修改。</p>
+<h2 id="五、使用"><a href="#五、使用" class="headerlink" title="五、使用"></a>五、使用</h2><p>zkServer.sh脚本的功能如下</p>
+<p>Usage: bin/zkServer.sh [–config &lt;conf-dir&gt;] {start|start-foreground|stop|version|restart|status|print-cmd}</p>
+<h3 id="1、zkCli-sh命令"><a href="#1、zkCli-sh命令" class="headerlink" title="1、zkCli.sh命令"></a>1、zkCli.sh命令</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>help</td>
+<td>帮助</td>
+</tr>
+<tr>
+<td>ls /path</td>
+<td>/path为节点路径，如：ls /zookeeper<br>-w 注册监听子节点路径变化，如果其他客户端修改该节点的值，或删除该节点，则可以收到通知。<font color="Red">但是有一个缺陷，这个监听只能监控到一次变化， 如果还需要继续监控，需要继续注册。</font></td>
+</tr>
+<tr>
+<td>create /path [value]</td>
+<td>创建节点，如：create /zktest mydata</td>
+</tr>
+<tr>
+<td>get /path</td>
+<td>获取节点的值，如：get /zktest<br>-w 注册监听节点的变化，监听效果同上<br>-s 获取节点信息</td>
+</tr>
+<tr>
+<td>set /path value</td>
+<td>设置节点的值，如：set /zktest junk</td>
+</tr>
+<tr>
+<td>delete /path</td>
+<td>删除节点（如果该节点下面非空，即有子节点，则无法删除），如：delete /zktest</td>
+</tr>
+<tr>
+<td>deleteall /path</td>
+<td>递归删除节点（会删除所有子节点）</td>
+</tr>
+<tr>
+<td>quit</td>
+<td>退出</td>
+</tr>
+</tbody></table>
+<h3 id="2、节点类型"><a href="#2、节点类型" class="headerlink" title="2、节点类型"></a>2、节点类型</h3><p>持久、短暂、有序号、无序号</p>
+<p>待完善。</p>
+<h3 id="3、API使用"><a href="#3、API使用" class="headerlink" title="3、API使用"></a>3、API使用</h3><h2 id="六、分布式理论"><a href="#六、分布式理论" class="headerlink" title="六、分布式理论"></a>六、分布式理论</h2><h3 id="1、CAP理论"><a href="#1、CAP理论" class="headerlink" title="1、CAP理论"></a>1、CAP理论</h3><p>CAP 理论指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
+<ul>
+<li><p><strong>一致性（Consistency）</strong>：在分布式环境中，一致性是指数据在多个副本之间是否能够保持一致的特性，等同于所有节点访问同一份最新的数据副本。在一致性的需求下，当一个系统在数据一致的状态下执行更新操作后，应该保证系统的数据仍然处于一致的状态。</p>
+</li>
+<li><p><strong>可用性（Availability）</strong>：每次请求都能获取到正确的响应，但是不保证获取的数据为最新数据。</p>
+</li>
+<li><p><strong>分区容错性（Partition Tolerance）</strong>：分布式系统在遇到任何网络分区故障的时候，仍然需要能够保证对外提供满足一致性和可用性的服务，除非是整个网络环境都发生了故障。</p>
+</li>
+</ul>
+<p><img src="/images/CAP%E7%90%86%E8%AE%BA.png" srcset="/img/loading.gif" lazyload></p>
+<p>一个分布式系统最多只能同时满足一致性（Consistency）、可用性（Availability）和分区容错性（Partition tolerance）这三项中的两项。</p>
+<p>在这三个基本需求中，最多只能同时满足其中的两项，P 是必须的，因此只能在 CP 和 AP 中选择，zookeeper 保证的是 CP，对比 spring cloud 系统中的注册中心 eruka 实现的是 AP。</p>
+<h3 id="2、BASE理论"><a href="#2、BASE理论" class="headerlink" title="2、BASE理论"></a>2、BASE理论</h3><p>BASE是Basically Available（基本可用）、Soft-state（软状态）和Eventually Consistent（最终一致性）三个短语的缩写。</p>
+<ul>
+<li><strong>基本可用：</strong>在分布式系统出现故障，允许损失部分可用性（服务降级、页面降级）。</li>
+<li><strong>软状态：</strong>允许分布式系统出现中间状态。而且中间状态不影响系统的可用性。这里的中间状态是指不同的 data replication（数据备份节点）之间的数据更新可以出现延时的最终一致性。</li>
+<li><strong>最终一致性：</strong>data replications 经过一段时间达到一致性。</li>
+</ul>
+<p>BASE 理论是对 CAP 中的一致性和可用性进行一个权衡的结果，理论的核心思想就是：我们无法做到强一致，但每个应用都可以根据自身的业务特点，采用适当的方式来使系统达到最终一致性。</p>
+<p>五、分布式一致性</p>
+<p><img src="/images/%E4%B8%80%E8%87%B4%E6%80%A7.png" srcset="/img/loading.gif" lazyload></p>
+<p>1、强一致性：用户更新了value后，服务器先把数据同步到其他服务器，再将“更新成功”的消息返回给用户，即这两个操作是同步的，也可以说<strong>服务器的主从复制是同步的</strong>，则用户不管读那台服务器都是更新后的值。</p>
+<p>2、弱一致性：用户更新了value后，服务器把数据同步到其他服务器和将“更新成功”的消息返回给用户这两个操作是异步的，也可以说<strong>服务器的主从复制是异步的</strong>，因此用户读取时可能会读到旧的数据。</p>
+<p>3、半同步：保证一台从服务器是同步的，其他从服务器则是异步的，如果同步的从服务器出现问题，则让另外一台异步服务器来做同步。即始终保证有两个节点拥有完整数据。</p>
+<p>3、最终一致性，最终一致性其实还是弱一致性，只不过用户看到的旧数据只是一个暂时的状态，如果等待一段时间，从服务器最终会和主服务器数据一致，这就是最终一致性。数据同步的速度受很多因素影响，一般都比较快，即这个等待延迟一般很短。</p>
+<h2 id="七、选举机制"><a href="#七、选举机制" class="headerlink" title="七、选举机制"></a>七、选举机制</h2><p>1、半数机制。集群中半数以上机器存活，集群可用。所以zookeeper适合安装奇数台服务器。</p>
+<p>2、zookeeper虽然在配置文件中没有指定leader和follower，但是在集群启动后，zookeeper会通过内部选举产生临时的leader和follower。</p>
+<h2 id="八、监听器"><a href="#八、监听器" class="headerlink" title="八、监听器"></a>八、监听器</h2>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/bigdata/" class="category-chain-item">bigdata</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/bigdata/zookeeper/" class="category-chain-item">zookeeper</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>zookeeper-study</div>
+      <div>https://yury757.github.io/bigdata/zookeeper/zookeeper-study/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>August 28, 2021</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/postgresql/postgresql/" title="postgresql">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">postgresql</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/java/SSM-Build/SSM-Build/" title="SSM-Build">
+                        <span class="hidden-mobile">SSM-Build</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,728 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="4.1 选择优化的数据类型1、应该尽量使用可以正确存储存储数据的最小数据类型。如能使用tinyint就不要使用int，能使用varchar(20)，就不要使用varchar(100)。 2、应该尽量使用尽可能简单的数据类型，如日期类型尽量使用date、time、datetime，而不是使用varchar存储日期数据，另外应该使用整形存储IP地址，而不是使用varchar。 3、应该尽量避免null">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第四章-Schema与数据类型优化">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="4.1 选择优化的数据类型1、应该尽量使用可以正确存储存储数据的最小数据类型。如能使用tinyint就不要使用int，能使用varchar(20)，就不要使用varchar(100)。 2、应该尽量使用尽可能简单的数据类型，如日期类型尽量使用date、time、datetime，而不是使用varchar存储日期数据，另外应该使用整形存储IP地址，而不是使用varchar。 3、应该尽量避免null">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:32:27.235Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>第四章-Schema与数据类型优化 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第四章-Schema与数据类型优化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-12-01 00:00" pubdate>
+          December 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.5k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          55 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第四章-Schema与数据类型优化</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="4-1-选择优化的数据类型"><a href="#4-1-选择优化的数据类型" class="headerlink" title="4.1 选择优化的数据类型"></a>4.1 选择优化的数据类型</h2><p>1、应该尽量使用可以正确存储存储数据的最小数据类型。如能使用tinyint就不要使用int，能使用varchar(20)，就不要使用varchar(100)。</p>
+<p>2、应该尽量使用尽可能简单的数据类型，如日期类型尽量使用date、time、datetime，而不是使用varchar存储日期数据，另外应该使用整形存储IP地址，而不是使用varchar。</p>
+<p>3、应该尽量避免null，可以保证不出错的情况下尽量把列指定为not null。<font color="Blue">一方面在于在查询时，如果有null，则需要使用ifnull，而这样的话会使索引失效；</font>另一方面，可为null的列会占用更多的存储空间。</p>
+<p>4、int(11)通常是没有意义的；decimal(m,n)中m是指整数部分和小数部分位数之和，n则仅仅指小数部分位数。</p>
+<p>5、财务数据建议用decimal存储，可以对小数部分进行精确计算，而在数据量比较大时，可以考虑使用BIGINT代替decimal，并根据需要存储的小数位乘以相应的倍数就行，如需要保留到万分之一，可以将原始数据乘以一百万，再存到bigint里面，因为bigint相比decimal的好处在于计算更精确和计算效率高。<font color="Blue">（但是这种方式要注意使用该金额时可能会出现忘记除掉相应的倍数的情况，个人建议还是使用decimal，更安全）</font></p>
+<p>6、varchar和char：</p>
+<p><font color="Blue">（1）varchar和char类型消耗的存储空间的字节数由其字符集决定，如使用utf8mb4时，英文字母和数字占用1个字节，而大部分中文占用3个字节，少量特殊字符占用4个字节。使用char_length()和length()可以查看字符串长度和字符串所占用的字节长度。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select test1, length(test1), char_length(test1) from test_varchar1;<br>+--------+---------------+--------------------+<br>| test1  | length(test1) | char_length(test1) |<br>+--------+---------------+--------------------+<br>| abc    |             3 |                  3 |<br>| 123    |             3 |                  3 |<br>| 你好啊 |             9 |                  3 |<br>+--------+---------------+--------------------+<br>3 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Blue">（2）varchar(n)是变长，char(n)是定长，即varchar消耗的存储空间是随字符串长度而改变的，char消耗的存储空间是既定的。此外varchar还会消耗1-2个字节存储字符串的长度，而char不会。因此对于存储定长数据，使用char更好，因此不需要额外存储一个字节来保存字符串长度，但在实际业务中这种需求较少，反倒使用enum的都比使用char的多。</font></p>
+<p><font color="Blue">（3）char类型会删除末尾的空格再进行存储**<font color="Red">（危！）</font>**，而varchar不会删除末尾空格（实际上在MySQL4.1或更老的版本中varchar也会删末尾空格）。</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; select test2, test3, char_length(test2), char_length(test3), length(test2), length(test3), concat(&#x27;(&#x27;, test2, &#x27;)&#x27;), concat(&#x27;(&#x27;, test3, &#x27;)&#x27;) from test_varchar2; -- test2为varchar类型，而test3为char类型。<br>+--------+-------+--------------------+--------------------+---------------+---------------+-------------------------+-------------------------+<br>| test2  | test3 | char_length(test2) | char_length(test3) | length(test2) | length(test3) | concat(&#x27;(&#x27;, test2, &#x27;)&#x27;) | concat(&#x27;(&#x27;, test3, &#x27;)&#x27;) |<br>+--------+-------+--------------------+--------------------+---------------+---------------+-------------------------+-------------------------+<br>|   ab   |   ab  |                  6 |                  4 |             6 |             4 | (  ab  )                | (  ab)                  |<br>|   ab   |   ab  |                  6 |                  4 |             6 |             4 | (  ab  )                | (  ab)                  |<br>+--------+-------+--------------------+--------------------+---------------+---------------+-------------------------+-------------------------+<br>2 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Blue">（4）当使用严格的SQL模式时，insert的数据超过varchar和char的最大长度时，都会报错；当启动非严格的SQL模式时，他们则是将超过长度后面的字符删除存储，并予以警告，而不是报错。</font></p>
+<p><font color="Blue">（5）最好的策略是根据业务需求选择最适合的类型，只分配真正需要的空间。</font></p>
+<p>7、blob与text都是用于存储长度特别长（超过65535个字节）的数据类型，对他们的排序并不是对整个字符串进行排序，都是对其前max_sort_length个字节的字符进行排序，可以手动设置max_sort_length的值，或者使用order by sustring(column, length)。区别在于blob存储的是字符串的二进制，而text存储的是原始字符串。</p>
+<p><font color="Red">8、enum类型会将“数字-字符串”映射关系的“查找表”存储于.frm文件中，而数据中只存储“数字”键，这种双重性容易导致混乱，特别是排序的时候，enum排序是使用内部存储的整数进行排序，而不是定义的字符串进行排序。除非使用FIELD()函数自定义排序顺序。列关联时的效率：enum关联enum &gt; varchar关联varchar &gt; enum和varchar互相关联</font></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; create table `enum1`(column1 enum(&#x27;Y&#x27;, &#x27;M&#x27;, &#x27;N&#x27;));<br>Query OK, 0 rows affected (0.01 sec)<br>mysql&gt; insert into enum1 values(&#x27;Y&#x27;), (&#x27;Y&#x27;), (&#x27;N&#x27;), (&#x27;M&#x27;);<br>Query OK, 4 rows affected (0.00 sec)<br><br>mysql&gt; select column1 from enum1;<br>+---------+<br>| column1 |<br>+---------+<br>| Y       |<br>| Y       |<br>| N       |<br>| M       |<br>+---------+<br>4 rows in set (0.00 sec)<br><br>mysql&gt; select column1 + 1 from enum1;<br>+-------------+<br>| column1 + 1 |<br>+-------------+<br>|           2 |<br>|           2 |<br>|           4 |<br>|           3 |<br>+-------------+<br>4 rows in set (0.00 sec)<br><br>mysql&gt; select column1 from enum1 order by column1;<br>+---------+<br>| column1 |<br>+---------+<br>| Y       |<br>| Y       |<br>| M       |<br>| N       |<br>+---------+<br>4 rows in set (0.00 sec)<br><br>mysql&gt; select column1 from enum1 order by field(column1, &#x27;M&#x27;, &#x27;N&#x27;, &#x27;Y&#x27;);<br>+---------+<br>| column1 |<br>+---------+<br>| M       |<br>| N       |<br>| Y       |<br>| Y       |<br>+---------+<br>4 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>9、datetime和timestamp</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>占用字节数</th>
+<th>支持的时间范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>datetime</td>
+<td>8</td>
+<td>1000-01-01 00:00:00至9999-12-31 23:59:59</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>4</td>
+<td>1970-01-01 00:00:00至2038-01-19 23:59:59</td>
+</tr>
+</tbody></table>
+<p><font color="Blue">10、标识列（即能唯一标识一条数据的字段）数据类型通常用unsigned int auto_increment或UUID()两种：当该标识列索引使用BTREE（innodb默认使用BTREE）时，使用unsigned int auto_increment更好（io速度更快、存储空间更小等），当标识列索引使用hash索引（innodb不显式支持hash索引，但当支持自适应hash索引，等后面讲）时，两者差不多。</font></p>
+<p>11、最好避免使用BIT和SET类型。</p>
+<h2 id="4-2-schema设计中的陷阱"><a href="#4-2-schema设计中的陷阱" class="headerlink" title="4.2 schema设计中的陷阱"></a>4.2 schema设计中的陷阱</h2><p>1、避免过多的列和过多的关联</p>
+<p>2、避免NULL，或者使用其他值代替NULL</p>
+<h2 id="4-3-范式和反范式"><a href="#4-3-范式和反范式" class="headerlink" title="4.3 范式和反范式"></a>4.3 范式和反范式</h2><p>设计方面的东西，详见原文或者参考其他博客，如<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ningskyer/articles/5632017.html">这里</a></p>
+<h2 id="4-4-缓存表和汇总表"><a href="#4-4-缓存表和汇总表" class="headerlink" title="4.4 缓存表和汇总表"></a>4.4 缓存表和汇总表</h2><p><strong>缓存表：</strong>表示存储那些可以比较简单的从schema其他表获取（但每次获取速度都比较慢）数据的表（例如，逻辑上冗杂的数据）。</p>
+<p><strong>汇总表：</strong>表示存储那些使用group by语句聚合的数据。</p>
+<p><font color="Blue">使用缓存表的情况是，比如展示一个很详细的业务数据，要关联很多张表并进行相关运算，每次查询速度都比较慢，则可以将定期查询该SQL并放到一张缓存表中，等需要的时候直接取这张缓存表中的数据即可，然后定时维护这张缓存表以更新数据。这种情况数据虽然有延迟，但对于用户来说能很快的看到数据。</font></p>
+<p><font color="Blue">使用汇总表的情况是，比如要看网站最近一个月每天的点击量，则要做group by操作，可以每天定时执行一个的SQL，将当天的点击量记录到这张汇总表中，等需要的时候直接where between就行，不用做group by。</font></p>
+<p><strong>物化视图</strong>：预先计算并存储在磁盘上的表，并通过各种策略来<strong>自动</strong>更新该表（视图）。MySQL可以用第三方工具：Justin Swanhart的Flexviews。</p>
+<p><font color="Red">计数器表</font>：再比如上面那个网站最近一个月每天的点击量的情况，可以通过定义一张下面所示的表，每次收到用户访问，就随机选一个槽进行更新（避免锁冲突）。再设置一个定时任务，每天将昨天的数据汇总到0号槽，并删除其他槽，这样就是一个统计每一天的访问量的计数器表。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs mysql">CREATE TABLE `daily_click` (<br>  `day` date NOT NULL,<br>  `slot` int unsigned NOT NULL,<br>  `cnt` int DEFAULT 0,<br>  PRIMARY KEY (`day`,`slot`)<br>) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci<br><br>mysql&gt; insert into daily_click values(now(), round(rand(), 2) * 100, 1) on duplicate key update cnt = cnt + 1; -- 我这里执行了六次<br>Query OK, 1 row affected, 1 warning (0.00 sec)<br><br>mysql&gt; select * from daily_click;<br>+------------+------+------+<br>| day        | slot | cnt  |<br>+------------+------+------+<br>| 2020-11-22 |   22 |    1 |<br>| 2020-11-22 |   29 |    1 |<br>| 2020-11-22 |   48 |    1 |<br>| 2020-11-22 |   53 |    2 |<br>| 2020-11-22 |   95 |    1 |<br>+------------+------+------+<br>5 rows in set (0.00 sec)<br><br>mysql&gt; update daily_click as c,<br>      (select day, sum(cnt) as cnt, min(slot) as slot from daily_click group by day) as x<br>      set c.cnt = if(c.slot = x.slot, x.cnt, 0),<br>      c.slot = if(c.slot = x.slot, 0, c.slot)<br>      where c.day = x.day and c.day = &#x27;2020-11-22&#x27;;<br>Query OK, 5 rows affected (0.00 sec)<br>Rows matched: 5  Changed: 5  Warnings: 0<br><br>mysql&gt; delete from daily_click where day = &#x27;2020-11-22&#x27; and slot &lt;&gt; 0;<br>Query OK, 4 rows affected (0.00 sec)<br><br>mysql&gt; select * from daily_click;<br>+------------+------+------+<br>| day        | slot | cnt  |<br>+------------+------+------+<br>| 2020-11-22 |    0 |    6 |<br>+------------+------+------+<br>1 row in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<h2 id="4-5-加快ALTER-TABLE的速度"><a href="#4-5-加快ALTER-TABLE的速度" class="headerlink" title="4.5 加快ALTER TABLE的速度"></a>4.5 加快ALTER TABLE的速度</h2><p><font color="Blue">1、修改列的三种方式：</font></p>
+<p><font color="Blue">（1）ALTER TABLE tbl_name CHANGE [COLUMN] old_col_name new_col_name column_definition [FIRST | AFTER col_name]：这种方法是整列换成一个新列的定义，包括列名也可以修改，会引起表的重建，即删除旧列，构造新列；</font></p>
+<p><font color="Blue">（2）ALTER TABLE tbl_name MODIFY [COLUMN] col_name column_definition [FIRST | AFTER col_name]：这种方法也是整列换成一个新列，但是不能修改表名，只能修改属性，也会引起表的重建；</font></p>
+<p><font color="Blue">（3）ALTER TABLE tbl_name ALTER [COLUMN] col_name {SET DEFAULT {literal | (expr)} | DROP DEFAULT}：这种方法局限性很高，只能修改列的默认值属性，这个语句会直接修改表的.frm文件，不涉及表数据，不会引起表的重建，因此速度很快。</font></p>
+<p><font color="Blue">即如果是需要修改的东西实际存在于.frm文件中，都可以通过直接修改.frm文件来进行修改，而不用重建表。</font>注意：《高性能MySQL》这本书对用的MySQL版本是8.0以下的版本，MySQL8.0及以后没有.frm文件了，表结构和表数据都在整个.ibd文件的表空间中。以上三种修改，第三种也是最快的，但是只是底层原理上有了较大的变化，详见MySQL官方文档。</p>
+<p>2、修改表结构的技巧：</p>
+<p>（1）先在一台不提供服务的库上执行alter table操作，然后和提供服务的主库进行切换。<font color="Blue">过程（个人盲猜的）：停止从主备库同步，备用库执行alter table，重新同步主备库，待同步成功再切换主备库。问题：切换主备库会不会导致整个服务器停顿？</font></p>
+<p>（2）影子拷贝。建一个新的空表，表结构为原表修改后的表结构，在新表中建三个INSERT UPDATE DELETE的触发器，将旧表数据拷贝到新表，最新数据会通过触发器更新过去，然后通过重命名表和删表的方式交换两张表。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第四章-Schema与数据类型优化</div>
+      <div>https://yury757.github.io/database/mysql/《高性能MySQL》/第4章-Schema与数据类型优化/第四章-Schema与数据类型优化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>December 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/" title="第三章-服务器性能剖析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第三章-服务器性能剖析</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/database/mysql/MySQL%E5%A4%87%E4%BB%BD-Linux%E7%89%88/MySQL%E5%A4%87%E4%BB%BD-linux%E7%89%88/" title="MySQL备份-Linux版">
+                        <span class="hidden-mobile">MySQL备份-Linux版</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

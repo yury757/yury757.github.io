@@ -1,0 +1,1126 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="JVM版本：HotSpot 1.8 推荐书籍：  《The Java Virtual Machine Specification》（The Java® Virtual Machine Specification (oracle.com)） 《深入理解java虚拟机——JVM高级特性与最佳实践》  一、JVM简介1、JVM是什么狭义上来说，JVM是java运行的平台。 广义上来说，It is the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM-1.8-memory-and-garbage-collect">
+<meta property="og:url" content="https://yury757.github.io/java/JVM/jvm-1.8/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="JVM版本：HotSpot 1.8 推荐书籍：  《The Java Virtual Machine Specification》（The Java® Virtual Machine Specification (oracle.com)） 《深入理解java虚拟机——JVM高级特性与最佳实践》  一、JVM简介1、JVM是什么狭义上来说，JVM是java运行的平台。 广义上来说，It is the">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yury757.github.io/images/JVM%E8%B7%A8%E8%AF%AD%E8%A8%80%E5%B9%B3%E5%8F%B0.png">
+<meta property="og:image" content="https://yury757.github.io/images/JVM%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%B1%BB%E5%9E%8B.png">
+<meta property="og:image" content="https://yury757.github.io/images/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.png">
+<meta property="og:image" content="https://yury757.github.io/images/pc%E5%AF%84%E5%AD%98%E5%99%A8.png">
+<meta property="og:image" content="https://yury757.github.io/images/stack%E6%B5%8B%E8%AF%95.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E6%A0%88%E5%B8%A7.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E8%A1%A8.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E5%9F%BA%E7%A1%80%E6%8C%87%E4%BB%A4%E5%88%86%E6%9E%90.png">
+<meta property="article:published_time" content="2021-09-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-06T07:29:23.639Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yury757.github.io/images/JVM%E8%B7%A8%E8%AF%AD%E8%A8%80%E5%B9%B3%E5%8F%B0.png">
+  
+  
+  
+  <title>JVM-1.8-memory-and-garbage-collect - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="JVM-1.8-memory-and-garbage-collect"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-09-20 00:00" pubdate>
+          September 20, 2021 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          32k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          270 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">JVM-1.8-memory-and-garbage-collect</h1>
+            
+            <div class="markdown-body">
+              
+              <p>JVM版本：HotSpot 1.8</p>
+<p>推荐书籍：</p>
+<ul>
+<li>《The Java Virtual Machine Specification》（<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/specs/jvms/se8/jvms8.pdf">The Java® Virtual Machine Specification (oracle.com)</a>）</li>
+<li>《深入理解java虚拟机——JVM高级特性与最佳实践》</li>
+</ul>
+<h2 id="一、JVM简介"><a href="#一、JVM简介" class="headerlink" title="一、JVM简介"></a>一、JVM简介</h2><h3 id="1、JVM是什么"><a href="#1、JVM是什么" class="headerlink" title="1、JVM是什么"></a>1、JVM是什么</h3><p>狭义上来说，JVM是java运行的平台。</p>
+<p>广义上来说，It is the component of the technology responsible for its hardware- and operating system independence, the small size of its compiled code, and its ability to protect users from malicious programs. 即JVM是一个操作系统或硬件与用户程序之间的一个接口或平台，这个接口可以使用户的程序与不同的操作系统或硬件独立开，只要程序运行在这个平台上，就可以对不同的操作系统或硬件进行相同的操作，就像一个虚拟的计算机，可以执行一系列的虚拟计算机指令。</p>
+<p>虚拟机分为两类：</p>
+<ul>
+<li>系统虚拟机，虚拟一个操作系统的运行环境（模拟硬件），如VMWare，是操作系统的运行环境，可以安装window、Linux等。</li>
+<li>程序虚拟机，虚拟一个普通应用程序的运行环境（模拟软件），如JVM，是二进制字节码的运行环境。</li>
+</ul>
+<p>java SE架构：<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/">Java Platform Standard Edition 8 Documentation (oracle.com)</a>，JVM处于最底层，即java的运行环境。</p>
+<h3 id="2、JVM厂商"><a href="#2、JVM厂商" class="headerlink" title="2、JVM厂商"></a>2、JVM厂商</h3><p>JVM和JVM规范（JVM Specification）不一样，JVM规范是一套规范，并不是JVM本身，而JVM是基于这套规范的实现，java官网上的JVM只是Oracle（Sun）对JVM规范的一个实现版本，不过还有其他厂商实现的JVM，如：</p>
+<ul>
+<li><p>Oracle HotSpot（<a target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/downloads/#java8">Java Downloads | Oracle</a>）（里面有很多历史，可以了解一下）</p>
+</li>
+<li><p>Microsoft OpenJDK（<a target="_blank" rel="noopener" href="https://www.microsoft.com/openjdk">Microsoft Build of OpenJDK</a>）</p>
+</li>
+<li><p>Alibaba Dragonwell（<a target="_blank" rel="noopener" href="https://developer.aliyun.com/opensource/project/alibabadragonwell">开发者平台_开发者中心 (aliyun.com)</a>）</p>
+</li>
+<li><p>Azul OpenJDK（<a target="_blank" rel="noopener" href="https://www.azul.com/downloads/azure-only/">Azure Only Downloads - Azul | Better Java Performance, Superior Java Support</a>）</p>
+</li>
+<li><p>Red Hat OpenJDK（<a target="_blank" rel="noopener" href="https://developers.redhat.com/products/openjdk/download">OpenJDK Download | Red Hat Developer</a>）</p>
+</li>
+<li><p>Amazon Corretto（<a target="_blank" rel="noopener" href="https://aws.amazon.com/cn/corretto/">Amazon Corretto-OpenJDK 的免费多平台发行版-AWS云服务</a>）</p>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> Oracle</span><br>java version &quot;13.0.2&quot; 2020-01-14<br>Java(TM) SE Runtime Environment (build 13.0.2+8)<br>Java HotSpot(TM) 64-Bit Server VM (build 13.0.2+8, mixed mode, sharing)<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> Microsoft</span><br>openjdk version &quot;11.0.12&quot; 2021-07-20<br>OpenJDK Runtime Environment Microsoft-25199 (build 11.0.12+7)<br>OpenJDK 64-Bit Server VM Microsoft-25199 (build 11.0.12+7, mixed mode)<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> Alibaba</span><br>openjdk version &quot;1.8.0_302&quot;<br>OpenJDK Runtime Environment (Alibaba Dragonwell 8.8.8) (build 1.8.0_302-b01)<br>OpenJDK 64-Bit Server VM (Alibaba Dragonwell 8.8.8) (build 25.302-b01, mixed mode)<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 不同的Linux发行版会提供OpenJDK或其变体作为系统默认的JVM实现</span><br>openjdk version &quot;1.8.0_292&quot;<br>OpenJDK Runtime Environment (build 1.8.0_292-8u292-b10-0ubuntu1~18.04-b10)<br>OpenJDK 64-Bit Server VM (build 25.292-b10, mixed mode)<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、跨语言平台"><a href="#3、跨语言平台" class="headerlink" title="3、跨语言平台"></a>3、跨语言平台</h3><p>JVM是一个跨语言的平台，只要对应的编译器按照一定的规范（JSR-292）能生成JVM可以识别的字节码文件，就可以运行其他语言的程序，而不仅仅是java。</p>
+<p>因此java的强大之处并不在于java语言本身，而更在于JVM的强大。</p>
+<p><img src="/images/JVM%E8%B7%A8%E8%AF%AD%E8%A8%80%E5%B9%B3%E5%8F%B0.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="4、JVM整体结构"><a href="#4、JVM整体结构" class="headerlink" title="4、JVM整体结构"></a>4、JVM整体结构</h3><p>JVM主要分为三个区域：</p>
+<ul>
+<li>类加载子系统</li>
+<li>运行时数据区</li>
+<li>执行引擎</li>
+</ul>
+<p><img src="/images/JVM%E6%95%B4%E4%BD%93%E7%BB%93%E6%9E%84.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="5、java代码执行流程"><a href="#5、java代码执行流程" class="headerlink" title="5、java代码执行流程"></a>5、java代码执行流程</h3><ul>
+<li>java编译器（如javac）编译成.class字节码文件（前端编译器）<ul>
+<li>词法分析</li>
+<li>语法分析</li>
+<li>语法/抽象语法树</li>
+<li>语义分析</li>
+<li>注解抽象语法树</li>
+<li>字节码生成器</li>
+</ul>
+</li>
+<li>JVM<ul>
+<li>类加载</li>
+<li>字节码校验</li>
+<li>解释器，逐行将字节码翻译成机器指令，解析执行</li>
+<li>JIT编译器（后端编译器），对字节码整体进行编译再执行，区别在于JIT会缓存一些热点代码等，优化执行效率</li>
+</ul>
+</li>
+</ul>
+<p><font color="Red">注意：解释器和JIT编译器属于JVM的执行引擎下，可以共存，但是不会同时运行，JIT编译器和解释器只能选其中一种来执行，但是并不是在JVM的整个生命周期内只能选一种运行，而是可以切换运行，根据当前要执行的代码的特征，JVM会选择其中一种来执行。</font></p>
+<h3 id="6、class文件反编译"><a href="#6、class文件反编译" class="headerlink" title="6、class文件反编译"></a>6、class文件反编译</h3><p>通过javap命令可以对.class文件进行反编译，查看字节码指令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><code class="hljs shell">javap -v Demo01.class<br><br>Classfile /D:/Adocument/Java/JVM/out/production/c1-memory-and-garbage-collect/net/yury/demo/Demo01.class<br>  Last modified 2021-9-20; size 580 bytes<br>  MD5 checksum fa60e763603ba1e3f645376ecc25e0ac<br>  Compiled from &quot;Demo01.java&quot;<br>public class net.yury.demo.Demo01<br>  minor version: 0<br>  major version: 52<br>  flags: ACC_PUBLIC, ACC_SUPER<br>Constant pool:<br><span class="hljs-meta">   #</span><span class="bash">1 = Methodref          <span class="hljs-comment">#5.#23         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span></span><br><span class="hljs-meta">   #</span><span class="bash">2 = Fieldref           <span class="hljs-comment">#24.#25        // java/lang/System.out:Ljava/io/PrintStream;</span></span><br><span class="hljs-meta">   #</span><span class="bash">3 = Methodref          <span class="hljs-comment">#26.#27        // java/io/PrintStream.println:(I)V</span></span><br><span class="hljs-meta">   #</span><span class="bash">4 = Class              <span class="hljs-comment">#28            // net/yury/demo/Demo01</span></span><br><span class="hljs-meta">   #</span><span class="bash">5 = Class              <span class="hljs-comment">#29            // java/lang/Object</span></span><br><span class="hljs-meta">   #</span><span class="bash">6 = Utf8               &lt;init&gt;</span><br><span class="hljs-meta">   #</span><span class="bash">7 = Utf8               ()V</span><br><span class="hljs-meta">   #</span><span class="bash">8 = Utf8               Code</span><br><span class="hljs-meta">   #</span><span class="bash">9 = Utf8               LineNumberTable</span><br><span class="hljs-meta">  #</span><span class="bash">10 = Utf8               LocalVariableTable</span><br><span class="hljs-meta">  #</span><span class="bash">11 = Utf8               this</span><br><span class="hljs-meta">  #</span><span class="bash">12 = Utf8               Lnet/yury/demo/Demo01;</span><br><span class="hljs-meta">  #</span><span class="bash">13 = Utf8               main</span><br><span class="hljs-meta">  #</span><span class="bash">14 = Utf8               ([Ljava/lang/String;)V</span><br><span class="hljs-meta">  #</span><span class="bash">15 = Utf8               args</span><br><span class="hljs-meta">  #</span><span class="bash">16 = Utf8               [Ljava/lang/String;</span><br><span class="hljs-meta">  #</span><span class="bash">17 = Utf8               a</span><br><span class="hljs-meta">  #</span><span class="bash">18 = Utf8               I</span><br><span class="hljs-meta">  #</span><span class="bash">19 = Utf8               b</span><br><span class="hljs-meta">  #</span><span class="bash">20 = Utf8               c</span><br><span class="hljs-meta">  #</span><span class="bash">21 = Utf8               SourceFile</span><br><span class="hljs-meta">  #</span><span class="bash">22 = Utf8               Demo01.java</span><br><span class="hljs-meta">  #</span><span class="bash">23 = NameAndType        <span class="hljs-comment">#6:#7          // &quot;&lt;init&gt;&quot;:()V</span></span><br><span class="hljs-meta">  #</span><span class="bash">24 = Class              <span class="hljs-comment">#30            // java/lang/System</span></span><br><span class="hljs-meta">  #</span><span class="bash">25 = NameAndType        <span class="hljs-comment">#31:#32        // out:Ljava/io/PrintStream;</span></span><br><span class="hljs-meta">  #</span><span class="bash">26 = Class              <span class="hljs-comment">#33            // java/io/PrintStream</span></span><br><span class="hljs-meta">  #</span><span class="bash">27 = NameAndType        <span class="hljs-comment">#34:#35        // println:(I)V</span></span><br><span class="hljs-meta">  #</span><span class="bash">28 = Utf8               net/yury/demo/Demo01</span><br><span class="hljs-meta">  #</span><span class="bash">29 = Utf8               java/lang/Object</span><br><span class="hljs-meta">  #</span><span class="bash">30 = Utf8               java/lang/System</span><br><span class="hljs-meta">  #</span><span class="bash">31 = Utf8               out</span><br><span class="hljs-meta">  #</span><span class="bash">32 = Utf8               Ljava/io/PrintStream;</span><br><span class="hljs-meta">  #</span><span class="bash">33 = Utf8               java/io/PrintStream</span><br><span class="hljs-meta">  #</span><span class="bash">34 = Utf8               println</span><br><span class="hljs-meta">  #</span><span class="bash">35 = Utf8               (I)V</span><br>&#123;<br>  public net.yury.demo.Demo01();<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=1, locals=1, args_size=1<br>         0: aload_0<br>         1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V<br>         4: return<br>      LineNumberTable:<br>        line 3: 0<br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            0       5     0  this   Lnet/yury/demo/Demo01;<br><br>  public static void main(java.lang.String[]);<br>    descriptor: ([Ljava/lang/String;)V<br>    flags: ACC_PUBLIC, ACC_STATIC<br>    Code:<br>      stack=2, locals=4, args_size=1<br>         0: iconst_4<br>         1: istore_1<br>         2: iconst_3<br>         3: istore_2<br>         4: iload_1<br>         5: iload_2<br>         6: iadd<br>         7: istore_3<br>         8: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;<br>        11: iload_1<br>        12: invokevirtual #3                  // Method java/io/PrintStream.println:(I)V<br>        15: return<br>      LineNumberTable:<br>        line 5: 0<br>        line 6: 2<br>        line 7: 4<br>        line 8: 8<br>        line 9: 15<br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            0      16     0  args   [Ljava/lang/String;<br>            2      14     1     a   I<br>            4      12     2     b   I<br>            8       8     3     c   I<br>&#125;<br>SourceFile: &quot;Demo01.java&quot;<br></code></pre></td></tr></table></figure>
+
+<p>JVM是基于栈的架构，不同CPU架构不同，因此不能基于寄存器来设计。</p>
+<h3 id="7、JVM生命周期"><a href="#7、JVM生命周期" class="headerlink" title="7、JVM生命周期"></a>7、JVM生命周期</h3><ul>
+<li><strong>启动</strong>：Java虚拟机的启动是通过<strong>引导类加载器</strong>（bootstrap class loader）创建一个初始类（initial class）来完成的，这个初始类是由虚拟机的具体实现来指定的，不同实现版本的JVM的类可能不一样。</li>
+<li><strong>执行</strong>：JVM执行的任务就是执行用户程序，即执行一个java程序，实际上是执行一个JVM进程，而用户程序只不过在这个进程上运行。</li>
+<li><strong>退出</strong>：程序正常终止、异常或错误而终止、操作系统错误终止、某个线程调用Runtime类或System类的exit方法或其他方法手动终止程序等都会导致程序退出，程序终止则JVM也退出。</li>
+</ul>
+<h2 id="二、类加载子系统"><a href="#二、类加载子系统" class="headerlink" title="二、类加载子系统"></a>二、类加载子系统</h2><p>类加载子系统（class loader subsystem）负责加载.class字节码文件。</p>
+<p>类加载过程分为一下几个步骤：加载、链接、初始化。</p>
+<h3 id="1、加载"><a href="#1、加载" class="headerlink" title="1、加载"></a>1、加载</h3><ul>
+<li>通过全限定类名获取定义此类的二进制流（本地文件，网络，<font color="Red">动态代理</font>，<font color="Red">JSP生成</font>）</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象（详见反射），作为方法区这个类的各种数据的访问入口</li>
+</ul>
+<h3 id="2、链接"><a href="#2、链接" class="headerlink" title="2、链接"></a>2、链接</h3><ul>
+<li><strong>验证</strong>：验证class字节码文件是否符合当前JMV规范，保证类被正确地加载并不会危害JVM本身。主要有：文件格式验证、元数据验证、字节码验证、符号引用验证。</li>
+<li><strong>准备</strong>：为变量分配内存，并设置该变量的默认值。用final static修饰的变量在编译成class文件时就会分配值，因而这种变量在这个阶段就会直接赋值。这里不会为示例变量分配初始化值，类变量会分配在方法区中，而实例变量是会随着对象一起分配到java堆中。</li>
+<li><strong>解析</strong>：将内存池中的符号引用转换为直接引用。即比如我们引用了一个java.Lang.String类，会产生一个对这个类的符号引用，等其他类都准备好了之后，将符号引用转换为地址引用这样的直接引用。解析动作主要针对类或接口、字段、类方法、接口方法、方法类型等。</li>
+</ul>
+<h3 id="3、初始化"><a href="#3、初始化" class="headerlink" title="3、初始化"></a>3、初始化</h3><p>这个初始化并不是初始化实例，而是类的初始化。</p>
+<ul>
+<li>执行类构造器方法&lt;clinit&gt;()的过程。此方法不需要定义，是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来。即执行所有static变量或static代码块相关的初始化操作，若没有这两类操作，则不会产生对应的&lt;clinit&gt;()方法。</li>
+<li>初始化顺序是按照代码在源文件中的顺序执行</li>
+<li>若该类具有父类，则必须先执行父类的&lt;clinit&gt;()方法，父类初始化完成后，才能初始化子类。</li>
+<li>JVM必须保证一个类的&lt;clinit&gt;()方法在多线程中被同步加锁，保证只能被加载一次。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo02</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        Runnable task = ()-&gt;&#123;<br>            System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;开始&quot;</span>);<br>            AnotherClass deadThread = <span class="hljs-keyword">new</span> AnotherClass();<br>            System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;结束&quot;</span>);<br>        &#125;;<br>        Thread thread1 = <span class="hljs-keyword">new</span> Thread(task, <span class="hljs-string">&quot;thread-1&quot;</span>);<br>        Thread thread2 = <span class="hljs-keyword">new</span> Thread(task, <span class="hljs-string">&quot;thread-2&quot;</span>);<br><br>        thread1.start();<br>        thread2.start();<br>    &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AnotherClass</span> </span>&#123;<br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;正在初始化&quot;</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            Thread.sleep(<span class="hljs-number">1000</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;初始化结束&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如以上代码执行时最多一个线程进入AnotherClass的static代码块去执行，要么是thread-1，要么是thread-2。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">thread-<span class="hljs-number">1</span>开始<br>thread-<span class="hljs-number">2</span>开始<br>thread-<span class="hljs-number">1</span>正在初始化<br>thread-<span class="hljs-number">1</span>初始化结束<br>thread-<span class="hljs-number">1</span>结束<br>thread-<span class="hljs-number">2</span>结束<br></code></pre></td></tr></table></figure>
+
+<h3 id="4、类加载器（重点）"><a href="#4、类加载器（重点）" class="headerlink" title="4、类加载器（重点）"></a>4、类加载器（重点）</h3><p>按被加载的被的类的类型划分，类加载分为一下几种：</p>
+<ul>
+<li>引导类加载器（Bootstrap ClassLoader）</li>
+<li>扩展类加载器（Extension ClassLoader）</li>
+<li>应用程序类加载器（Application ClassLoader）</li>
+<li>用户自定义类加载器（意为用户自定义的<strong>类加载器</strong>，而不是<strong>用户自定义类</strong>的加载器，没有加载器这个东西，只有类加载器）</li>
+</ul>
+<p>而按照JVM的标准，后面三种都叫用户自定义类加载器。<font color="Red">所有直接或间接派生于ClassLoader的类加载器都是用户自定义类加载器</font>。如扩展类加载器（ExtClassLoader）间接继承了ClassLoader。</p>
+<p>Launcher类是JVM的一个入口应用，后面可以看到扩展了加载器和应用程序类加载器都是Launcher类里面的内部类。</p>
+<h4 id="（1）引导类加载器"><a href="#（1）引导类加载器" class="headerlink" title="（1）引导类加载器"></a>（1）引导类加载器</h4><p>引导类加载器为C/C++编写，用于引导java的核心类库（JAVA_HOME/jre/lib/rt.jar、resources.jar、sun.boot.class.path路径下的内容），用于提供JVM启动运行自身需要的类。</p>
+<p><font color="Red">扩展类加载器和应用程序类加载器也是一个类，因此引导类加载器用于还用于加载这两个特殊的类。</font></p>
+<p>出于安全考虑，Bootstrap类加载器只加载包含java、javax、sun等开头的类。</p>
+<p>引导类加载器加载的类，调用getClassLoader()方法返回null。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">import</span> com.sun.net.ssl.internal.ssl.Provider;<br><span class="hljs-keyword">import</span> sun.misc.Launcher;<br><br><span class="hljs-keyword">import</span> java.net.URL;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo03BootstrapClassLoader</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;bootstrap引导类加载器加载的路径为：&quot;</span>);<br>        URL[] urLs = Launcher.getBootstrapClassPath().getURLs();<br>        <span class="hljs-keyword">for</span> (URL urL : urLs) &#123;<br>            System.out.println(urL.toString());<br>        &#125;<br>        ClassLoader classLoader = Provider.class.getClassLoader();<br>        System.out.println(classLoader);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">bootstrap引导类加载器加载的路径为：</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/resources.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/rt.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/sunrsasign.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/jsse.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/jce.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/charsets.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/lib/jfr.jar</span><br><span class="hljs-comment">file:/D:/Program%20Files%20(x86)/Java/jdk1.8.0_201/jre/classes</span><br><span class="hljs-comment">null</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="（2）扩展类加载器"><a href="#（2）扩展类加载器" class="headerlink" title="（2）扩展类加载器"></a>（2）扩展类加载器</h4><p>java语言编写，由sun.misc.Launcher$ExtClassLoader实现，继承于ClassLoader，该类由Bootstrap引导类加载器加载。</p>
+<p>加载的类目录为指定的java.ext.dirs系统属性目录，若没指定则默认为JAVA_HOME/jre/lib/ext，当用户写了一个类放入这个目录下也会被加载。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">import</span> sun.security.ec.CurveDB;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo04ExtClassLoader</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        String property = System.getProperty(<span class="hljs-string">&quot;java.ext.dirs&quot;</span>);<br>        System.out.println(property);<br><br>        ClassLoader classLoader = CurveDB.class.getClassLoader();<br>        System.out.println(classLoader);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">D:\Program Files (x86)\Java\jdk1.8.0_201\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext</span><br><span class="hljs-comment">sun.misc.Launcher$ExtClassLoader@4b67cf4d</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="（3）应用程序类加载器"><a href="#（3）应用程序类加载器" class="headerlink" title="（3）应用程序类加载器"></a>（3）应用程序类加载器</h4><p>应用程序类加载器也叫系统类加载器，java语言编写，由sun.misc.Launcher$AppClassLoader实现，继承于ClassLoader，该类由扩展类加载器加载。</p>
+<p>加载的类的目录为指定的java.class.path系统属性目录。</p>
+<p><font color="Red">该类加载器是java应用程序的默认类加载器，即java应用的类一般都是由这个类加载器加载的。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo05AppClassLoader</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        ClassLoader classLoader = Demo05AppClassLoader.class.getClassLoader();<br>        System.out.println(classLoader);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<p>总结如下：</p>
+<p><img src="/images/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%B1%BB%E5%9E%8B.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="（4）用户自定义类加载器"><a href="#（4）用户自定义类加载器" class="headerlink" title="（4）用户自定义类加载器"></a>（4）用户自定义类加载器</h4><p>不适用以上三种类加载器，而是用户自定义一个类加载器，来加载需要加载的类。</p>
+<p>为什么需要自定义类加载器？</p>
+<ul>
+<li>隔离加载类</li>
+<li>修改类的加载方式</li>
+<li>扩展加载源</li>
+<li>防止源码泄露</li>
+</ul>
+<p>定义用户自定义类的两个方法：</p>
+<ul>
+<li>继承ClassLoader类，重写findClass方法，JDK1.2之前要重写loadClass方法</li>
+<li>继承URLClassLoader类，按照需求重写部分方法</li>
+<li>将URLClassLoader类作为一个参考模板，模仿重写一个适应自己需求的一个类</li>
+</ul>
+<h4 id="（5）获取类加载器的方式"><a href="#（5）获取类加载器的方式" class="headerlink" title="（5）获取类加载器的方式"></a>（5）获取类加载器的方式</h4><ul>
+<li>Class.getClassLoader()</li>
+<li>Thread.currentThread().getContextClassLoader()</li>
+<li>ClassLoader.getSystemClassLoader()</li>
+<li>DriverManager.getCallerCLassLoader()</li>
+</ul>
+<h3 id="5、双亲委派机制（重点）"><a href="#5、双亲委派机制（重点）" class="headerlink" title="5、双亲委派机制（重点）"></a>5、双亲委派机制（重点）</h3><p>JVM对class文件采用的是<font color="Red">按需加载</font>的方式加载，即在要用到这个类时才会将这个类加载进内存中生成class对象。而加载某个类时，JVM加载类时采用的是<font color="Red">双亲委派机制</font>，是一种任务委派模式。</p>
+<p>双亲委派机制原理如下：</p>
+<ul>
+<li>当一个类加载器收到加载类的请求时，并不会自己去加载这个类，而是将这个请求委托给父类去加载</li>
+<li>父类加载器收到加载请求后，会继续向上委托，最终到达Bootstrap ClassLoader</li>
+<li>在这个递归的过程中，如果父类加载器完成了加载过程，则成功返回，否则才让子类加载器去完成类加载，知道这个类完成加载。</li>
+</ul>
+<p>注：“父类加载器“的断句为”<strong>父 类加载器</strong>“，还是一个类加载器，而不是父类的类加载器。类加载器可以通过调用getParent()方法获取其父类加载器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Returns the parent class loader for delegation. Some implementations may</span><br><span class="hljs-comment"> * use &lt;tt&gt;null&lt;/tt&gt; to represent the bootstrap class loader. This method</span><br><span class="hljs-comment"> * will return &lt;tt&gt;null&lt;/tt&gt; in such implementations if this class loader&#x27;s</span><br><span class="hljs-comment"> * parent is the bootstrap class loader.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> ClassLoader <span class="hljs-title">getParent</span><span class="hljs-params">()</span> </span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">就像注释中说的，类加载器在任务委派方面是存在父子这种层次关系的，上面一节中讲到的不同类型的类加载器可以加载那些类，只是说明了它拥有加载这些类的能力，而不是说这些类一定由这个类加载器加载。而某个类最终由哪个类加载器加载，取决于可以加载这个类的最高级别的类加载器。</font></p>
+<p>类加载器在任务委派方面的级别从高到低依次如下：</p>
+<ul>
+<li>Bootstrap ClassLoader</li>
+<li>Extension ClassLoader</li>
+<li>Application ClassLoader</li>
+<li>UserDefined ClassLoader</li>
+</ul>
+<p>例如用户定义了一个java.lang.String类，而用户在使用这个类时，并不会找到用户定义的这个类，而是用了bootstrap classloader加载的rt.jar包下的java.lang.String类。因为通过双亲委派机制加载类时，加载任务不会直接进行，而是从最底层一直往上传递，最顶层的bootstrap classloader可以完成这个类的加载，于是直接完成了加载并返回class对象了，并不会将加载任务继续返还给子类加载器加载。代码略。</p>
+<p>机制的优点：</p>
+<ul>
+<li>避免类被重复加载</li>
+<li>保护程序安全，防止核心api被随意篡改</li>
+</ul>
+<h3 id="6、识别同一个类"><a href="#6、识别同一个类" class="headerlink" title="6、识别同一个类"></a>6、识别同一个类</h3><p>JVM中识别两个对象是否属于同一个类，包含以下两个校验：</p>
+<ul>
+<li>全限定类名是否相同</li>
+<li>这两个对象的类是否由同一个类加载器加载的</li>
+</ul>
+<h3 id="7、类的主动使用和被动使用"><a href="#7、类的主动使用和被动使用" class="headerlink" title="7、类的主动使用和被动使用"></a>7、类的主动使用和被动使用</h3><p>主动使用包括：</p>
+<ul>
+<li>创建类实例</li>
+<li>访问类或接口的静态变量，或对该静态变量进行赋值</li>
+<li>调用类的静态方法</li>
+<li>反射</li>
+<li>初始化一个类的子类</li>
+<li>JVM启动时被标明为启动类的类</li>
+<li>JDK7开始提供的动态语言支持：java.lang.invoke.MethodHandler实例的解析结果</li>
+</ul>
+<p>除了以上几种情况为主动使用，其他均为被动使用。<font color="Red">类的被动使用不会导致类的初始化，即不会执行对应的&lt;clinit&gt;()方法</font>。</p>
+<h2 id="三、运行时数据区"><a href="#三、运行时数据区" class="headerlink" title="三、运行时数据区"></a>三、运行时数据区</h2><h3 id="1、组成"><a href="#1、组成" class="headerlink" title="1、组成"></a>1、组成</h3><ul>
+<li>方法区（JDK1.8叫元空间metaspace，或堆外内存）</li>
+<li>JVM堆</li>
+<li>程序计数器</li>
+<li>本地方法栈</li>
+<li>JVM栈</li>
+</ul>
+<p><font color="Red">其中方法区和JVM堆的生命周期和JVM进程的生命周期一样，而程序计数器、本地方法栈、JVM栈的生命周期和程序线程的生命周期一样，每有一个线程， 就会有一个自身的程序计数器、本地方法栈、JVM栈。</font></p>
+<p><img src="/images/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="2、线程"><a href="#2、线程" class="headerlink" title="2、线程"></a>2、线程</h3><p><font color="Red">在HotSpot JVM中，每个线程都与操作系统中的本地线程直接映射。java线程准备好时，操作系统中对应的本地线程也同时创建；java线程终止时，本地线程也会回收。</font></p>
+<p><strong>普通线程</strong>：用户应用程序需要执行一定的工作而创建的工作线程。JVM虚拟机在所有普通线程终止时自动终止。</p>
+<p><strong>守护线程</strong>：驻立在后台的线程，用于服务普通线程的线程，当JVM虚拟机准备终止时，守护线程才会终止。</p>
+<p>HotSpot JVM中的守护线程主要有：</p>
+<ul>
+<li>JVM线程</li>
+<li>周期任务线程</li>
+<li>GC线程</li>
+<li>编译线程</li>
+<li>信号调度线程</li>
+</ul>
+<h3 id="3、程序计数器（PC寄存器）"><a href="#3、程序计数器（PC寄存器）" class="headerlink" title="3、程序计数器（PC寄存器）"></a>3、程序计数器（PC寄存器）</h3><p>英文全称：Program Counter Register。它是对CPU的寄存器的一种抽象模拟。</p>
+<p>PC寄存器用来<font color="Red">存储指向下一条指令的地址</font>，也即将要执行的指令代码。由执行引擎读取下一条指令。它是程序控制流的指示器，分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。可以理解为数据库中的游标，或集合的迭代器。</p>
+<p>线程私有，和线程的生命周期一致。</p>
+<p><font color="Red">没有GC，且是唯一一个在JVM规范中没有规定任何OOM情况的区域。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo06PCRegister</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-keyword">int</span> i = <span class="hljs-number">10</span>;<br>        <span class="hljs-keyword">int</span> j = <span class="hljs-number">20</span>;<br>        <span class="hljs-keyword">int</span> k = i + j;<br>        String s = <span class="hljs-string">&quot;yury&quot;</span>;<br>        System.out.println(s);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>对于上面这段代码反编译后的指令如下：</p>
+<p><img src="/images/pc%E5%AF%84%E5%AD%98%E5%99%A8.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>问题1：为什么要用PC寄存器？</strong></p>
+<p>因为CPU需要不断地在各个线程之间切换运行，需要有一个东西记录CPU需要运行的下一条指令的位置，不然CPU从其他线程切换回来不知道从哪里开始。</p>
+<p><strong>问题2：PC寄存器为什么是线程私有的？</strong></p>
+<p>因为PC寄存器是记录每个线程的下一条指令的位置，和线程相关，因此要每个线程独享一份PC寄存器。如果设计成公用的，则需要将对应线程的id也记录进去（即一种key-value形式的数据结构存储），而在创建线程和销毁线程时还要对这个数据结构进行操作，又涉及并发问题，稍显麻烦。而PC寄存器的占用内存及其小，因此设计成和线程绑定，随着线程生命周期创建或销毁，使用起来更方便。</p>
+<h3 id="4、JVM栈"><a href="#4、JVM栈" class="headerlink" title="4、JVM栈"></a>4、JVM栈</h3><p>英文全称：Java Virtual Machine Stacks。</p>
+<p><font color="Red">栈是运行时的单位，而堆是存储的单位。栈解决程序运行的问题，即程序如何运行，或者说如何处理数据。堆解决的是数据存储的问题，即数据怎么放，放在那里。</font></p>
+<p><font color="Red">JVM栈内部存储的是一个个的栈帧，对应着一次次的方法调用，当前线程每调用一个方法，则将该方法入栈，栈顶元素即为正在运行的方法，当前方法运行结束后则栈顶元素出栈</font>。主管java程序的运行，每个栈帧中保存方法的局部变量、部分结果，并参与方法的调用和返回。</p>
+<p>线程私有，和线程的生命周期一致。</p>
+<p>不存在GC，但是存在OOM。</p>
+<p>JVM允许JVM栈的大小是动态的或者固定不变的。若栈大小是固定的，则可能存在<strong>StackOverflowError</strong>异常；若栈大小是动态的，则可能存在<strong>OutOfMemoryError</strong>异常。</p>
+<p><font color="Red">设置栈的大小</font>：在JVM参数设置里面加上<code>-Xss1024</code>即可设置栈空间的大小；默认单位是bytes，加上<code>k</code>则以kb为单位，同样加上<code>m</code>则以mb为单位。</p>
+<h4 id="（1）栈帧"><a href="#（1）栈帧" class="headerlink" title="（1）栈帧"></a>（1）栈帧</h4><p>栈帧是一个内存区块，是一个数据集，维系着方法执行过程中的各种数据集。</p>
+<p>在一个活动线程中，一个时间点上只可能有一个活动的栈帧，即栈顶栈帧，对应着当前正在运行的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo07JVMStackTest</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        Demo07JVMStackTest demo = <span class="hljs-keyword">new</span> Demo07JVMStackTest();<br>        demo.test1();<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test1</span><span class="hljs-params">()</span></span>&#123;<br>        <span class="hljs-keyword">int</span> a = <span class="hljs-number">10</span>;<br>        test2();<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span>&#123;<br>        <span class="hljs-keyword">int</span> b = <span class="hljs-number">20</span>;<br>        test3();<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test3</span><span class="hljs-params">()</span></span>&#123;<br>        <span class="hljs-keyword">int</span> c = <span class="hljs-number">30</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如在运行以上代码时，通过debug手动控制程序的运行时，会发现每当进入一个方法时，下图的顶端方法就会变成当前方法。每执行完一个方法时，顶端方法就会移除。</p>
+<p><img src="/images/stack%E6%B5%8B%E8%AF%95.png" srcset="/img/loading.gif" lazyload></p>
+<p>注意：不同线程中的所包含的栈帧是不允许存在相互引用的，即不可能在一个栈帧中引用另外一个线程的栈帧。即不同栈之间的栈帧时隔离的。</p>
+<blockquote>
+<p>返回类型</p>
+</blockquote>
+<p>函数有两种返回方式，一是正常返回，而是异常返回。这两种返回方式都会导致栈帧被弹出。</p>
+<p>正常返回时，使用return指令，返回值会被传给下一个栈帧，接着当前栈帧就被JVM丢弃。返回值为void其实也有一个return。</p>
+<p>异常返回时，抛出的异常会传给下一个栈帧去处理，如果下一个栈帧没有处理该异常，则继续往前抛，直到有一个函数可以处理这个异常。</p>
+<blockquote>
+<p>栈帧内部结构</p>
+</blockquote>
+<ul>
+<li><p><font color="Red">局部变量表</font></p>
+</li>
+<li><p><font color="Red">操作数栈（或表达式栈）</font></p>
+</li>
+<li><p>动态链接（或指向运行时常量池的方法引用）</p>
+</li>
+<li><p>方法返回地址（或方法正常退出或异常退出的定义）</p>
+</li>
+<li><p>其他附加信息</p>
+</li>
+</ul>
+<p><img src="/images/%E6%A0%88%E5%B8%A7.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="（2）局部变量表"><a href="#（2）局部变量表" class="headerlink" title="（2）局部变量表"></a>（2）局部变量表</h4><p>局部变量表（local variables），<font color="Red">定义为一个数字数组，主要用于存储方法参数和定义在方法体内的局部变量，如字节码指令中的store、load等指令都会对局部变量表的操作</font>，这些数据类型包括基本数据类型、对象引用（reference），以及returnAddress类型。</p>
+<p><font color="Red">局部变量表中最基本的存储单元是slot（变量槽）</font>。32位以内的类型只占用一个slot（包括returnAddress类型），64位的类型（long和double）占用两个slot。</p>
+<ul>
+<li>boolean、byte、short、char在存储之前都会被转换成int，占用一个slot</li>
+<li>float为占用一个字节，故占用一个slot</li>
+<li>long和double则占用两个slot</li>
+<li>引用类型占用一个slot</li>
+</ul>
+<p>局部变量表是和线程绑定的，不存在线程安全的问题。</p>
+<p><strong>局部变量表所需的容量大小是在编译器就确定下来了</strong>，并保存在方法的Code属性的locals数据项中，在方法运行期间是不会改变局部变量表的大小的。</p>
+<p><font color="Red">局部变量表中的变量是重要的垃圾回收的根节点，只要被局部变量表中直接或间接引用的对象都不会被回收。</font></p>
+<p>如下这段代码，在javap命令下展示的局部变量表如下所示。locals即为局部变量表的容量（数字数组的长度），L开头表示引用类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo08Slot</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        String res = test(args);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">test</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>        <span class="hljs-keyword">long</span> a = <span class="hljs-number">1L</span>;<br>        <span class="hljs-keyword">double</span> b = <span class="hljs-number">2</span>;<br>        <span class="hljs-keyword">float</span> c = <span class="hljs-number">3F</span>;<br>        <span class="hljs-keyword">int</span> d = <span class="hljs-number">3</span>;<br>        <span class="hljs-keyword">short</span> e = <span class="hljs-number">4</span>;<br>        <span class="hljs-keyword">byte</span> f = <span class="hljs-number">5</span>;<br>        <span class="hljs-keyword">boolean</span> g = <span class="hljs-keyword">true</span>;<br>        <span class="hljs-keyword">char</span> h = <span class="hljs-string">&#x27;a&#x27;</span>;<br>        String i = <span class="hljs-string">&quot;123&quot;</span>;<br>        <span class="hljs-keyword">return</span> i + <span class="hljs-string">&quot;456&quot;</span>;<br>    &#125;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">public static java.lang.String test(java.lang.String[]);</span><br><span class="hljs-comment">    descriptor: ([Ljava/lang/String;)Ljava/lang/String;</span><br><span class="hljs-comment">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="hljs-comment">    Code:</span><br><span class="hljs-comment">      stack=2, locals=12, args_size=1</span><br><span class="hljs-comment">         0: lconst_1</span><br><span class="hljs-comment">         1: lstore_1</span><br><span class="hljs-comment">         2: ldc2_w        #3                  // double 2.0d</span><br><span class="hljs-comment">         5: dstore_3</span><br><span class="hljs-comment">         6: ldc           #5                  // float 3.0f</span><br><span class="hljs-comment">         8: fstore        5</span><br><span class="hljs-comment">        10: iconst_3</span><br><span class="hljs-comment">        11: istore        6</span><br><span class="hljs-comment">        13: iconst_4</span><br><span class="hljs-comment">        14: istore        7</span><br><span class="hljs-comment">        16: iconst_5</span><br><span class="hljs-comment">        17: istore        8</span><br><span class="hljs-comment">        19: iconst_1</span><br><span class="hljs-comment">        20: istore        9</span><br><span class="hljs-comment">        22: bipush        97</span><br><span class="hljs-comment">        24: istore        10</span><br><span class="hljs-comment">        26: ldc           #6                  // String 123</span><br><span class="hljs-comment">        28: astore        11</span><br><span class="hljs-comment">        30: new           #7                  // class java/lang/StringBuilder</span><br><span class="hljs-comment">        33: dup</span><br><span class="hljs-comment">        34: invokespecial #8                  // Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:()V</span><br><span class="hljs-comment">        37: aload         11</span><br><span class="hljs-comment">        39: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="hljs-comment">        42: ldc           #10                 // String 456</span><br><span class="hljs-comment">        44: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="hljs-comment">        47: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="hljs-comment">        50: areturn</span><br><span class="hljs-comment">      LineNumberTable:</span><br><span class="hljs-comment">        line 8: 0</span><br><span class="hljs-comment">        line 9: 2</span><br><span class="hljs-comment">        line 10: 6</span><br><span class="hljs-comment">        line 11: 10</span><br><span class="hljs-comment">        line 12: 13</span><br><span class="hljs-comment">        line 13: 16</span><br><span class="hljs-comment">        line 14: 19</span><br><span class="hljs-comment">        line 15: 22</span><br><span class="hljs-comment">        line 16: 26</span><br><span class="hljs-comment">        line 17: 30</span><br><span class="hljs-comment">      LocalVariableTable:</span><br><span class="hljs-comment">        Start  Length  Slot  Name   Signature</span><br><span class="hljs-comment">            0      51     0  args   [Ljava/lang/String;</span><br><span class="hljs-comment">            2      49     1     a   J</span><br><span class="hljs-comment">            6      45     3     b   D</span><br><span class="hljs-comment">           10      41     5     c   F</span><br><span class="hljs-comment">           13      38     6     d   I</span><br><span class="hljs-comment">           16      35     7     e   S</span><br><span class="hljs-comment">           19      32     8     f   B</span><br><span class="hljs-comment">           22      29     9     g   Z</span><br><span class="hljs-comment">           26      25    10     h   C</span><br><span class="hljs-comment">           30      21    11     i   Ljava/lang/String;</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<p>局部变量表在LocalVariableTable下，</p>
+<ul>
+<li>start：该局部变量开始生效的字节码行号</li>
+<li>length：该局部变量开始生效的字节码行的数量，start + length一定等于该方法的总字节码行数</li>
+<li>slot：占据的槽位的编号</li>
+<li>name：局部变量名</li>
+<li>signature：局部变量类型缩写</li>
+</ul>
+<p>最上面<code>Code：</code>下面的<code>locals</code>即为局部变量表的大小，而<code>stack</code>为操作数栈的长度。</p>
+<p>LineNumberTable这个表指的是<strong>源代码中行号（冒号左边）</strong>和<strong>字节码行号（冒号右边）</strong>的对应关系</p>
+<p><img src="/images/%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E8%A1%A8.png" srcset="/img/loading.gif" lazyload></p>
+<p><font color="Red">注意：非静态方法，会把对自身对象的引用this放在第0个位置的slot处作为“局部变量”，甚至方法的参数都要放在这个“局部变量”后面。而静态方法中，不会将自身对象的应用放到局部变量表中，因此在静态方法中使用this会报错。如下：</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">test1</span><span class="hljs-params">(<span class="hljs-keyword">long</span> i)</span> <span class="hljs-keyword">throws</span> FileNotFoundException </span>&#123;<br>    FileInputStream fileInputStream = <span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">&quot;&quot;</span>);<br>    <span class="hljs-keyword">this</span>.test2();<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">public java.lang.String test1(long) throws java.io.FileNotFoundException;</span><br><span class="hljs-comment">    descriptor: (J)Ljava/lang/String;</span><br><span class="hljs-comment">    flags: ACC_PUBLIC</span><br><span class="hljs-comment">    Code:</span><br><span class="hljs-comment">      stack=3, locals=4, args_size=2</span><br><span class="hljs-comment">         0: new           #12                 // class java/io/FileInputStream</span><br><span class="hljs-comment">         3: dup</span><br><span class="hljs-comment">         4: ldc           #13                 // String</span><br><span class="hljs-comment">         6: invokespecial #14                 // Method java/io/FileInputStream.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</span><br><span class="hljs-comment">         9: astore_3</span><br><span class="hljs-comment">        10: aload_0</span><br><span class="hljs-comment">        11: invokevirtual #15                 // Method test2:()V</span><br><span class="hljs-comment">        14: aload_0</span><br><span class="hljs-comment">        15: getfield      #16                 // Field name:Ljava/lang/String;</span><br><span class="hljs-comment">        18: areturn</span><br><span class="hljs-comment">      LineNumberTable:</span><br><span class="hljs-comment">        line 21: 0</span><br><span class="hljs-comment">        line 22: 10</span><br><span class="hljs-comment">        line 23: 14</span><br><span class="hljs-comment">      LocalVariableTable:</span><br><span class="hljs-comment">        Start  Length  Slot  Name   Signature</span><br><span class="hljs-comment">            0      19     0  this   Lnet/yury/demo/Demo09Method;</span><br><span class="hljs-comment">            0      19     1     i   J</span><br><span class="hljs-comment">           10       9     3 fileInputStream   Ljava/io/FileInputStream;</span><br><span class="hljs-comment">    Exceptions:</span><br><span class="hljs-comment">      throws java.io.FileNotFoundException</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>slot的重复利用</p>
+</blockquote>
+<p>局部变量表中的slot槽位是可以重复利用的。当一个局部变量过了其作用域时，那么后面申明的局部变量可以利用前面过期的局部变量的slot槽位，以达到节省资源的作用。</p>
+<p>如下，c和d利用了过期了的b的slot槽位。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test3</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">int</span> a = <span class="hljs-number">0</span>;<br>    &#123;<br>        <span class="hljs-keyword">long</span> b = <span class="hljs-number">100L</span>;<br>        b = a;<br>    &#125;<br>    <span class="hljs-keyword">int</span> c = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">char</span> d = <span class="hljs-string">&#x27;a&#x27;</span>;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">public void test3();</span><br><span class="hljs-comment">    descriptor: ()V</span><br><span class="hljs-comment">    flags: ACC_PUBLIC</span><br><span class="hljs-comment">    Code:</span><br><span class="hljs-comment">      stack=2, locals=4, args_size=1</span><br><span class="hljs-comment">         0: iconst_0</span><br><span class="hljs-comment">         1: istore_1</span><br><span class="hljs-comment">         2: ldc2_w        #4                  // long 100l</span><br><span class="hljs-comment">         5: lstore_2</span><br><span class="hljs-comment">         6: iload_1</span><br><span class="hljs-comment">         7: i2l</span><br><span class="hljs-comment">         8: lstore_2</span><br><span class="hljs-comment">         9: iconst_0</span><br><span class="hljs-comment">        10: istore_2</span><br><span class="hljs-comment">        11: bipush        97</span><br><span class="hljs-comment">        13: istore_3</span><br><span class="hljs-comment">        14: return</span><br><span class="hljs-comment">      LineNumberTable:</span><br><span class="hljs-comment">        line 31: 0</span><br><span class="hljs-comment">        line 33: 2</span><br><span class="hljs-comment">        line 34: 6</span><br><span class="hljs-comment">        line 36: 9</span><br><span class="hljs-comment">        line 37: 11</span><br><span class="hljs-comment">        line 38: 14</span><br><span class="hljs-comment">      LocalVariableTable:</span><br><span class="hljs-comment">        Start  Length  Slot  Name   Signature</span><br><span class="hljs-comment">            6       3     2     b   J</span><br><span class="hljs-comment">            0      15     0  this   Lnet/yury/demo/Demo09Method;</span><br><span class="hljs-comment">            2      13     1     a   I</span><br><span class="hljs-comment">           11       4     2     c   I</span><br><span class="hljs-comment">           14       1     3     d   C</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="（3）操作数栈"><a href="#（3）操作数栈" class="headerlink" title="（3）操作数栈"></a>（3）操作数栈</h4><p><font color="Red">操作数栈（operand stack），即在方法执行过程中，根据字节码指令，往栈中写入数据或提取数据的一个临时存储空间，主要用于保存一些指令需要用的临时数据。</font>如指令中的push、store、load等指令，都会对操作数栈进行操作。</p>
+<p>JVM的执行引擎是基于栈的执行引擎，其中这里说的栈，就是操作数栈。</p>
+<p>JVM操作数栈用数组来实现，操作数栈的大小在编译时即确定了，对操作数栈的操作只有入栈和出栈。</p>
+<p>操作数栈中的任何一个元素的都可以是任意类型的java数据类型，只是占用的栈单位不一样：</p>
+<ul>
+<li>32位及以下的类型占用一个栈单位深度，以int类型存放</li>
+<li>64位类型占用两个栈单位深度</li>
+</ul>
+<blockquote>
+<p>指令分析</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo10OperandStack</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">method1</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">byte</span> m = <span class="hljs-number">15</span>;<br>        <span class="hljs-keyword">int</span> n = <span class="hljs-number">8</span>;<br>        <span class="hljs-keyword">int</span> k = m + n;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">method1</span><span class="hljs-params">()</span></span>;<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">2</span>, locals=<span class="hljs-number">4</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: bipush        <span class="hljs-number">15</span><br>         <span class="hljs-number">2</span>: istore_1<br>         <span class="hljs-number">3</span>: bipush        <span class="hljs-number">8</span><br>         <span class="hljs-number">5</span>: istore_2<br>         <span class="hljs-number">6</span>: iload_1<br>         <span class="hljs-number">7</span>: iload_2<br>         <span class="hljs-number">8</span>: iadd<br>         <span class="hljs-number">9</span>: istore_3<br>        <span class="hljs-number">10</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">5</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">6</span>: <span class="hljs-number">3</span><br>        line <span class="hljs-number">7</span>: <span class="hljs-number">6</span><br>        line <span class="hljs-number">8</span>: <span class="hljs-number">10</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>      <span class="hljs-number">11</span>     <span class="hljs-number">0</span>  <span class="hljs-keyword">this</span>   Lnet/yury/demo/Demo10OperandStack;<br>            <span class="hljs-number">3</span>       <span class="hljs-number">8</span>     <span class="hljs-number">1</span>     m   B<br>            <span class="hljs-number">6</span>       <span class="hljs-number">5</span>     <span class="hljs-number">2</span>     n   I<br>           <span class="hljs-number">10</span>       <span class="hljs-number">1</span>     <span class="hljs-number">3</span>     k   I<br></code></pre></td></tr></table></figure>
+
+<p>以上指令是如何一步一步进行的，如下图所示：</p>
+<p><img src="/images/%E5%9F%BA%E7%A1%80%E6%8C%87%E4%BB%A4%E5%88%86%E6%9E%90.png" srcset="/img/loading.gif" lazyload></p>
+<p><font color="Red">注意：对于<code>int n = 8;</code>这段代码，虽然指定的是int型，但是数值不超过byte的范围，所以编译后的类型是byte。即并不是我们指定什么类型，它就是什么类型，前端编译器会对我们的代码做优化。</font></p>
+<p>对于有返回值的函数，调用这个函数时，会将函数结果压入栈顶，如下所示。sum方法和上面的method方法的指令，除了ireturn有区别外，其他均无区别。getSum方法的指令中，<font color="Red"><code>aload_0</code>是将this自身对应的引用从局部变量表中复制出来，放入操作数栈中；<code>invokevirtual</code>指令则是取出栈顶元素，以该元素为对象，调用对象中的一个方法，返回的结果会被重新压入栈顶；<code>istore_1</code>则是将栈顶元素出栈，即取出刚才的函数返回值，放入局部变量表中的1号slot槽位。</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getSum</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">int</span> a = sum();<br>    <span class="hljs-keyword">int</span> b = <span class="hljs-number">10000</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">sum</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">byte</span> m = <span class="hljs-number">15</span>;<br>    <span class="hljs-keyword">int</span> n = <span class="hljs-number">8</span>;<br>    <span class="hljs-keyword">int</span> k = m + n;<br>    <span class="hljs-keyword">return</span> k;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">getSum</span><span class="hljs-params">()</span></span>;<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">1</span>, locals=<span class="hljs-number">3</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: aload_0<br>         <span class="hljs-number">1</span>: invokevirtual #<span class="hljs-number">2</span>                  <span class="hljs-comment">// Method sum:()I</span><br>         <span class="hljs-number">4</span>: istore_1<br>         <span class="hljs-number">5</span>: sipush        <span class="hljs-number">10000</span><br>         <span class="hljs-number">8</span>: istore_2<br>         <span class="hljs-number">9</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">11</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">12</span>: <span class="hljs-number">5</span><br>        line <span class="hljs-number">13</span>: <span class="hljs-number">9</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>      <span class="hljs-number">10</span>     <span class="hljs-number">0</span>  <span class="hljs-keyword">this</span>   Lnet/yury/demo/Demo10OperandStack;<br>            <span class="hljs-number">5</span>       <span class="hljs-number">5</span>     <span class="hljs-number">1</span>     a   I<br>            <span class="hljs-number">9</span>       <span class="hljs-number">1</span>     <span class="hljs-number">2</span>     <span class="hljs-function">b   I</span><br><span class="hljs-function"></span><br><span class="hljs-function">  <span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">sum</span><span class="hljs-params">()</span></span>;<br>    descriptor: ()I<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">2</span>, locals=<span class="hljs-number">4</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: bipush        <span class="hljs-number">15</span><br>         <span class="hljs-number">2</span>: istore_1<br>         <span class="hljs-number">3</span>: bipush        <span class="hljs-number">8</span><br>         <span class="hljs-number">5</span>: istore_2<br>         <span class="hljs-number">6</span>: iload_1<br>         <span class="hljs-number">7</span>: iload_2<br>         <span class="hljs-number">8</span>: iadd<br>         <span class="hljs-number">9</span>: istore_3<br>        <span class="hljs-number">10</span>: iload_3<br>        <span class="hljs-number">11</span>: ireturn<br>      LineNumberTable:<br>        line <span class="hljs-number">16</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">17</span>: <span class="hljs-number">3</span><br>        line <span class="hljs-number">18</span>: <span class="hljs-number">6</span><br>        line <span class="hljs-number">19</span>: <span class="hljs-number">10</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>      <span class="hljs-number">12</span>     <span class="hljs-number">0</span>  <span class="hljs-keyword">this</span>   Lnet/yury/demo/Demo10OperandStack;<br>            <span class="hljs-number">3</span>       <span class="hljs-number">9</span>     <span class="hljs-number">1</span>     m   B<br>            <span class="hljs-number">6</span>       <span class="hljs-number">6</span>     <span class="hljs-number">2</span>     n   I<br>           <span class="hljs-number">10</span>       <span class="hljs-number">2</span>     <span class="hljs-number">3</span>     k   I<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>i++与++i的区别</p>
+</blockquote>
+<p>先通过字节码分析，可以发现，<code>n++</code>是先将数据从局部变量表中复制到操作数栈中，再对局部变量表中slot为1的变量的值进行++操作，最后将操作数栈中栈顶元素store到新的局部变量中，而<code>++n</code>是先在局部变量表中slot为1的变量的值进行++操作，再load到操作数栈中，最后store到新的局部变量中。即load和++操作的执行顺序不一样，这就导致n++返回的是n，而++n返回的是(n+1)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">int</span> n = <span class="hljs-number">1000</span>;<br>    <span class="hljs-keyword">int</span> m = n++;<br>    <span class="hljs-keyword">int</span> k = ++n;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>;<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">1</span>, locals=<span class="hljs-number">4</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: sipush        <span class="hljs-number">1000</span><br>         <span class="hljs-number">3</span>: istore_1<br>         <span class="hljs-number">4</span>: iload_1<br>         <span class="hljs-number">5</span>: iinc          <span class="hljs-number">1</span>, <span class="hljs-number">1</span><br>         <span class="hljs-number">8</span>: istore_2<br>         <span class="hljs-number">9</span>: iinc          <span class="hljs-number">1</span>, <span class="hljs-number">1</span><br>        <span class="hljs-number">12</span>: iload_1<br>        <span class="hljs-number">13</span>: istore_3<br>        <span class="hljs-number">14</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">23</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">24</span>: <span class="hljs-number">4</span><br>        line <span class="hljs-number">25</span>: <span class="hljs-number">9</span><br>        line <span class="hljs-number">26</span>: <span class="hljs-number">14</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>      <span class="hljs-number">15</span>     <span class="hljs-number">0</span>  <span class="hljs-keyword">this</span>   Lnet/yury/demo/Demo10OperandStack;<br>            <span class="hljs-number">4</span>      <span class="hljs-number">11</span>     <span class="hljs-number">1</span>     n   I<br>            <span class="hljs-number">9</span>       <span class="hljs-number">6</span>     <span class="hljs-number">2</span>     m   I<br>           <span class="hljs-number">14</span>       <span class="hljs-number">1</span>     <span class="hljs-number">3</span>     k   I<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>栈顶缓存技术（top-of-stack caching）</p>
+</blockquote>
+<p>由于JVM是基于栈设计的，因此在不断的执行指令过程中，经常会有入栈出栈的操作，这就意味着存在多次的内存读写操作，会对整体运行速度有所影响。因此HotSpot JVM对此处做了一个缓存，即<font color="Red">将所有栈顶元素缓存到物理CPU寄存器中，依次降低对内存的读写，提高执行效率。</font></p>
+<p>CPU还有一个东西叫高速缓存（一级、二级、三级），这个东西是集成到CPU内和CPU完全独立的一个器件，作为CPU的临时数据缓存区。而CPU寄存器是属于CPU本身的，因此CPU对寄存器的读写速度比对高速缓存的读写速度快得多。这一块是硬件相关的东西，不同架构的硬件设计不一样，可以去学习学习。</p>
+<h4 id="（4）动态链接"><a href="#（4）动态链接" class="headerlink" title="（4）动态链接"></a>（4）动态链接</h4><p>之前说过，每个栈帧都对应一个方法的执行，那么JVM怎么知道这个栈帧是对应的哪个方法呢，这就是通过动态链接来实现的。</p>
+<p>每个栈帧中都包含了一个指向运行时常量池中的该栈帧对应的方法类型的引用，这样字节码文件中的指令就可以支持使用动态链接。</p>
+<p><font color="Red">动态链接（Dynamic Linking），将符号方法引用转换为直接方法引用，加载符号引用对应的类，将对变量的访问转换为这些变量在对应的存储结构中的对应的偏移量。</font></p>
+<p>java代码被编译成字节码指令后，所有的类、变量和方法都保存在运行时常量池中，并都指定了一个通过#开头的独一无二的符号引用作为这个变量或方法的引用。<font color="Red">动态链接就是将这个符号引用转换为直接引用，从而实现方法的调用、类的加载和变量的使用。</font></p>
+<p>比如下面这个类的运行时常量池和test()方法的字节码。运行时常量池中记录了这个类所需要的字节码对象，左边的#加数字即为对应的符号引用，test()方法中的指令需要用到某个对象时，则使用这个引用即可。</p>
+<p>JVM的运行时常量池可以把其他字节码文件中的对象在本字节码文件中设置引用，但动态链接只能链接本字节码文件中运行时常量池中包含的对象，无法直接链接到外部字节码文件的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo11DynamicLinking</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-keyword">new</span> Demo11DynamicLinking().test();<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i)</span></span>&#123;<br><br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>        String test = Demo08Slot.test(<span class="hljs-keyword">null</span>);<br>        Demo10OperandStack demo = <span class="hljs-keyword">new</span> Demo10OperandStack();<br>        demo.test();<br>        test(<span class="hljs-number">10</span>);<br>        System.out.println(test);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><code class="hljs java">Constant pool:<br>   #<span class="hljs-number">1</span> = Methodref          #<span class="hljs-number">14.</span>#<span class="hljs-number">36</span>        <span class="hljs-comment">// java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">2</span> = Class              #<span class="hljs-number">37</span>            <span class="hljs-comment">// net/yury/demo/Demo11DynamicLinking</span><br>   #<span class="hljs-number">3</span> = Methodref          #<span class="hljs-number">2.</span>#<span class="hljs-number">36</span>         <span class="hljs-comment">// net/yury/demo/Demo11DynamicLinking.&quot;&lt;init&gt;&quot;:()V</span><br>   #<span class="hljs-number">4</span> = Methodref          #<span class="hljs-number">2.</span>#<span class="hljs-number">38</span>         <span class="hljs-comment">// net/yury/demo/Demo11DynamicLinking.test:()V</span><br>   #<span class="hljs-number">5</span> = Class              #<span class="hljs-number">39</span>            <span class="hljs-comment">// java/lang/String</span><br>   #<span class="hljs-number">6</span> = String             #<span class="hljs-number">40</span>            <span class="hljs-comment">// 123456</span><br>   #<span class="hljs-number">7</span> = Methodref          #<span class="hljs-number">41.</span>#<span class="hljs-number">42</span>        <span class="hljs-comment">// net/yury/demo/Demo08Slot.test:([Ljava/lang/String;)Ljava/lang/String;</span><br>   #<span class="hljs-number">8</span> = Class              #<span class="hljs-number">43</span>            <span class="hljs-comment">// net/yury/demo/Demo10OperandStack</span><br>   #<span class="hljs-number">9</span> = Methodref          #<span class="hljs-number">8.</span>#<span class="hljs-number">36</span>         <span class="hljs-comment">// net/yury/demo/Demo10OperandStack.&quot;&lt;init&gt;&quot;:()V</span><br>  #<span class="hljs-number">10</span> = Methodref          #<span class="hljs-number">8.</span>#<span class="hljs-number">38</span>         <span class="hljs-comment">// net/yury/demo/Demo10OperandStack.test:()V</span><br>  #<span class="hljs-number">11</span> = Methodref          #<span class="hljs-number">2.</span>#<span class="hljs-number">44</span>         <span class="hljs-comment">// net/yury/demo/Demo11DynamicLinking.test:(I)V</span><br>  #<span class="hljs-number">12</span> = Fieldref           #<span class="hljs-number">45.</span>#<span class="hljs-number">46</span>        <span class="hljs-comment">// java/lang/System.out:Ljava/io/PrintStream;</span><br>  #<span class="hljs-number">13</span> = Methodref          #<span class="hljs-number">47.</span>#<span class="hljs-number">48</span>        <span class="hljs-comment">// java/io/PrintStream.println:(Ljava/lang/String;)V</span><br>  #<span class="hljs-number">14</span> = Class              #<span class="hljs-number">49</span>            <span class="hljs-comment">// java/lang/Object</span><br>  #<span class="hljs-number">15</span> = Utf8               &lt;init&gt;<br>  #<span class="hljs-number">16</span> = Utf8               ()V<br>  #<span class="hljs-number">17</span> = Utf8               Code<br>  #<span class="hljs-number">18</span> = Utf8               LineNumberTable<br>  #<span class="hljs-number">19</span> = Utf8               LocalVariableTable<br>  #<span class="hljs-number">20</span> = Utf8               <span class="hljs-keyword">this</span><br>  #<span class="hljs-number">21</span> = Utf8               Lnet/yury/demo/Demo11DynamicLinking;<br>  #<span class="hljs-number">22</span> = Utf8               main<br>  #<span class="hljs-number">23</span> = Utf8               ([Ljava/lang/String;)V<br>  #<span class="hljs-number">24</span> = Utf8               args<br>  #<span class="hljs-number">25</span> = Utf8               [Ljava/lang/String;<br>  #<span class="hljs-number">26</span> = Utf8               test<br>  #<span class="hljs-number">27</span> = Utf8               (I)V<br>  #<span class="hljs-number">28</span> = Utf8               i<br>  #<span class="hljs-number">29</span> = Utf8               I<br>  #<span class="hljs-number">30</span> = Utf8               testString<br>  #<span class="hljs-number">31</span> = Utf8               Ljava/lang/String;<br>  #<span class="hljs-number">32</span> = Utf8               demo<br>  #<span class="hljs-number">33</span> = Utf8               Lnet/yury/demo/Demo10OperandStack;<br>  #<span class="hljs-number">34</span> = Utf8               SourceFile<br>  #<span class="hljs-number">35</span> = Utf8               Demo11DynamicLinking.java<br>  #<span class="hljs-number">36</span> = NameAndType        #<span class="hljs-number">15</span>:#<span class="hljs-number">16</span>        <span class="hljs-comment">// &quot;&lt;init&gt;&quot;:()V</span><br>  #<span class="hljs-number">37</span> = Utf8               net/yury/demo/Demo11DynamicLinking<br>  #<span class="hljs-number">38</span> = NameAndType        #<span class="hljs-number">26</span>:#<span class="hljs-number">16</span>        <span class="hljs-comment">// test:()V</span><br>  #<span class="hljs-number">39</span> = Utf8               java/lang/String<br>  #<span class="hljs-number">40</span> = Utf8               <span class="hljs-number">123456</span><br>  #<span class="hljs-number">41</span> = Class              #<span class="hljs-number">50</span>            <span class="hljs-comment">// net/yury/demo/Demo08Slot</span><br>  #<span class="hljs-number">42</span> = NameAndType        #<span class="hljs-number">26</span>:#<span class="hljs-number">51</span>        <span class="hljs-comment">// test:([Ljava/lang/String;)Ljava/lang/String;</span><br>  #<span class="hljs-number">43</span> = Utf8               net/yury/demo/Demo10OperandStack<br>  #<span class="hljs-number">44</span> = NameAndType        #<span class="hljs-number">26</span>:#<span class="hljs-number">27</span>        <span class="hljs-comment">// test:(I)V</span><br>  #<span class="hljs-number">45</span> = Class              #<span class="hljs-number">52</span>            <span class="hljs-comment">// java/lang/System</span><br>  #<span class="hljs-number">46</span> = NameAndType        #<span class="hljs-number">53</span>:#<span class="hljs-number">54</span>        <span class="hljs-comment">// out:Ljava/io/PrintStream;</span><br>  #<span class="hljs-number">47</span> = Class              #<span class="hljs-number">55</span>            <span class="hljs-comment">// java/io/PrintStream</span><br>  #<span class="hljs-number">48</span> = NameAndType        #<span class="hljs-number">56</span>:#<span class="hljs-number">57</span>        <span class="hljs-comment">// println:(Ljava/lang/String;)V</span><br>  #<span class="hljs-number">49</span> = Utf8               java/lang/Object<br>  #<span class="hljs-number">50</span> = Utf8               net/yury/demo/Demo08Slot<br>  #<span class="hljs-number">51</span> = Utf8               ([Ljava/lang/String;)Ljava/lang/String;<br>  #<span class="hljs-number">52</span> = Utf8               java/lang/System<br>  #<span class="hljs-number">53</span> = Utf8               out<br>  #<span class="hljs-number">54</span> = Utf8               Ljava/io/PrintStream;<br>  #<span class="hljs-number">55</span> = Utf8               java/io/PrintStream<br>  #<span class="hljs-number">56</span> = Utf8               println<br>  #<span class="hljs-number">57</span> = Utf8               (Ljava/lang/String;)<span class="hljs-function">V</span><br><span class="hljs-function"></span><br><span class="hljs-function">  <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>;<br>    descriptor: ()V<br>    flags: ACC_PUBLIC<br>    Code:<br>      stack=<span class="hljs-number">4</span>, locals=<span class="hljs-number">4</span>, args_size=<span class="hljs-number">1</span><br>         <span class="hljs-number">0</span>: iconst_1<br>         <span class="hljs-number">1</span>: anewarray     #<span class="hljs-number">5</span>                  <span class="hljs-comment">// class java/lang/String</span><br>         <span class="hljs-number">4</span>: dup<br>         <span class="hljs-number">5</span>: iconst_0<br>         <span class="hljs-number">6</span>: ldc           #<span class="hljs-number">6</span>                  <span class="hljs-comment">// String 123456</span><br>         <span class="hljs-number">8</span>: aastore<br>         <span class="hljs-number">9</span>: astore_1<br>        <span class="hljs-number">10</span>: aload_1<br>        <span class="hljs-number">11</span>: invokestatic  #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Method net/yury/demo/Demo08Slot.test:([Ljava/lang/String;)Ljava/lang/String;</span><br>        <span class="hljs-number">14</span>: astore_2<br>        <span class="hljs-number">15</span>: <span class="hljs-keyword">new</span>           #<span class="hljs-number">8</span>                  <span class="hljs-comment">// class net/yury/demo/Demo10OperandStack</span><br>        <span class="hljs-number">18</span>: dup<br>        <span class="hljs-number">19</span>: invokespecial #<span class="hljs-number">9</span>                  <span class="hljs-comment">// Method net/yury/demo/Demo10OperandStack.&quot;&lt;init&gt;&quot;:()V</span><br>        <span class="hljs-number">22</span>: astore_3<br>        <span class="hljs-number">23</span>: aload_3<br>        <span class="hljs-number">24</span>: invokevirtual #<span class="hljs-number">10</span>                 <span class="hljs-comment">// Method net/yury/demo/Demo10OperandStack.test:()V</span><br>        <span class="hljs-number">27</span>: aload_0<br>        <span class="hljs-number">28</span>: bipush        <span class="hljs-number">10</span><br>        <span class="hljs-number">30</span>: invokevirtual #<span class="hljs-number">11</span>                 <span class="hljs-comment">// Method test:(I)V</span><br>        <span class="hljs-number">33</span>: getstatic     #<span class="hljs-number">12</span>                 <span class="hljs-comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span><br>        <span class="hljs-number">36</span>: aload_2<br>        <span class="hljs-number">37</span>: invokevirtual #<span class="hljs-number">13</span>                 <span class="hljs-comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br>        <span class="hljs-number">40</span>: <span class="hljs-keyword">return</span><br>      LineNumberTable:<br>        line <span class="hljs-number">16</span>: <span class="hljs-number">0</span><br>        line <span class="hljs-number">17</span>: <span class="hljs-number">10</span><br>        line <span class="hljs-number">18</span>: <span class="hljs-number">15</span><br>        line <span class="hljs-number">19</span>: <span class="hljs-number">23</span><br>        line <span class="hljs-number">20</span>: <span class="hljs-number">27</span><br>        line <span class="hljs-number">21</span>: <span class="hljs-number">33</span><br>        line <span class="hljs-number">22</span>: <span class="hljs-number">40</span><br>      LocalVariableTable:<br>        Start  Length  Slot  Name   Signature<br>            <span class="hljs-number">0</span>      <span class="hljs-number">41</span>     <span class="hljs-number">0</span>  <span class="hljs-keyword">this</span>   Lnet/yury/demo/Demo11DynamicLinking;<br>           <span class="hljs-number">10</span>      <span class="hljs-number">31</span>     <span class="hljs-number">1</span> testString   [Ljava/lang/String;<br>           <span class="hljs-number">15</span>      <span class="hljs-number">26</span>     <span class="hljs-number">2</span>  test   Ljava/lang/String;<br>           <span class="hljs-number">23</span>      <span class="hljs-number">18</span>     <span class="hljs-number">3</span>  demo   Lnet/yury/demo/Demo10OperandStack;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>早期绑定和晚期绑定</p>
+</blockquote>
+<p><strong>绑定</strong>是一个字段、方法或类在符号引用被转换成直接引用的过程。</p>
+<p><strong>早期绑定</strong>：如果被调用的目标的类型在编译期间就是确定的，且运行期间保持不变，则这个目标的绑定过程叫早期绑定。</p>
+<p><strong>晚期绑定</strong>：如果被调用的目标的类型在编译期间无法确定，只能在运行期间确定，则这个目标的绑定过程叫晚期绑定。</p>
+<p>对于方法而言，有早期绑定和晚期绑定又叫静态链接和动态链接。</p>
+<p><strong>静态链接</strong>：如果被调用的方法类型在编译期间就是确定下来的，并且运行期间保持不变，这种情况下将调用的方法的符号引用转换为直接引用的过程叫静态链接。</p>
+<p><strong>动态链接</strong>：如果被调用的方法类型在编译期间无法确定，只能在运行期间将调用的方法的符号引用转换为直接引用，这个过程叫动态链接。</p>
+<blockquote>
+<p>虚方法和非虚方法</p>
+</blockquote>
+<p><strong>虚方法</strong>：编译期间无法确定的方法叫虚方法；</p>
+<p><strong>非虚方法</strong>：编译期间就可以确定，且运行期间无法修改的方法，叫非需方法。</p>
+<p>虚方法的调用使用在字节码层面会使用invokevirtual和invokeinterface两个指令；而非虚方法的调用在字节码层面使用invokestatic和invokespecial指令。final方法外除外，final方法的调用仍然使用invokevirtual指令。</p>
+<ul>
+<li>invokestatic：调用静态方法</li>
+<li>invokespecial：调用父类方法、私有方法、构造器方法</li>
+<li>invokevirtual：调用其他普通方法或final方法</li>
+<li>invokeinterface：调用接口方法</li>
+<li>invokedynamic：使用函数式接口或lamdba表达式生成一个对象时使用的指令</li>
+</ul>
+<p>不同方法的调用使用的字节码指令如下。值得注意的是，下面这段代码中，Function接口通过lamdba表达式和new的方式使用的底层指令不一样，lamdba使用invokedynamic，而new实际上是生成了一个匿名内部类<code>Demo12DynamicLinking2$1</code>，并初始化这个匿名内部类，因此使用了invokespecial。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">import</span> java.util.function.Function;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo12DynamicLinking2</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Parent</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Interface</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test1</span><span class="hljs-params">()</span></span>&#123; &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span>&#123; &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test3</span><span class="hljs-params">()</span></span>&#123; &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test4</span><span class="hljs-params">()</span></span>&#123; &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test5</span><span class="hljs-params">()</span></span>&#123; &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test6</span><span class="hljs-params">()</span></span>&#123; System.out.println(<span class="hljs-string">&quot;child&quot;</span>); &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test7</span><span class="hljs-params">()</span></span>&#123; &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test8</span><span class="hljs-params">()</span></span>&#123; &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">method</span><span class="hljs-params">(Interface demo)</span></span>&#123;<br>        test1();<br>        test2();<br>        test3();<br>        test4();<br>        test5();<br>        test6();<br>        <span class="hljs-keyword">super</span>.test6();<br>        test7();<br>        test8();<br>        demo.test8();<br>        Function&lt;String, String&gt; function1 = s -&gt; &#123; <span class="hljs-keyword">return</span> s; &#125;;<br>        Function&lt;String, String&gt; function2 = <span class="hljs-keyword">new</span> Function&lt;String, String&gt;() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">apply</span><span class="hljs-params">(String s)</span> </span>&#123;<br>                <span class="hljs-keyword">return</span> s;<br>            &#125;<br>        &#125;;<br>        String s1 = function1.apply(<span class="hljs-string">&quot;123&quot;</span>);<br>        String s2 = function2.apply(<span class="hljs-string">&quot;456&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Interface</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test8</span><span class="hljs-params">()</span></span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Parent</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test6</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;parent&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs java">stack=<span class="hljs-number">3</span>, locals=<span class="hljs-number">6</span>, args_size=<span class="hljs-number">2</span><br>   <span class="hljs-number">0</span>: invokestatic  #<span class="hljs-number">5</span>                  <span class="hljs-comment">// Method test1:()V</span><br>   <span class="hljs-number">3</span>: aload_0<br>   <span class="hljs-number">4</span>: invokespecial #<span class="hljs-number">6</span>                  <span class="hljs-comment">// Method test2:()V</span><br>   <span class="hljs-number">7</span>: aload_0<br>   <span class="hljs-number">8</span>: invokevirtual #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Method test3:()V</span><br>  <span class="hljs-number">11</span>: aload_0<br>  <span class="hljs-number">12</span>: invokevirtual #<span class="hljs-number">8</span>                  <span class="hljs-comment">// Method test4:()V</span><br>  <span class="hljs-number">15</span>: aload_0<br>  <span class="hljs-number">16</span>: invokevirtual #<span class="hljs-number">9</span>                  <span class="hljs-comment">// Method test5:()V</span><br>  <span class="hljs-number">19</span>: aload_0<br>  <span class="hljs-number">20</span>: invokevirtual #<span class="hljs-number">10</span>                 <span class="hljs-comment">// Method test6:()V</span><br>  <span class="hljs-number">23</span>: aload_0<br>  <span class="hljs-number">24</span>: invokespecial #<span class="hljs-number">11</span>                 <span class="hljs-comment">// Method net/yury/demo/Parent.test6:()V</span><br>  <span class="hljs-number">27</span>: aload_0<br>  <span class="hljs-number">28</span>: invokevirtual #<span class="hljs-number">12</span>                 <span class="hljs-comment">// Method test7:()V</span><br>  <span class="hljs-number">31</span>: aload_0<br>  <span class="hljs-number">32</span>: invokevirtual #<span class="hljs-number">13</span>                 <span class="hljs-comment">// Method test8:()V</span><br>  <span class="hljs-number">35</span>: aload_1<br>  <span class="hljs-number">36</span>: invokeinterface #<span class="hljs-number">14</span>,  <span class="hljs-number">1</span>           <span class="hljs-comment">// InterfaceMethod net/yury/demo/Interface.test8:()V</span><br>  <span class="hljs-number">41</span>: invokedynamic #<span class="hljs-number">15</span>,  <span class="hljs-number">0</span>             <span class="hljs-comment">// InvokeDynamic #0:apply:()Ljava/util/function/Function;</span><br>  <span class="hljs-number">46</span>: astore_2<br>  <span class="hljs-number">47</span>: <span class="hljs-keyword">new</span>           #<span class="hljs-number">16</span>                 <span class="hljs-comment">// class net/yury/demo/Demo12DynamicLinking2$1</span><br>  <span class="hljs-number">50</span>: dup<br>  <span class="hljs-number">51</span>: aload_0<br>  <span class="hljs-number">52</span>: invokespecial #<span class="hljs-number">17</span>                 <span class="hljs-comment">// Method net/yury/demo/Demo12DynamicLinking2$1.&quot;&lt;init&gt;&quot;:(Lnet/yury/demo/Demo12DynamicLinking2;)V</span><br>  <span class="hljs-number">55</span>: astore_3<br>  <span class="hljs-number">56</span>: aload_2<br>  <span class="hljs-number">57</span>: ldc           #<span class="hljs-number">18</span>                 <span class="hljs-comment">// String 123</span><br>  <span class="hljs-number">59</span>: invokeinterface #<span class="hljs-number">19</span>,  <span class="hljs-number">2</span>           <span class="hljs-comment">// InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;</span><br>  <span class="hljs-number">64</span>: checkcast     #<span class="hljs-number">20</span>                 <span class="hljs-comment">// class java/lang/String</span><br>  <span class="hljs-number">67</span>: astore        <span class="hljs-number">4</span><br>  <span class="hljs-number">69</span>: aload_3<br>  <span class="hljs-number">70</span>: ldc           #<span class="hljs-number">21</span>                 <span class="hljs-comment">// String 456</span><br>  <span class="hljs-number">72</span>: invokeinterface #<span class="hljs-number">19</span>,  <span class="hljs-number">2</span>           <span class="hljs-comment">// InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;</span><br>  <span class="hljs-number">77</span>: checkcast     #<span class="hljs-number">20</span>                 <span class="hljs-comment">// class java/lang/String</span><br>  <span class="hljs-number">80</span>: astore        <span class="hljs-number">5</span><br>  <span class="hljs-number">82</span>: <span class="hljs-keyword">return</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>继承和方法重写的本质</p>
+</blockquote>
+<p>java的类可能会有继承关系，而调用一个子类的方法时，JVM怎么知道这个方法是子类重写的方法，还是父类的方法呢。JVM会在编译期做以下操作。</p>
+<ol>
+<li>将该方法所属的对象引用加载到操作数栈（如果调用静态方法则省略这一步）</li>
+<li>找到操作数栈栈顶的第一个元素所执行的对象的实际类型，记作 C</li>
+<li>如果在运行时常量池的类型C中找到参数和返回值类型都和调用的方法相同的方法，则再进行权限校验，如果通过则返回这个方法的直接引用，如果权限校验不通过，则返回java.lang.IllegalAccessError异常；</li>
+<li>如果没找到类型C中没找到这种方法，则按照类继承关系依次往父类执行第3步查找和权限校验。</li>
+<li>如果最终无法正常返回一个方法的直接引用，则抛出异常。</li>
+</ol>
+<p>因此如果子类有这个方法则调用的是子类的方法，如果没有，则调用的是第一个有该方法的父类方法。</p>
+<h4 id="（5）方法返回地址"><a href="#（5）方法返回地址" class="headerlink" title="（5）方法返回地址"></a>（5）方法返回地址</h4><p>正常返回：<font color="Red">方法返回地址存放调用该方法的pc寄存器的值，即返回下一条将要执行的指令的地址。</font></p>
+<p>异常返回：通过异常表来确定，栈帧中一般不保存这部分信息。</p>
+<p>方法返回的本质：</p>
+<ul>
+<li>当前栈帧出栈</li>
+<li>返回到上层方法的局部变量表、操作数栈，将当前方法的返回值压入操作数栈（如果上层方法要使用的话）</li>
+<li>设置pc寄存器的值</li>
+</ul>
+<p>return指令根据返回值类型的不同分为以下几种：</p>
+<ul>
+<li>return：返回void</li>
+<li>ireturn：返回32位的类型，如boolean、byte、short、char、int</li>
+<li>dreturn：返回double</li>
+<li>freturn：返回float</li>
+<li>lreturn：返回long</li>
+<li>areturn：返回引用类型，如所有的类</li>
+</ul>
+<p>异常处理表：</p>
+<p>从<code>from</code>这一行字节码开始，到<code>to</code>这一行字节码，如果出现了<code>type</code>类型，则从<code>target</code>行指令继续执行。如下Exception table所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">import</span> java.io.FileInputStream;<br><span class="hljs-keyword">import</span> java.io.FileNotFoundException;<br><span class="hljs-keyword">import</span> java.util.Arrays;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo09Method</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        Demo09Method demo = <span class="hljs-keyword">new</span> Demo09Method();<br>        String s;<br>        <span class="hljs-keyword">try</span>&#123;<br>            s = demo.test1(<span class="hljs-number">100L</span>);<br>            System.out.println(s);<br>        &#125;<span class="hljs-keyword">catch</span> (FileNotFoundException ex)&#123;<br>            System.out.println(Arrays.toString(ex.getStackTrace()));<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(java.lang.String[])</span></span>;<br>  descriptor: ([Ljava/lang/String;)V<br>  flags: ACC_PUBLIC, ACC_STATIC<br>  Code:<br>    stack=<span class="hljs-number">3</span>, locals=<span class="hljs-number">4</span>, args_size=<span class="hljs-number">1</span><br>       <span class="hljs-number">0</span>: <span class="hljs-keyword">new</span>           #<span class="hljs-number">2</span>                  <span class="hljs-comment">// class net/yury/demo/Demo09Method</span><br>       <span class="hljs-number">3</span>: dup<br>       <span class="hljs-number">4</span>: invokespecial #<span class="hljs-number">3</span>                  <span class="hljs-comment">// Method &quot;&lt;init&gt;&quot;:()V</span><br>       <span class="hljs-number">7</span>: astore_1<br>       <span class="hljs-number">8</span>: aload_1<br>       <span class="hljs-number">9</span>: ldc2_w        #<span class="hljs-number">4</span>                  <span class="hljs-comment">// long 100l</span><br>      <span class="hljs-number">12</span>: invokevirtual #<span class="hljs-number">6</span>                  <span class="hljs-comment">// Method test1:(J)Ljava/lang/String;</span><br>      <span class="hljs-number">15</span>: astore_2<br>      <span class="hljs-number">16</span>: getstatic     #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span><br>      <span class="hljs-number">19</span>: aload_2<br>      <span class="hljs-number">20</span>: invokevirtual #<span class="hljs-number">8</span>                  <span class="hljs-comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br>      <span class="hljs-number">23</span>: goto          <span class="hljs-number">40</span><br>      <span class="hljs-number">26</span>: astore_3<br>      <span class="hljs-number">27</span>: getstatic     #<span class="hljs-number">7</span>                  <span class="hljs-comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span><br>      <span class="hljs-number">30</span>: aload_3<br>      <span class="hljs-number">31</span>: invokevirtual #<span class="hljs-number">10</span>                 <span class="hljs-comment">// Method java/io/FileNotFoundException.getStackTrace:()[Ljava/lang/StackTraceElement;</span><br>      <span class="hljs-number">34</span>: invokestatic  #<span class="hljs-number">11</span>                 <span class="hljs-comment">// Method java/util/Arrays.toString:([Ljava/lang/Object;)Ljava/lang/String;</span><br>      <span class="hljs-number">37</span>: invokevirtual #<span class="hljs-number">8</span>                  <span class="hljs-comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br>      <span class="hljs-number">40</span>: <span class="hljs-keyword">return</span><br>    Exception table:<br>       from    to  target type<br>           <span class="hljs-number">8</span>    <span class="hljs-number">23</span>    <span class="hljs-number">26</span>   Class java/io/FileNotFoundException<br>    LineNumberTable:<br>      line <span class="hljs-number">10</span>: <span class="hljs-number">0</span><br>      line <span class="hljs-number">13</span>: <span class="hljs-number">8</span><br>      line <span class="hljs-number">14</span>: <span class="hljs-number">16</span><br>      line <span class="hljs-number">17</span>: <span class="hljs-number">23</span><br>      line <span class="hljs-number">15</span>: <span class="hljs-number">26</span><br>      line <span class="hljs-number">16</span>: <span class="hljs-number">27</span><br>      line <span class="hljs-number">18</span>: <span class="hljs-number">40</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="（6）一些附加信息"><a href="#（6）一些附加信息" class="headerlink" title="（6）一些附加信息"></a>（6）一些附加信息</h4><p>略。</p>
+<h4 id="（7）问题"><a href="#（7）问题" class="headerlink" title="（7）问题"></a>（7）问题</h4><blockquote>
+<p>栈相关的报错有哪些？</p>
+</blockquote>
+<p>stackoverflow，栈溢出，方法调用的次数太多以致于栈耗费的空间超过了我们设置的栈大小，可以通过修改-Xss设置栈大小。</p>
+<p>outofmemory，内存不足，栈空间设置足够大，但是方法调用过多，导致整体内存不足。（OOM很少出现在栈空间发生）</p>
+<blockquote>
+<p>调整栈空间大小，可以保证不出现溢出吗？</p>
+</blockquote>
+<p>不能。若使用固定大小的栈，即使调整了栈空间大小，他也是确定的；而程序方法的调用如在出现递归的情况下，调用次数是不确定的，有可能会出现栈溢出的情况。</p>
+<blockquote>
+<p>分配栈空间内存越大越好吗？</p>
+</blockquote>
+<p>服务器资源是有效的，栈空间内存分配越大，则其他资源（如堆）分配到的空间就受限。应根据服务器和应用程序的实际情况分配。</p>
+<blockquote>
+<p>垃圾回收会设计到栈空间吗？</p>
+</blockquote>
+<p>不会，栈没有垃圾回收。</p>
+<blockquote>
+<p>java对象一定都是在对空间上创建的吗？</p>
+</blockquote>
+<p>不一定，栈也可以创建对象。堆那边再聊。</p>
+<blockquote>
+<p><font color="Red">局部变量是线程安全的吗？</font></p>
+</blockquote>
+<p>若该局部变量是方法内部产生，且方法内部销毁的，则这个局部变量是线程安全的。</p>
+<p>若该局部变量以参数形式传入方法，或者作为返回值返回出去的，则这个局部变量是线程不安全的。</p>
+<p><strong>即只要这个局部变量的生命周期完全在这个方法内，则是线程安全的；否则是线程不安全的。</strong></p>
+<p>一个对象的指针或引用被多个方法或线程使用，即称这个对象出现了<strong>逃逸</strong>（Escape）。全局变量如类属性和私有属性可能会被多个方法或线程使用，这种线程安全问题很常见；而局部变量如果其作用域不仅限于该方法，还被其他方法或线程使用了，即出现了逃逸，则也可能会存在线程安全问题。具体见后面的<strong>逃逸分析</strong>。</p>
+<p>最稳妥的方式是，避免局部变量逃逸到其他方法或线程中，如</p>
+<ul>
+<li>方法参数尽量使用线程安全的对象，或者不可变对象（如String），或者使用私有属性的方式代替传入参数的形式来定义方法。</li>
+<li>避免将局部变量作为方法返回值，或者以一个线程安全的或不可变的对象的形式返回（如返回<code>StringBuilder.ToString()</code>）。</li>
+<li>坚守一个原则：对象的作用域尽量维持在使用它的最小作用域</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.demo;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo13ThreadSafe</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> InterruptedException </span>&#123;<br>        method2();<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">method1</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> InterruptedException </span>&#123;<br>        StringBuilder sb = <span class="hljs-keyword">new</span> StringBuilder();<br>        <span class="hljs-keyword">new</span> Thread(() -&gt; &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10000</span>; i++) &#123;<br>                sb.append(<span class="hljs-string">&#x27;a&#x27;</span>);<br>            &#125;<br>        &#125;).start();<br>        <span class="hljs-keyword">new</span> Thread(() -&gt; add(sb)).start();<br>        Thread.sleep(<span class="hljs-number">1000</span>);<br>        System.out.println(sb.toString());<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">add</span><span class="hljs-params">(StringBuilder sb)</span></span>&#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt;<span class="hljs-number">10000</span>; i++) &#123;<br>            sb.append(<span class="hljs-string">&#x27;b&#x27;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">method2</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> InterruptedException </span>&#123;<br>        StringBuilder sb = add2();<br>        <span class="hljs-keyword">new</span> Thread(() -&gt; &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10000</span>; i++) &#123;<br>                sb.append(<span class="hljs-string">&#x27;1&#x27;</span>);<br>            &#125;<br>        &#125;).start();<br>        <span class="hljs-keyword">new</span> Thread(() -&gt; &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10000</span>; i++) &#123;<br>                sb.append(<span class="hljs-string">&#x27;2&#x27;</span>);<br>            &#125;<br>        &#125;).start();<br>        Thread.sleep(<span class="hljs-number">1000</span>);<br>        System.out.println(sb.toString());<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> StringBuilder <span class="hljs-title">add2</span><span class="hljs-params">()</span></span>&#123;<br>        StringBuilder sb = <span class="hljs-keyword">new</span> StringBuilder();<br>        sb.append(<span class="hljs-string">&quot;abc&quot;</span>);<br>        <span class="hljs-keyword">return</span> sb;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="5、本地方法栈"><a href="#5、本地方法栈" class="headerlink" title="5、本地方法栈"></a>5、本地方法栈</h3><p><font color="Red">本地方法栈（Nativa Method Stack）用于管理本地方法的调用，本地方法栈也是线程私有的。</font></p>
+<p>本地方法：使用native关键字修饰的方法，由C/C++实现。</p>
+<p>本地方法栈的大小和异常种类和普通的JVM栈是相同的，允许被实现成固定大小或者动态扩展的，溢出和OOM都有可能存在。</p>
+<p>本地方法栈的具体做法就是执行本地方法时，在本地方法栈中压入本地方法，然后让执行引擎从本地方法库中加载这个本地方法，再让本地方法执行，最后本地方法栈栈顶元素出栈。</p>
+<p><strong>本地方法接口</strong>就是本地方法运行时和JVM沟通的接口，<strong>本地方法库</strong>就是java所有本地方法的集合。</p>
+<p><font color="Red">当某个线程调用本地方法时，本地方法执行的权限和JVM有着相同的权限。</font></p>
+<ul>
+<li>本地方法可以通过本地方法接口来访问JMV内部的运行时数据区。</li>
+<li>本地方法可以直接使用本地处理器中的寄存器</li>
+<li>本地方法可以直接从本地内存堆中分配任意数量的内存。</li>
+</ul>
+<p>并不是所有的JVM都支持本地方法，因为JVM规范中并没有明确要求本地方法栈的使用语言、具体实现方式、数据结构等，如果JVM产品不打算支持本地方法，那么无需实现本地方法栈也是可以的。</p>
+<p>在HotSpot JVM中，直接将JVM栈和本地方法栈合二为一。</p>
+<h3 id="6、JVM堆"><a href="#6、JVM堆" class="headerlink" title="6、JVM堆"></a>6、JVM堆</h3><ul>
+<li><p>堆是JVM进程私有的，一个JVM进程只有一个堆内存，堆也是JVM内存管理的核心区域。</p>
+</li>
+<li><p>堆内存的大小是可以调节的。</p>
+</li>
+<li><p>JVM规范规定，堆可以处于物理上不连续的内存空间中，但在逻辑上他应该被视为连续的。</p>
+</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>JVM-1.8-memory-and-garbage-collect</div>
+      <div>https://yury757.github.io/java/JVM/jvm-1.8/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>September 20, 2021</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/project/flink_data_warehouse/flink_data_warehouse/" title="flink_data_warehouse">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">flink_data_warehouse</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/database/postgresql/postgresql/" title="postgresql">
+                        <span class="hidden-mobile">postgresql</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

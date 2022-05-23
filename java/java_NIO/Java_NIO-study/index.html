@@ -1,0 +1,755 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、NIO和IO的区别 传统IO面向流，而NIO面向管道（channel）和缓冲区（buffer）。传统IO只能单向传输数据，而NIO可以双向传输数据。传统IO就像单向水管，而NIO中channel像列车轨道，buffer就像火车，可以双向传输数据。  传统IO是阻塞（blocking）的，而NIO就是非阻塞（Non blocking）的。  NIO多了一个选择器（Selector），是针对网络编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java_NIO-study">
+<meta property="og:url" content="https://yury757.github.io/java/java_NIO/Java_NIO-study/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="一、NIO和IO的区别 传统IO面向流，而NIO面向管道（channel）和缓冲区（buffer）。传统IO只能单向传输数据，而NIO可以双向传输数据。传统IO就像单向水管，而NIO中channel像列车轨道，buffer就像火车，可以双向传输数据。  传统IO是阻塞（blocking）的，而NIO就是非阻塞（Non blocking）的。  NIO多了一个选择器（Selector），是针对网络编">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://yury757.github.io/images/%E9%9D%9E%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA%E5%92%8C%E9%9D%9E%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E9%80%9A%E9%81%93.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E8%81%9A%E9%9B%86%E5%92%8C%E5%88%86%E6%95%A3.png">
+<meta property="og:image" content="https://yury757.github.io/images/%E9%9D%9E%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%BC%8F.png">
+<meta property="article:published_time" content="2021-08-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-28T05:50:37.102Z">
+<meta property="article:author" content="Yury">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yury757.github.io/images/%E9%9D%9E%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png">
+  
+  
+  
+  <title>Java_NIO-study - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java_NIO-study"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-08-24 00:00" pubdate>
+          August 24, 2021 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.7k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          65 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java_NIO-study</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="一、NIO和IO的区别"><a href="#一、NIO和IO的区别" class="headerlink" title="一、NIO和IO的区别"></a>一、NIO和IO的区别</h2><ul>
+<li><p>传统IO面向流，而NIO面向管道（channel）和缓冲区（buffer）。传统IO只能单向传输数据，而NIO可以双向传输数据。传统IO就像单向水管，而NIO中channel像列车轨道，buffer就像火车，可以双向传输数据。</p>
+</li>
+<li><p>传统IO是阻塞（blocking）的，而NIO就是非阻塞（Non blocking）的。</p>
+</li>
+<li><p>NIO多了一个选择器（Selector），是针对网络编程用的。</p>
+</li>
+</ul>
+<h2 id="二、缓冲区（Buffer）"><a href="#二、缓冲区（Buffer）" class="headerlink" title="二、缓冲区（Buffer）"></a>二、缓冲区（Buffer）</h2><p>缓冲区（Buffer）是基于数组来做管理的，负责存取数据。java NIO有七种xxxBuffer类，都继承了Buffer类，即八种基本数据类型中，除了boolean以外都提供了对应的xxxBuffer。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java">ByteBuffer<br>CharBuffer<br>ShortBuffer<br>IntBuffer<br>LongBuffer<br>FloatBuffer<br>DoubleBuffer<br></code></pre></td></tr></table></figure>
+
+<p>每种xxxBuffer类还不是最终实现类，最终的实现类有两种，以下以ByteBuffer为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 属于下面说的直接缓冲区，不懂操作系统的人最好不要使用，有风险</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DirectByteBufferR</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">DirectByteBuffer</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">DirectBuffer</span></span>&#123;&#125;<br><br><span class="hljs-comment">// 常用这个实现类</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HeapByteBuffer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ByteBuffer</span></span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="1、四个核心属性"><a href="#1、四个核心属性" class="headerlink" title="1、四个核心属性"></a>1、四个核心属性</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 容量，缓冲区总的最大容量</span><br><span class="hljs-keyword">int</span> capacity;<br><br><span class="hljs-comment">// 最大可读写的容量</span><br><span class="hljs-keyword">int</span> limit;<br><br><span class="hljs-comment">// 位置，表示缓冲区中正在操作的数据的下标。当position&lt;limit，可以做写入操作，当position=limit时，写入操作会报错。</span><br><span class="hljs-keyword">int</span> position;<br><br><span class="hljs-comment">// 标记位置，默认为-1</span><br><span class="hljs-keyword">int</span> mark = -<span class="hljs-number">1</span>;<br><br><span class="hljs-comment">// mark &lt; position &lt; limit &lt; capacity</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2、主要方法"><a href="#2、主要方法" class="headerlink" title="2、主要方法"></a>2、主要方法</h3><p>下面以ByteBuffer为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 分配缓冲区</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ByteBuffer <span class="hljs-title">allocate</span><span class="hljs-params">(<span class="hljs-keyword">int</span> capacity)</span></span>;<br><br><span class="hljs-comment">// 存入数据到缓冲区中</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ByteBuffer <span class="hljs-title">put</span><span class="hljs-params">(<span class="hljs-keyword">byte</span> b)</span></span>;<br><br><span class="hljs-comment">// 读取数据</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">byte</span> <span class="hljs-title">get</span><span class="hljs-params">(<span class="hljs-keyword">int</span> index)</span></span>;<br><br><span class="hljs-comment">// 将缓冲区的数据读取到另外一个数组中</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> ByteBuffer <span class="hljs-title">get</span><span class="hljs-params">(<span class="hljs-keyword">byte</span>[] dst, <span class="hljs-keyword">int</span> offset, <span class="hljs-keyword">int</span> length)</span></span>;<br><br><span class="hljs-comment">// 切换到读取数据的模式。将limit的值置为当前position的值，再把position归0</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title">flip</span><span class="hljs-params">()</span> </span>&#123;<br>        limit = position;<br>        position = <span class="hljs-number">0</span>;<br>        mark = -<span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>&#125;<br><br><span class="hljs-comment">// 恢复到初始状态，注意数据还在，只是被遗忘了</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title">clear</span><span class="hljs-params">()</span> </span>&#123;<br>        position = <span class="hljs-number">0</span>;<br>        limit = capacity;<br>        mark = -<span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>&#125;<br><br><span class="hljs-comment">// 将position恢复到上一次mark标记的位置</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title">reset</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">int</span> m = mark;<br>        <span class="hljs-keyword">if</span> (m &lt; <span class="hljs-number">0</span>)<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidMarkException();<br>        position = m;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">注意：<code>public ByteBufferget(byte[] dst, int offset, int length)</code>方法参数中的offset和length不是针对源buffer，而是针对新数组dst的！！</font></p>
+<h3 id="3、非直接缓冲区"><a href="#3、非直接缓冲区" class="headerlink" title="3、非直接缓冲区"></a>3、非直接缓冲区</h3><p><img src="/images/%E9%9D%9E%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="4、直接缓冲区"><a href="#4、直接缓冲区" class="headerlink" title="4、直接缓冲区"></a>4、直接缓冲区</h3><p><img src="/images/%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>优点</strong>：效率更高！</p>
+<p><strong>缺点：</strong>消耗资源大，数据写入到物理内存中后不受java控制，垃圾回收也有一定的问题。</p>
+<p><img src="/images/%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA%E5%92%8C%E9%9D%9E%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%86%B2%E5%8C%BA.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="三、通道（Channel）"><a href="#三、通道（Channel）" class="headerlink" title="三、通道（Channel）"></a>三、通道（Channel）</h2><p>之前进行IO操作，是通过CPU授权给DMA（Direct Memory Access）总线，然后在DMA总线的管理下进行IO操作。而Channel则是一种独立的专门处理IO操作的特殊的（协）处理器，具有自己的IO指令，进行IO操作时不需要CPU授权。</p>
+<p><img src="/images/%E9%80%9A%E9%81%93.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="1、接口和实现类"><a href="#1、接口和实现类" class="headerlink" title="1、接口和实现类"></a>1、接口和实现类</h3><p>接口：</p>
+<p>java.nio.Channels.Channel</p>
+<p>实现类：</p>
+<ul>
+<li>FileChannel：本地数据IO</li>
+<li>SocketChannel：TCP连接用</li>
+<li>ServerSocketChannel：TCP连接用</li>
+<li>DatagramChannel：UDP连接用</li>
+</ul>
+<h3 id="2、获取通道的三种方式"><a href="#2、获取通道的三种方式" class="headerlink" title="2、获取通道的三种方式"></a>2、获取通道的三种方式</h3><h4 id="（1）各个支持通道的IO类提供了相应的getChannel方法"><a href="#（1）各个支持通道的IO类提供了相应的getChannel方法" class="headerlink" title="（1）各个支持通道的IO类提供了相应的getChannel方法"></a>（1）各个支持通道的IO类提供了相应的getChannel方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test02</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">try</span>(<span class="hljs-comment">// 获取流</span><br>        FileInputStream fis = <span class="hljs-keyword">new</span> FileInputStream(filename1);<br>        FileOutputStream fos = <span class="hljs-keyword">new</span> FileOutputStream(filename2);<br><br>        <span class="hljs-comment">// 获取对应的通道</span><br>        FileChannel fisChannel = fis.getChannel();<br>        FileChannel fosChannel = fos.getChannel();)<br>    &#123;<br>        <span class="hljs-comment">// 通过非直接缓冲区方式</span><br>        ByteBuffer buffer = ByteBuffer.allocate(<span class="hljs-number">1024</span>);<br><br>        <span class="hljs-comment">// 将源数据通道的数据写入缓冲区</span><br>        <span class="hljs-keyword">while</span> (fisChannel.read(buffer) != -<span class="hljs-number">1</span>)&#123;<br>            <span class="hljs-comment">// 切换成读取模式</span><br>            buffer.flip();<br><br>            <span class="hljs-comment">// 读取缓冲区中的数据，写入目标数据通道</span><br>            fosChannel.write(buffer);<br><br>            <span class="hljs-comment">// 清空缓冲区</span><br>            buffer.clear();<br>        &#125;<br>    &#125;<span class="hljs-keyword">catch</span> (Exception ex)&#123;<br>        ex.printStackTrace();<br>    &#125;<br><br>    <span class="hljs-comment">// 使用try()&#123;&#125;的方式就可以不用关闭，否则就要关闭所有的流和通道</span><br>    <span class="hljs-comment">//        fosChannel.close();</span><br>    <span class="hljs-comment">//        fisChannel.close();</span><br>    <span class="hljs-comment">//        fis.close();</span><br>    <span class="hljs-comment">//        fos.close();</span><br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="（2）使用open函数"><a href="#（2）使用open函数" class="headerlink" title="（2）使用open函数"></a>（2）使用open函数</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test03</span><span class="hljs-params">()</span> </span>&#123;<br>    Date startTime = <span class="hljs-keyword">new</span> Date();<br>    <span class="hljs-comment">// 通过open的方式获取通道</span><br>    <span class="hljs-comment">// CREATE_NEW：当文件存在时会报错</span><br>    <span class="hljs-comment">// CREATE：当文件存在时，会在原文件上从头开始覆盖写入。</span><br>    <span class="hljs-comment">// 但是很奇怪，当使用CREATE和直接缓冲区结合的方式时，当source文件的字节数小于destination文件的字节数时，并不会发生写入操作。</span><br>    <span class="hljs-comment">// 即一般使用CREATE_NEW就行</span><br>    <span class="hljs-keyword">try</span>(FileChannel fisChannel = FileChannel.open(Paths.get(filename1), StandardOpenOption.READ);<br>        FileChannel fosChannel = FileChannel.open(Paths.get(filename2), StandardOpenOption.WRITE, StandardOpenOption.READ, StandardOpenOption.CREATE_NEW))<br>    &#123;<br><br>        <span class="hljs-comment">// 使用非直接缓冲区</span><br>        ByteBuffer buffer = ByteBuffer.allocate(<span class="hljs-number">8</span> * <span class="hljs-number">1024</span> * <span class="hljs-number">1024</span>);<br>        <span class="hljs-keyword">while</span> (fisChannel.read(buffer) != -<span class="hljs-number">1</span>)&#123;<br>            buffer.flip();<br>            fosChannel.write(buffer);<br>            buffer.clear();<br>        &#125;<br><br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">            // 通过直接缓冲区方式</span><br><span class="hljs-comment">            MappedByteBuffer inMappedBuffer = fisChannel.map(FileChannel.MapMode.READ_ONLY, 0, fisChannel.size());</span><br><span class="hljs-comment">            MappedByteBuffer outMappedBuffer = fosChannel.map(FileChannel.MapMode.READ_WRITE, 0, fisChannel.size());</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">            // 对直接缓冲区中的数据进行读写，因此省略了从OS地址空间到JVM地址空间的copy操作</span><br><span class="hljs-comment">            // 使用内存映射文件时，就是将一个硬盘上的文件通过通道映射到物理内存的缓冲区中，当缓冲区有put操作，则会直接将对应的数据写入硬盘</span><br><span class="hljs-comment">            byte[] dst = new byte[inMappedBuffer.limit()];</span><br><span class="hljs-comment">            inMappedBuffer.get(dst);</span><br><span class="hljs-comment">            outMappedBuffer.put(dst);</span><br><span class="hljs-comment"> */</span><br><br>        <span class="hljs-comment">// 关闭通道，同样如果使用了try()&#123;&#125;则不用关闭</span><br>        <span class="hljs-comment">//            fisChannel.close();</span><br>        <span class="hljs-comment">//            fosChannel.close();</span><br><br>    &#125;<span class="hljs-keyword">catch</span> (Exception ex)&#123;<br>        ex.printStackTrace();<br>    &#125;<br>    Date endTime = <span class="hljs-keyword">new</span> Date();<br>    System.out.println(<span class="hljs-string">&quot;time: &quot;</span> + (endTime.getTime() - startTime.getTime()) / <span class="hljs-number">1000</span> + <span class="hljs-string">&quot;秒&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">注意！！使用Channel.transferTo方法时，一次传输最大传输支持2G，如果文件超过2G，则要断点传输！如下：</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test04</span><span class="hljs-params">()</span></span>&#123;<br>    Date startTime = <span class="hljs-keyword">new</span> Date();<br>    <span class="hljs-keyword">try</span>(FileChannel fisChannel = FileChannel.open(Paths.get(filename1), StandardOpenOption.READ);<br>        FileChannel fosChannel = FileChannel.open(Paths.get(filename2), StandardOpenOption.WRITE, StandardOpenOption.READ, StandardOpenOption.CREATE_NEW))<br>    &#123;<br>        <span class="hljs-comment">// 通过transferTo，也是通过直接缓冲区的方式</span><br>        <span class="hljs-comment">// transferTo一次传输最大2G，因此无论文件大小的化，最好使用以下方式</span><br>        <span class="hljs-keyword">long</span> position = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">long</span> len = fisChannel.size();<br>        <span class="hljs-keyword">while</span> (<span class="hljs-number">0</span> &lt; len)&#123;<br>            <span class="hljs-keyword">long</span> l = fisChannel.transferTo(position, len, fosChannel);<br>            <span class="hljs-keyword">if</span> (l &gt; <span class="hljs-number">0</span>)&#123;<br>                position = l;<br>                len -= l;<br>            &#125;<br>        &#125;<br>    &#125;<span class="hljs-keyword">catch</span> (Exception ex)&#123;<br>        ex.printStackTrace();<br>    &#125;<br>    Date endTime = <span class="hljs-keyword">new</span> Date();<br>    System.out.println(<span class="hljs-string">&quot;time: &quot;</span> + (endTime.getTime() - startTime.getTime()) / <span class="hljs-number">1000</span> + <span class="hljs-string">&quot;秒&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="（3）通过Files创建"><a href="#（3）通过Files创建" class="headerlink" title="（3）通过Files创建"></a>（3）通过Files创建</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Files.newByteChannel();<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、聚集和分散"><a href="#3、聚集和分散" class="headerlink" title="3、聚集和分散"></a>3、聚集和分散</h3><p>分散读取（Scattering Reads）：读取文件时按顺序填入多个缓冲区中，前面的缓冲区填满了，再填后面的缓冲区</p>
+<p>聚集写入（Gathering Writes）：将多个缓冲区中的数据按顺序写入到通道中</p>
+<p>即就是将channel写入一个bytebuffer数组中，或者从一个bytebuffer数组中读取数据到channel。</p>
+<p><img src="/images/%E8%81%9A%E9%9B%86%E5%92%8C%E5%88%86%E6%95%A3.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test05</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">try</span>(RandomAccessFile raf = <span class="hljs-keyword">new</span> RandomAccessFile(filename1, <span class="hljs-string">&quot;r&quot;</span>);<br>        FileChannel channel = raf.getChannel();<br>        RandomAccessFile raf2 = <span class="hljs-keyword">new</span> RandomAccessFile(filename2, <span class="hljs-string">&quot;rw&quot;</span>);<br>        FileChannel channel2 = raf2.getChannel();<br>        )<br>    &#123;<br>        System.out.println(<span class="hljs-string">&quot;=======分散读取======&quot;</span>);<br>        ByteBuffer buffer1 = ByteBuffer.allocate(<span class="hljs-number">10</span>);<br>        ByteBuffer buffer2 = ByteBuffer.allocate(<span class="hljs-number">1024</span>);<br>        <span class="hljs-comment">// 写入缓冲区</span><br>        ByteBuffer[] buffers = &#123;buffer1, buffer2&#125;;<br>        channel.read(buffers);<br>        <span class="hljs-comment">// 将缓冲区切换成读取模式</span><br>        <span class="hljs-keyword">for</span> (ByteBuffer buffer : buffers) &#123;<br>            buffer.flip();<br>        &#125;<br>        <span class="hljs-comment">// 将缓冲区中的内容打印出来</span><br>        System.out.println(<span class="hljs-keyword">new</span> String(buffers[<span class="hljs-number">0</span>].array(), <span class="hljs-number">0</span>, buffers[<span class="hljs-number">0</span>].limit()));<br>        System.out.println(<span class="hljs-string">&quot;=============&quot;</span>);<br>        System.out.println(<span class="hljs-keyword">new</span> String(buffers[<span class="hljs-number">1</span>].array(), <span class="hljs-number">0</span>, buffers[<span class="hljs-number">1</span>].limit()));<br><br>        System.out.println(<span class="hljs-string">&quot;=======聚集写入======&quot;</span>);<br>        channel2.write(buffers);<br>    &#125;<span class="hljs-keyword">catch</span> (Exception ex)&#123;<br>        ex.printStackTrace();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="四、字符集（Charset）"><a href="#四、字符集（Charset）" class="headerlink" title="四、字符集（Charset）"></a>四、字符集（Charset）</h2><p>编码：字符串 =&gt; 字节数组</p>
+<p>解码：字节数组 =&gt; 字符串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test01</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">final</span> SortedMap&lt;String, Charset&gt; stringCharsetSortedMap = Charset.availableCharsets();<br>    stringCharsetSortedMap.forEach((key, value) -&gt; &#123;<br>        System.out.println(key.getClass().getName());<br>        System.out.println(value.getClass().getName());<br>        System.out.println(key + <span class="hljs-string">&quot;: &quot;</span> + value);<br>    &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>获取一个字符集的类，并得到他们的编码器和解码器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">Charset gbk = Charset.forName(<span class="hljs-string">&quot;GBK&quot;</span>);<br>CharsetEncoder charsetEncoder = gbk.newEncoder();<br>CharsetDecoder charsetDecoder = gbk.newDecoder();<br></code></pre></td></tr></table></figure>
+
+<p>encode方法得到一个ByteBuffer，而decode方法得到一个CharBuffer：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test02</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br>    <span class="hljs-keyword">final</span> Charset gbk = Charset.forName(<span class="hljs-string">&quot;GBK&quot;</span>);<br>    <span class="hljs-keyword">final</span> CharsetEncoder charsetEncoder = gbk.newEncoder();<br>    <span class="hljs-keyword">final</span> CharsetDecoder charsetDecoder = gbk.newDecoder();<br><br>    CharBuffer charBuffer = CharBuffer.allocate(<span class="hljs-number">1024</span>);<br>    charBuffer.put(<span class="hljs-string">&quot;你好，世界！hello, world!!&quot;</span>);<br>    charBuffer.flip();<br><br>    ByteBuffer byteBuffer = charsetEncoder.encode(charBuffer);<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; byteBuffer.limit(); i++) &#123;<br>        System.out.print(byteBuffer.get() + <span class="hljs-string">&quot; &quot;</span>);<br>    &#125;<br>    System.out.println();<br>    byteBuffer.flip();<br><br>    CharBuffer charBuffer2 = charsetDecoder.decode(byteBuffer);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; charBuffer2.limit(); i++) &#123;<br>        System.out.print(charBuffer2.get() + <span class="hljs-string">&quot; &quot;</span>);<br>    &#125;<br>    System.out.println();<br>    charBuffer2.flip();<br><br>    System.out.println(charBuffer2.toString());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="五、阻塞和非阻塞（重点！！）"><a href="#五、阻塞和非阻塞（重点！！）" class="headerlink" title="五、阻塞和非阻塞（重点！！）"></a>五、阻塞和非阻塞（重点！！）</h2><p>这里所说的阻塞和非阻塞主要针对网络编程。在客户端连接服务器时，客户端要向服务器发送数据包请求，双方都会打开一个通道，但是当服务器读取一段数据后，不清楚客户端通道中的数据是否读取完，则这个线程会被阻塞。</p>
+<p>而非阻塞网络IO就是在客户端和服务器之间加一个选择器（Selector），所有客户端发送过来的数据包都先通过选择器，由选择器来判断该数据包是否准备完毕，将准备完毕的数据包发送给服务器去处理，而没准备完毕的数据包留在这里。</p>
+<p><img src="/images/%E9%9D%9E%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%BC%8F.png" srcset="/img/loading.gif" lazyload></p>
+<p>因此，使用NIO完成网络通信的三个核心：</p>
+<ul>
+<li>Channel，负责连接</li>
+<li>Buffer，负责传输数据</li>
+<li>Selector，是SelectableChannel的多路复用器，用于监控SelectableChannel的IO状况。</li>
+</ul>
+<p>这部分笔者还不是很清楚。</p>
+<h2 id="六、NIO实战项目"><a href="#六、NIO实战项目" class="headerlink" title="六、NIO实战项目"></a>六、NIO实战项目</h2><p>用NIO写一个非阻塞式http服务器：<a target="_blank" rel="noopener" href="https://github.com/yury757/httpserver">yury757/httpserver (github.com)</a></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/java/">#java</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java_NIO-study</div>
+      <div>https://yury757.github.io/java/java_NIO/Java_NIO-study/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>August 24, 2021</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/SSM-Build/SSM-Build/" title="SSM-Build">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SSM-Build</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/bigdata/hbase/HBase-study/" title="hbase-study">
+                        <span class="hidden-mobile">hbase-study</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

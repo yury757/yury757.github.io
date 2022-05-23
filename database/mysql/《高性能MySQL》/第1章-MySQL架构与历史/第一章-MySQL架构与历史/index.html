@@ -1,0 +1,773 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1.1 MySQL逻辑架构 第一层：连接、线程处理、授权认证、安全等  第二层：缓存、解析器、优化器等。第一层 + 第二层 &#x3D; 服务器层？？？  第三层：存储引擎，负责MySQL数据的存储和提取。    1.1.1 连接管理与安全性每个客户端连接都会在服务器中有一个线程，这个连接的查询只会在这个单独的线程中进行。如：  使用命令行登录MySQL服务器后，show processlist就会新增一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第一章-MySQL架构与历史">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="1.1 MySQL逻辑架构 第一层：连接、线程处理、授权认证、安全等  第二层：缓存、解析器、优化器等。第一层 + 第二层 &#x3D; 服务器层？？？  第三层：存储引擎，负责MySQL数据的存储和提取。    1.1.1 连接管理与安全性每个客户端连接都会在服务器中有一个线程，这个连接的查询只会在这个单独的线程中进行。如：  使用命令行登录MySQL服务器后，show processlist就会新增一个">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201106210532402-1730406593.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107004053104-1267357727.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107005100110-223892046.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107014028395-1594607007.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107020519952-283921490.png">
+<meta property="article:published_time" content="2020-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:28:55.176Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201106210532402-1730406593.png">
+  
+  
+  
+  <title>第一章-MySQL架构与历史 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第一章-MySQL架构与历史"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-12-01 00:00" pubdate>
+          December 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          29 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第一章-MySQL架构与历史</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="1-1-MySQL逻辑架构"><a href="#1-1-MySQL逻辑架构" class="headerlink" title="1.1 MySQL逻辑架构"></a>1.1 MySQL逻辑架构</h2><ul>
+<li><p>第一层：连接、线程处理、授权认证、安全等</p>
+</li>
+<li><p>第二层：缓存、解析器、优化器等。<strong>第一层 + 第二层 = 服务器层？？？</strong></p>
+</li>
+<li><p>第三层：存储引擎，负责MySQL数据的存储和提取。</p>
+</li>
+</ul>
+<p><img src="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201106210532402-1730406593.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="1-1-1-连接管理与安全性"><a href="#1-1-1-连接管理与安全性" class="headerlink" title="1.1.1 连接管理与安全性"></a>1.1.1 连接管理与安全性</h3><p><strong>每个客户端连接都会在服务器中有一个线程，这个连接的查询只会在这个单独的线程中进行。</strong>如：</p>
+<ul>
+<li><p>使用命令行登录MySQL服务器后，show processlist就会新增一个线程；</p>
+</li>
+<li><p>使用workbench打开一个连接后会新增两个线程（不知道为何有两个线程？），workbench的SQL tab和线程无关，开十个SQL tab还是两个线程；</p>
+</li>
+<li><p>使用datagrip每打开一个query console并查询数据后就会开启一个线程。</p>
+</li>
+</ul>
+<h3 id="1-1-2-优化与执行"><a href="#1-1-2-优化与执行" class="headerlink" title="1.1.2 优化与执行"></a>1.1.2 优化与执行</h3><p>特殊关键字提示优化器：hint</p>
+<p>请求优化器解释优化过程：explain</p>
+<h2 id="1-2-并发控制"><a href="#1-2-并发控制" class="headerlink" title="1.2 并发控制"></a>1.2 并发控制</h2><p>并发控制的问题：多个查询在同一时刻修改数据时产生的问题。</p>
+<p>并发控制的两个层面：服务器层、存储引擎层。</p>
+<h3 id="1-2-1-读写锁"><a href="#1-2-1-读写锁" class="headerlink" title="1.2.1 读写锁"></a>1.2.1 读写锁</h3><p>在处理并发的读或写时，可以通过实现一个由两种类型的锁组成的锁系统来解决问题。这两种类型的锁通常被称为<strong>共享锁（shared lock）和排他锁（exclusive lock），也叫读锁（read lock）和写锁（write lock）</strong>。</p>
+<ul>
+<li><p>读锁：读锁之间是共享的，即读锁之间互不阻塞；</p>
+</li>
+<li><p>写锁：写锁之间是排他的，即一个写锁会阻塞其他写锁和读锁，<font color="Blue">注意不仅仅是写锁会被阻塞，读锁也会被阻塞！</font></p>
+</li>
+</ul>
+<p><font color="Red">写锁比读锁的优先级高，即在一个锁队列中，一个写锁可能会插队到读锁前面，而读锁不能被插入到写锁前面，想想之前数据结构中学的优先队列。</font></p>
+<h3 id="1-2-2-锁粒度"><a href="#1-2-2-锁粒度" class="headerlink" title="1.2.2 锁粒度"></a>1.2.2 锁粒度</h3><p><strong>锁粒度：</strong>对正在修改的数据片进行锁定的精度，即对一条数据进行修改时，是做到仅锁住这条数据，还是锁住整个表。</p>
+<p><strong>锁策略：</strong>在锁的开销和数据的安全性之间寻求平衡。一般商业数据库是在表上加行级锁。</p>
+<p>表锁：锁定整张表。开销最小，</p>
+<p>行级锁：锁定独写的某一条数据。开销最大。</p>
+<h2 id="1-3-事务"><a href="#1-3-事务" class="headerlink" title="1.3 事务"></a>1.3 事务</h2><p><font color="Red">事务（Transaction）：</font>是一组原子性的SQL查询，或者说一个独立的工作单元。</p>
+<p>ACID：</p>
+<ol>
+<li><strong>原子性（atomicity）</strong></li>
+</ol>
+<p>一个事务必须被视为一个不可分割的最小单元，整个事务的操作要么全部提交成功，要么全部失败回滚，不能只执行其中的一部分操作，这就是事务的原子性。</p>
+<ol start="2">
+<li><strong>一致性（consistency）</strong></li>
+</ol>
+<p>数据库总是从一个一致状态转换到另外一个一致状态。</p>
+<p><a target="_blank" rel="noopener" href="https://www.jdon.com/concurrent/acid-database.html">有一个博客</a>对一致性的解释比较容易理解：</p>
+<p>一致性有下面特点：</p>
+<ul>
+<li><p>如果一个操作触发辅助操作（级联，触发器），这些也必须成功，否则交易失败。</p>
+</li>
+<li><p>如果系统是由多个节点组成，一致性规定所有的变化必须传播到所有节点（多主复制）。如果从站节点是异步更新，那么我们打破一致性规则，系统成为“最终一致性”。</p>
+</li>
+<li><p>一个事务是数据状态的切换，因此，<strong>如果事务是并发多个，系统也必须如同串行事务一样操作</strong>。</p>
+</li>
+</ul>
+<p>在现实中，事务系统遭遇并发请求时，这种串行化是有成本的， Amdahl法则描述如下：它是描述序列串行执行和并发之间的关系。一个程序在并行计算情况下使用多个处理器所能提升的速度是由这个程序中串行执行部分的时间决定的。</p>
+<p>大多数数据库管理系统选择（默认情况下）是放宽一致性，以达到更好的并发性。</p>
+<p>事务的执行不能破坏数据库数据的完整性和一致性，一个事务在执行之前和执行之后，数据库都必须处于一致性状态。</p>
+<ol start="3">
+<li><strong>隔离性（isolation）</strong></li>
+</ol>
+<p>隔离性是指，一个事务所做的修改在最终提交之前，对其他事务是不可见的（并不是完全不可见，有不同的隔离级别）。</p>
+<ol start="4">
+<li><strong>持久性（durability）</strong></li>
+</ol>
+<p>事务一旦提交，其所作的修改就会永久保存到数据库中，此时即使系统奔溃，修改的数据也不会丢失。<font color="Red">不可能有能做到100%持久性保证的策略。</font></p>
+<h3 id="1-3-1-隔离级别"><a href="#1-3-1-隔离级别" class="headerlink" title="1.3.1 隔离级别"></a>1.3.1 隔离级别</h3><p>READ UNCOMMITTED（未提交读）、READ COMMITTED（提交读，也是不可重复读）、REPEATABLE READ（可重复读，<strong>是MySQL的默认事务隔离级别</strong>）、SERIALIZABLE（可串行化）。</p>
+<p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/743691">这篇博文</a>对隔离级别的讲解很到位（若原文链接失效，可参考我自己的<a target="_blank" rel="noopener" href="https://www.cnblogs.com/yuyr757/articles/13939593.html">复制内容</a>），可以参考。书中都是文字性的讲解，不太好理解。<strong>额外要注意的一点就是SERIALIZABLE会在读的每一行上加锁。</strong></p>
+<p><img src="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107004053104-1267357727.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="1-3-2-死锁"><a href="#1-3-2-死锁" class="headerlink" title="1.3.2 死锁"></a>1.3.2 死锁</h3><p><strong>死锁：是指当两个或多个事务在同一资源上相互占用，请求锁定对方占用的资源，每个事务都在等待对方释放锁，从而等待状态永远不会结束形成恶性循环的现象。</strong></p>
+<p><img src="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107005100110-223892046.png" srcset="/img/loading.gif" lazyload></p>
+<p>书中这个例子很容易理解，如果凑巧两个事务的第一条SQL同时执行，则事务1锁定了stock_id=4的数据（假设叫做第1条数据），事务2锁定了stock_id=3的数据（假设叫做第2条数据），然后事务1等待事务2释放第2条数据的锁，而事务2要执行整个事务提交后才能释放数据2的锁，当时在执行第2条SQL时又要等事务1释放第1条数据的锁，这样就导致两个事务相互等待，且相互等待的状态永远不会结束，导致死锁。</p>
+<p>数据库实现了各种死锁检测机制和死锁超时机制。<strong>当前InnoDB处理死锁的方法是，将持有最少行级排他锁的事务进行回滚。</strong>（书中原文）</p>
+<p>死锁的产生有些还和存储引擎的实现方式有关。</p>
+<h3 id="1-3-3-事务日志"><a href="#1-3-3-事务日志" class="headerlink" title="1.3.3 事务日志"></a>1.3.3 事务日志</h3><p>使用事务日志，存储引擎在修改表的数据时，只需要修改其内存拷贝，再把该修改行为记录到持久在硬盘的事务日志中。可以理解为事务提交后并不会直接修改硬盘中的数据，而是先把事务日志写到硬盘的事务日志中，然后让数据在后台慢慢修改到硬盘中。通常称这种日志为<strong>预写式日志</strong>，修改数据要写入两次数据到硬盘中，第一次是日志，第二次才是数据根据日志进行修改。系统奔溃时，也可以通过硬盘中的事务日志进行数据恢复。</p>
+<h3 id="1-3-4-MySQL中的事务"><a href="#1-3-4-MySQL中的事务" class="headerlink" title="1.3.4 MySQL中的事务"></a>1.3.4 MySQL中的事务</h3><p>如果不是显示地使用start transaction，则默认为每一个SQL语句都是一个事务。MySQL默认采用自动提交事务（autocommit）的方式。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; SHOW VARIABLES LIKE &#x27;AUTOCOMMIT&#x27;;<br>+---------------+-------+<br>| Variable_name | Value |<br>+---------------+-------+<br>| autocommit    | ON    |<br>+---------------+-------+<br>1 row in set, 1 warning (0.01 sec)<br><br>mysql&gt; SET AUTOCOMMIT = 0; -- 显示的将该线程下的提交方式修改为手动提交，即要手动使用COMMIT或ROLLBACK<br>Query OK, 0 rows affected (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>注意！某些命令在执行前会强制执行COMMIT提交掉当前事务的修改，如ALTER TABLE、LOCK TABLES等。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; SET TRANSACTION ISOLATION LEVEL READ COMMITTED; -- 设置下一个事务的隔离级别，可以用在存储过程的start transaction之前。<br>Query OK, 0 rows affected (0.00 sec)<br><br>mysql&gt; SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED; -- 设置当前会话事务的隔离级别<br>Query OK, 0 rows affected (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p>虽然InnoDB会根据事务隔离级别自动锁定修改，但MySQL也支持显式锁定表：LOCK TABLES。但<strong>本书建议，只有在使用set transaction = 0的事务中可以使用LOCK TABLES，其他情况应该避免使用使用LOCK TABLES。</strong></p>
+<h2 id="1-4-多版本并发控制（MVCC）"><a href="#1-4-多版本并发控制（MVCC）" class="headerlink" title="1.4 多版本并发控制（MVCC）"></a>1.4 多版本并发控制（MVCC）</h2><p>可以认为MVCC是行级锁的一个变种，但是它很多情况下避免了枷锁操作，虽然实现机制有所不同，但大都实现了非阻塞的读操作，写操作也只锁定必要的行。</p>
+<p>下面是本书中通过InnoDB的简化版行为来说明MVCC是如何工作的。</p>
+<p><img src="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107014028395-1594607007.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="1-5-MySQL的存储引擎"><a href="#1-5-MySQL的存储引擎" class="headerlink" title="1.5 MySQL的存储引擎"></a>1.5 MySQL的存储引擎</h2><ul>
+<li><p>InnoDB引擎：支持事务</p>
+</li>
+<li><p>MyISAM引擎：不支持事务和行级锁，但读取效率高</p>
+</li>
+<li><p>Archive：不支持引擎，支持行级锁，插入效率高</p>
+</li>
+<li><p>CSV引擎：用作数据交换很有用</p>
+</li>
+<li><p>Memory引擎：不支持行级锁，支持hash索引，查找效率特别高，比MyISAM效率还更高，数据保存在内存中的形式</p>
+</li>
+</ul>
+<p><img src="https://img2020.cnblogs.com/blog/2145586/202011/2145586-20201107020519952-283921490.png" srcset="/img/loading.gif" lazyload></p>
+<p>中间省略大量内容…</p>
+<p>如果需要对记录的日志做分析报表，则生成报表的SQL可能会导致日志插入效率下降，怎么办？一种办法是，利用MySQL内置的复制方案，复制一份到从库，然后在从库做查询操作，主库只用于高效的插入操作，因此从库的查询操作就不会影响到主库的插入性能。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第一章-MySQL架构与历史</div>
+      <div>https://yury757.github.io/database/mysql/《高性能MySQL》/第1章-MySQL架构与历史/第一章-MySQL架构与历史/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>December 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/computer-science/Computer-Networking/Computer-Networking/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC2%E7%AB%A0-MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/%E7%AC%AC%E4%BA%8C%E7%AB%A0%20MySQL%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/" title="第二章-MySQL基准测试">
+                        <span class="hidden-mobile">第二章-MySQL基准测试</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,879 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本学习笔记基于ubuntu18+cpp14中socket代码，学习socket。 最权威的文档：man命令。 1、socket是什么socket是一个**文件描述符（file descriptor）**，可以通过设置DOMAIN、TYPE、PROTOCOL来创建不同类型的socket。 linux将网络IO抽象为对文件的IO，socket就是网络IO的一个通道或者接口。 123456&#x2F;&#x2F; &lt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="socket入门学习">
+<meta property="og:url" content="https://yury757.github.io/computer-science/Computer-Networking/socket/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="本学习笔记基于ubuntu18+cpp14中socket代码，学习socket。 最权威的文档：man命令。 1、socket是什么socket是一个**文件描述符（file descriptor）**，可以通过设置DOMAIN、TYPE、PROTOCOL来创建不同类型的socket。 linux将网络IO抽象为对文件的IO，socket就是网络IO的一个通道或者接口。 123456&#x2F;&#x2F; &lt;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-02T13:41:12.650Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>socket入门学习 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="socket入门学习"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-04-15 00:00" pubdate>
+          April 15, 2022 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          33k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          277 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">socket入门学习</h1>
+            
+            <div class="markdown-body">
+              
+              <p>本学习笔记基于ubuntu18+cpp14中socket代码，学习socket。</p>
+<p>最权威的文档：man命令。</p>
+<h2 id="1、socket是什么"><a href="#1、socket是什么" class="headerlink" title="1、socket是什么"></a>1、socket是什么</h2><p>socket是一个**<font color="Red">文件描述符（file descriptor）</font>**，可以通过设置DOMAIN、TYPE、PROTOCOL来创建不同类型的socket。</p>
+<p>linux将网络IO抽象为对文件的IO，socket就是网络IO的一个通道或者接口。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// &lt;sys/socket.h&gt;</span><br><br><span class="hljs-comment">/* Create a new socket of type TYPE in domain DOMAIN, using</span><br><span class="hljs-comment">   protocol PROTOCOL.  If PROTOCOL is zero, one is chosen automatically.</span><br><span class="hljs-comment">   Returns a file descriptor for the new socket, or -1 for errors.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">socket</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __domain, <span class="hljs-keyword">int</span> __type, <span class="hljs-keyword">int</span> __protocol)</span> __THROW</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="（1）DOMAIN"><a href="#（1）DOMAIN" class="headerlink" title="（1）DOMAIN"></a>（1）DOMAIN</h3><p>DOMAIN是指地址簇，或者协议簇，表示不同类型的<strong>地址识别方式</strong>。如下所示有这么多种地址簇。</p>
+<p>最常用的就是TCP/IP协议簇，即<code>PF_INET</code>，或<code>AF_INET</code>；以及IPV6协议簇，<code>PF_INET6</code>，或<code>AF_INET6</code>。</p>
+<p>protocol family和address family本质上是同一种分类，只是为了适配不同的系统才形成两类宏名。在linux上我们一般用<code>AF</code>这一套。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Protocol families.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_UNSPEC	0	<span class="hljs-comment">/* Unspecified.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_LOCAL	1	<span class="hljs-comment">/* Local to host (pipes and file-domain).  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_UNIX		PF_LOCAL <span class="hljs-comment">/* POSIX name for PF_LOCAL.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_FILE		PF_LOCAL <span class="hljs-comment">/* Another non-standard name for PF_LOCAL.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_INET		2	<span class="hljs-comment">/* IP protocol family.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_AX25		3	<span class="hljs-comment">/* Amateur Radio AX.25.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_IPX		4	<span class="hljs-comment">/* Novell Internet Protocol.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_APPLETALK	5	<span class="hljs-comment">/* Appletalk DDP.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_NETROM	6	<span class="hljs-comment">/* Amateur radio NetROM.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_BRIDGE	7	<span class="hljs-comment">/* Multiprotocol bridge.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ATMPVC	8	<span class="hljs-comment">/* ATM PVCs.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_X25		9	<span class="hljs-comment">/* Reserved for X.25 project.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_INET6	10	<span class="hljs-comment">/* IP version 6.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ROSE		11	<span class="hljs-comment">/* Amateur Radio X.25 PLP.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_DECnet	12	<span class="hljs-comment">/* Reserved for DECnet project.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_NETBEUI	13	<span class="hljs-comment">/* Reserved for 802.2LLC project.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_SECURITY	14	<span class="hljs-comment">/* Security callback pseudo AF.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_KEY		15	<span class="hljs-comment">/* PF_KEY key management API.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_NETLINK	16</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ROUTE	PF_NETLINK <span class="hljs-comment">/* Alias to emulate 4.4BSD.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_PACKET	17	<span class="hljs-comment">/* Packet family.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ASH		18	<span class="hljs-comment">/* Ash.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ECONET	19	<span class="hljs-comment">/* Acorn Econet.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ATMSVC	20	<span class="hljs-comment">/* ATM SVCs.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_RDS		21	<span class="hljs-comment">/* RDS sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_SNA		22	<span class="hljs-comment">/* Linux SNA Project */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_IRDA		23	<span class="hljs-comment">/* IRDA sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_PPPOX	24	<span class="hljs-comment">/* PPPoX sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_WANPIPE	25	<span class="hljs-comment">/* Wanpipe API sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_LLC		26	<span class="hljs-comment">/* Linux LLC.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_IB		27	<span class="hljs-comment">/* Native InfiniBand address.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_MPLS		28	<span class="hljs-comment">/* MPLS.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_CAN		29	<span class="hljs-comment">/* Controller Area Network.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_TIPC		30	<span class="hljs-comment">/* TIPC sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_BLUETOOTH	31	<span class="hljs-comment">/* Bluetooth sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_IUCV		32	<span class="hljs-comment">/* IUCV sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_RXRPC	33	<span class="hljs-comment">/* RxRPC sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ISDN		34	<span class="hljs-comment">/* mISDN sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_PHONET	35	<span class="hljs-comment">/* Phonet sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_IEEE802154	36	<span class="hljs-comment">/* IEEE 802.15.4 sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_CAIF		37	<span class="hljs-comment">/* CAIF sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_ALG		38	<span class="hljs-comment">/* Algorithm sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_NFC		39	<span class="hljs-comment">/* NFC sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_VSOCK	40	<span class="hljs-comment">/* vSockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_KCM		41	<span class="hljs-comment">/* Kernel Connection Multiplexor.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_QIPCRTR	42	<span class="hljs-comment">/* Qualcomm IPC Router.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_SMC		43	<span class="hljs-comment">/* SMC sockets.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> PF_MAX		44	<span class="hljs-comment">/* For now..  */</span></span><br><br><span class="hljs-comment">/* Address families.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_UNSPEC	PF_UNSPEC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_LOCAL	PF_LOCAL</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_UNIX		PF_UNIX</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_FILE		PF_FILE</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_INET		PF_INET</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_AX25		PF_AX25</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_IPX		PF_IPX</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_APPLETALK	PF_APPLETALK</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_NETROM	PF_NETROM</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_BRIDGE	PF_BRIDGE</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ATMPVC	PF_ATMPVC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_X25		PF_X25</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_INET6	PF_INET6</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ROSE		PF_ROSE</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_DECnet	PF_DECnet</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_NETBEUI	PF_NETBEUI</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_SECURITY	PF_SECURITY</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_KEY		PF_KEY</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_NETLINK	PF_NETLINK</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ROUTE	PF_ROUTE</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_PACKET	PF_PACKET</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ASH		PF_ASH</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ECONET	PF_ECONET</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ATMSVC	PF_ATMSVC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_RDS		PF_RDS</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_SNA		PF_SNA</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_IRDA		PF_IRDA</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_PPPOX	PF_PPPOX</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_WANPIPE	PF_WANPIPE</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_LLC		PF_LLC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_IB		PF_IB</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_MPLS		PF_MPLS</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_CAN		PF_CAN</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_TIPC		PF_TIPC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_BLUETOOTH	PF_BLUETOOTH</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_IUCV		PF_IUCV</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_RXRPC	PF_RXRPC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ISDN		PF_ISDN</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_PHONET	PF_PHONET</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_IEEE802154	PF_IEEE802154</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_CAIF		PF_CAIF</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_ALG		PF_ALG</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_NFC		PF_NFC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_VSOCK	PF_VSOCK</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_KCM		PF_KCM</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_QIPCRTR	PF_QIPCRTR</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_SMC		PF_SMC</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> AF_MAX		PF_MAX</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="（2）TYPE"><a href="#（2）TYPE" class="headerlink" title="（2）TYPE"></a>（2）TYPE</h3><p>TYPE是指socket传输类型，表示不同的<strong>传输层类型</strong>，如下所示。</p>
+<ul>
+<li>SOCK_STREAM，即有序的、可靠的、基于连接的字节流。（TCP）</li>
+<li>SOCK_DGRAM，面向无连接的，不可靠，固定最大长度数据包。（UDP）</li>
+<li>SOCK_RAW，原始socket数据包，需要手动解析数据包格式并作出对应处理。可以理解为TCP/UDP一种封装好了的数据包格式，而RAW则需要自己封装或解析数据包。</li>
+<li>SOCK_PACKET，直接从网络链路层获取数据并处理数据，如MySQL、postgresql数据库连接的各种驱动就是这种网络连接方式。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Types of sockets.  */</span><br><span class="hljs-class"><span class="hljs-keyword">enum</span> __<span class="hljs-title">socket_type</span></span><br><span class="hljs-class">&#123;</span><br>  SOCK_STREAM = <span class="hljs-number">1</span>,		<span class="hljs-comment">/* Sequenced, reliable, connection-based</span><br><span class="hljs-comment">				   byte streams.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_STREAM SOCK_STREAM</span><br>  SOCK_DGRAM = <span class="hljs-number">2</span>,		<span class="hljs-comment">/* Connectionless, unreliable datagrams</span><br><span class="hljs-comment">				   of fixed maximum length.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_DGRAM SOCK_DGRAM</span><br>  SOCK_RAW = <span class="hljs-number">3</span>,			<span class="hljs-comment">/* Raw protocol interface.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_RAW SOCK_RAW</span><br>  SOCK_RDM = <span class="hljs-number">4</span>,			<span class="hljs-comment">/* Reliably-delivered messages.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_RDM SOCK_RDM</span><br>  SOCK_SEQPACKET = <span class="hljs-number">5</span>,		<span class="hljs-comment">/* Sequenced, reliable, connection-based,</span><br><span class="hljs-comment">				   datagrams of fixed maximum length.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_SEQPACKET SOCK_SEQPACKET</span><br>  SOCK_DCCP = <span class="hljs-number">6</span>,		<span class="hljs-comment">/* Datagram Congestion Control Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_DCCP SOCK_DCCP</span><br>  SOCK_PACKET = <span class="hljs-number">10</span>,		<span class="hljs-comment">/* Linux specific way of getting packets</span><br><span class="hljs-comment">				   at the dev level.  For writing rarp and</span><br><span class="hljs-comment">				   other similar things on the user level. */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_PACKET SOCK_PACKET</span><br><br>  <span class="hljs-comment">/* Flags to be ORed into the type parameter of socket and socketpair and</span><br><span class="hljs-comment">     used for the flags parameter of paccept.  */</span><br><br>  SOCK_CLOEXEC = <span class="hljs-number">02000000</span>,	<span class="hljs-comment">/* Atomically set close-on-exec flag for the</span><br><span class="hljs-comment">				   new descriptor(s).  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_CLOEXEC SOCK_CLOEXEC</span><br>  SOCK_NONBLOCK = <span class="hljs-number">00004000</span>	<span class="hljs-comment">/* Atomically mark descriptor(s) as</span><br><span class="hljs-comment">				   non-blocking.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SOCK_NONBLOCK SOCK_NONBLOCK</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="（3）PROTOCAL"><a href="#（3）PROTOCAL" class="headerlink" title="（3）PROTOCAL"></a>（3）PROTOCAL</h3><p>PROTOCAL表示最终socket通信协议类型（= 网络层协议 + 传输层协议）。基于IP协议簇包括的协议类型如下。</p>
+<p>如果选择0，用于TCP的虚拟协议，则操作系统会自动根据前两个参数选择一种协议。若自己填，却填错了，则无法创建socket。所以一般填0即可。</p>
+<ul>
+<li>IPPROTO_TCP，网络层使用IP协议，传输层使用TCP协议。</li>
+<li>IPPROTO_TCP，网络层使用IP协议，传输层使用TCP协议。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Standard well-defined IP protocols.  */</span><br><span class="hljs-class"><span class="hljs-keyword">enum</span></span><br><span class="hljs-class">  &#123;</span><br>    IPPROTO_IP = <span class="hljs-number">0</span>,	   <span class="hljs-comment">/* Dummy protocol for TCP.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_IP		IPPROTO_IP</span><br>    IPPROTO_ICMP = <span class="hljs-number">1</span>,	   <span class="hljs-comment">/* Internet Control Message Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_ICMP		IPPROTO_ICMP</span><br>    IPPROTO_IGMP = <span class="hljs-number">2</span>,	   <span class="hljs-comment">/* Internet Group Management Protocol. */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_IGMP		IPPROTO_IGMP</span><br>    IPPROTO_IPIP = <span class="hljs-number">4</span>,	   <span class="hljs-comment">/* IPIP tunnels (older KA9Q tunnels use 94).  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_IPIP		IPPROTO_IPIP</span><br>    IPPROTO_TCP = <span class="hljs-number">6</span>,	   <span class="hljs-comment">/* Transmission Control Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_TCP		IPPROTO_TCP</span><br>    IPPROTO_EGP = <span class="hljs-number">8</span>,	   <span class="hljs-comment">/* Exterior Gateway Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_EGP		IPPROTO_EGP</span><br>    IPPROTO_PUP = <span class="hljs-number">12</span>,	   <span class="hljs-comment">/* PUP protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_PUP		IPPROTO_PUP</span><br>    IPPROTO_UDP = <span class="hljs-number">17</span>,	   <span class="hljs-comment">/* User Datagram Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_UDP		IPPROTO_UDP</span><br>    IPPROTO_IDP = <span class="hljs-number">22</span>,	   <span class="hljs-comment">/* XNS IDP protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_IDP		IPPROTO_IDP</span><br>    IPPROTO_TP = <span class="hljs-number">29</span>,	   <span class="hljs-comment">/* SO Transport Protocol Class 4.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_TP		IPPROTO_TP</span><br>    IPPROTO_DCCP = <span class="hljs-number">33</span>,	   <span class="hljs-comment">/* Datagram Congestion Control Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_DCCP		IPPROTO_DCCP</span><br>    IPPROTO_IPV6 = <span class="hljs-number">41</span>,     <span class="hljs-comment">/* IPv6 header.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_IPV6		IPPROTO_IPV6</span><br>    IPPROTO_RSVP = <span class="hljs-number">46</span>,	   <span class="hljs-comment">/* Reservation Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_RSVP		IPPROTO_RSVP</span><br>    IPPROTO_GRE = <span class="hljs-number">47</span>,	   <span class="hljs-comment">/* General Routing Encapsulation.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_GRE		IPPROTO_GRE</span><br>    IPPROTO_ESP = <span class="hljs-number">50</span>,      <span class="hljs-comment">/* encapsulating security payload.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_ESP		IPPROTO_ESP</span><br>    IPPROTO_AH = <span class="hljs-number">51</span>,       <span class="hljs-comment">/* authentication header.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_AH		IPPROTO_AH</span><br>    IPPROTO_MTP = <span class="hljs-number">92</span>,	   <span class="hljs-comment">/* Multicast Transport Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_MTP		IPPROTO_MTP</span><br>    IPPROTO_BEETPH = <span class="hljs-number">94</span>,   <span class="hljs-comment">/* IP option pseudo header for BEET.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_BEETPH		IPPROTO_BEETPH</span><br>    IPPROTO_ENCAP = <span class="hljs-number">98</span>,	   <span class="hljs-comment">/* Encapsulation Header.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_ENCAP		IPPROTO_ENCAP</span><br>    IPPROTO_PIM = <span class="hljs-number">103</span>,	   <span class="hljs-comment">/* Protocol Independent Multicast.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_PIM		IPPROTO_PIM</span><br>    IPPROTO_COMP = <span class="hljs-number">108</span>,	   <span class="hljs-comment">/* Compression Header Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_COMP		IPPROTO_COMP</span><br>    IPPROTO_SCTP = <span class="hljs-number">132</span>,	   <span class="hljs-comment">/* Stream Control Transmission Protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_SCTP		IPPROTO_SCTP</span><br>    IPPROTO_UDPLITE = <span class="hljs-number">136</span>, <span class="hljs-comment">/* UDP-Lite protocol.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_UDPLITE		IPPROTO_UDPLITE</span><br>    IPPROTO_MPLS = <span class="hljs-number">137</span>,    <span class="hljs-comment">/* MPLS in IP.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_MPLS		IPPROTO_MPLS</span><br>    IPPROTO_RAW = <span class="hljs-number">255</span>,	   <span class="hljs-comment">/* Raw IP packets.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> IPPROTO_RAW		IPPROTO_RAW</span><br>    IPPROTO_MAX<br>  &#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="（4）创建socket"><a href="#（4）创建socket" class="headerlink" title="（4）创建socket"></a>（4）创建socket</h3><p>若成功创建socket，则返回大于0的数字。创建失败则返回-1。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// 基于ipv4的TCP连接</span><br><span class="hljs-keyword">int</span> socket1 = <span class="hljs-built_in">socket</span>(AF_INET, SOCK_STREAM, IPPROTO_TCP);<br>cout &lt;&lt; socket1 &lt;&lt; endl;<br><br><span class="hljs-comment">// 基于ipv4的UDP连接</span><br><span class="hljs-keyword">int</span> socket2 = <span class="hljs-built_in">socket</span>(AF_INET, SOCK_DGRAM, IPPROTO_UDP);<br>cout &lt;&lt; socket2 &lt;&lt; endl;<br><br><span class="hljs-comment">// 基于ipv4的原始数据包</span><br><span class="hljs-keyword">int</span> socket3 = <span class="hljs-built_in">socket</span>(AF_INET, SOCK_RAW, <span class="hljs-number">0</span>);<br>cout &lt;&lt; socket3 &lt;&lt; endl;<br></code></pre></td></tr></table></figure>
+
+<h2 id="2、创建socket地址"><a href="#2、创建socket地址" class="headerlink" title="2、创建socket地址"></a>2、创建socket地址</h2><p>以ipv4地址为例。sockaddr_in结构体即为socket地址，三个变量分别为：</p>
+<ul>
+<li>SOCKADDR_COMMON (sin_)，地址簇，即创建socket的第一个参数</li>
+<li>in_port_t sin_port，端口，是一个2字节无符号整数（unsigned short int）。<ul>
+<li>htons方法用于将unsigned short int型主机字节序的端口数字转换成网络传输需要的字节序的端口数字。</li>
+</ul>
+</li>
+<li>struct in_addr sin_addr，具体ip地址，是一个4字节无符号整数（unsigned int）。<ul>
+<li>htonl方法用于将unsigned int型主机字节序的端口数字转换成网络传输需要的字节序的端口数字。</li>
+</ul>
+</li>
+</ul>
+<p>常用地址如下：</p>
+<ul>
+<li>INADDR_LOOPBACK，本机回环地址，127.0.0.0</li>
+<li>INADDR_ANY，接收任意收到的消息，0.0.0.0</li>
+<li>INADDR_BROADCASE，广播地址，发动消息到任意主机，255.255.255.255</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Structure describing an Internet socket address.  */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span></span><br><span class="hljs-class">  &#123;</span><br>    __SOCKADDR_COMMON (sin_);<br>    <span class="hljs-keyword">in_port_t</span> sin_port;			<span class="hljs-comment">/* Port number.  */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">sin_addr</span>;</span>		<span class="hljs-comment">/* Internet address.  */</span><br><br>    <span class="hljs-comment">/* Pad to size of `struct sockaddr&#x27;.  */</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> sin_zero[<span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span> (struct sockaddr) -<br>			   __SOCKADDR_COMMON_SIZE -<br>			   <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span> (<span class="hljs-keyword">in_port_t</span>) -<br>			   <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span> (struct in_addr)];<br>  &#125;;<br><br><span class="hljs-comment">/* Internet address.  */</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">uint32_t</span> <span class="hljs-keyword">in_addr_t</span>;<br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span></span><br><span class="hljs-class">  &#123;</span><br>    <span class="hljs-keyword">in_addr_t</span> s_addr;<br>  &#125;;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">__uint32_t</span> <span class="hljs-keyword">uint32_t</span>;<br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> <span class="hljs-keyword">__uint32_t</span>;<br><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">uint32_t</span> <span class="hljs-title">htonl</span> <span class="hljs-params">(<span class="hljs-keyword">uint32_t</span> __hostlong)</span></span><br><span class="hljs-function">     __THROW __<span class="hljs-title">attribute__</span> <span class="hljs-params">((__const__))</span></span>;<br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">uint16_t</span> <span class="hljs-title">htons</span> <span class="hljs-params">(<span class="hljs-keyword">uint16_t</span> __hostshort)</span></span><br><span class="hljs-function">     __THROW __<span class="hljs-title">attribute__</span> <span class="hljs-params">((__const__))</span></span>;<br></code></pre></td></tr></table></figure>
+
+<p>创建socket地址：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++">sockaddr_in addr&#123;&#125;;<br>addr.sin_family = AF_INET;<br><span class="hljs-keyword">short</span> <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> port = <span class="hljs-built_in">htons</span>(<span class="hljs-number">3000</span>);<br>cout &lt;&lt; <span class="hljs-string">&quot;转换前的端口为：&quot;</span> &lt;&lt; <span class="hljs-number">3000</span> &lt;&lt; <span class="hljs-string">&quot;，转换后的端口为：&quot;</span> &lt;&lt; port &lt;&lt; endl;<br>addr.sin_port = port;<br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> <span class="hljs-keyword">int</span> address = <span class="hljs-built_in">htonl</span>(INADDR_LOOPBACK);<br>cout &lt;&lt; <span class="hljs-string">&quot;转换前的地址为：&quot;</span> &lt;&lt; INADDR_LOOPBACK &lt;&lt; <span class="hljs-string">&quot;，转换后的地址为：&quot;</span> &lt;&lt; address &lt;&lt; endl;<br>addr.sin_addr.s_addr = address;<br></code></pre></td></tr></table></figure>
+
+<h2 id="3、setsockopt"><a href="#3、setsockopt" class="headerlink" title="3、setsockopt"></a>3、setsockopt</h2><p>该方法用于设置socket选项，可选调用，也可以不调用该方法，使用默认选项。但通常来说启动其中的“复用端口号”选项可以开启，若不开启该选项，重启server端的socket程序时，会绑定端口错误，说端口正在被使用。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Set socket FD&#x27;s option OPTNAME at protocol level LEVEL</span><br><span class="hljs-comment">   to *OPTVAL (which is OPTLEN bytes long).</span><br><span class="hljs-comment">   Returns 0 on success, -1 for errors.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">setsockopt</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __fd, <span class="hljs-keyword">int</span> __level, <span class="hljs-keyword">int</span> __optname,</span></span><br><span class="hljs-params"><span class="hljs-function">             <span class="hljs-keyword">const</span> <span class="hljs-keyword">void</span> *__optval, <span class="hljs-keyword">socklen_t</span> __optlen)</span> __THROW</span>;<br><br><span class="hljs-built_in">setsockopt</span>(welcome_socket, SOL_SOCKET, SO_REUSEADDR, &amp;enable, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-keyword">int</span>));<br></code></pre></td></tr></table></figure>
+
+<p>socket选项如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_DEBUG	1</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_REUSEADDR	2</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_TYPE		3</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_ERROR	4</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_DONTROUTE	5</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_BROADCAST	6</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_SNDBUF	7</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_RCVBUF	8</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_SNDBUFFORCE	32</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_RCVBUFFORCE	33</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_KEEPALIVE	9</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_OOBINLINE	10</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_NO_CHECK	11</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_PRIORITY	12</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_LINGER	13</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_BSDCOMPAT	14</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_REUSEPORT	15</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifndef</span> SO_PASSCRED <span class="hljs-comment">/* powerpc only differs in these */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_PASSCRED	16</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_PEERCRED	17</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_RCVLOWAT	18</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_SNDLOWAT	19</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_RCVTIMEO	20  <span class="hljs-comment">// 接收消息的超时时间</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> SO_SNDTIMEO	21  <span class="hljs-comment">// 发送消息的超时时间</span></span><br></code></pre></td></tr></table></figure>
+
+<h2 id="4、server-socket创建"><a href="#4、server-socket创建" class="headerlink" title="4、server socket创建"></a>4、server socket创建</h2><p>socket表示网络IO的通道，服务器和客户端通信都需要创建socket，服务端接收连接，客户端发起连接。</p>
+<p>创建服务端的socket，有以下步骤：</p>
+<ul>
+<li>创建服务端welcome socket，该socket专门用于接收连接而不会从该socket读取数据。</li>
+<li>创建服务端地址结构体sockaddr_in</li>
+<li>绑定端口并监听</li>
+<li>接收连接，获取connection socket，该socket代表一个连接会话，可以从该socket中读取数据。</li>
+<li>读取字节流，处理，写入输出字节流</li>
+</ul>
+<h3 id="（1）绑定、监听"><a href="#（1）绑定、监听" class="headerlink" title="（1）绑定、监听"></a>（1）绑定、监听</h3><p>将创建的socket绑定到创建的ip地址上。</p>
+<p>其中需要将sockaddr_in强制转换为sockaddr指针再绑定。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Give the socket FD the local address ADDR (which is LEN bytes long).  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">bind</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __fd, __CONST_SOCKADDR_ARG __addr, <span class="hljs-keyword">socklen_t</span> __len)</span></span><br><span class="hljs-function">     __THROW</span>;<br><br><span class="hljs-comment">/* Structure describing a generic socket address.  */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span></span><br><span class="hljs-class">  &#123;</span><br>    __SOCKADDR_COMMON (sa_);	<span class="hljs-comment">/* Common data: address family and length.  */</span><br>    <span class="hljs-keyword">char</span> sa_data[<span class="hljs-number">14</span>];		<span class="hljs-comment">/* Address data.  */</span><br>  &#125;;<br><br><span class="hljs-built_in">bind</span>(welcome_socket1, (struct sockaddr *) &amp;addr, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(addr));<br></code></pre></td></tr></table></figure>
+
+<p>开启对socket的监听，准备接受客户端连接。</p>
+<p>N表示最大队列数，当程序已经接收到一个connection时，若还有其他客户端发起连接，则会进入队列中，当前连接处理结束后会直接从队列中取出下一个连接进行处理。超过该数字的连接将会被抛弃。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Prepare to accept connections on socket FD.</span><br><span class="hljs-comment">   N connection requests will be queued before further requests are refused.</span><br><span class="hljs-comment">   Returns 0 on success, -1 for errors.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">listen</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __fd, <span class="hljs-keyword">int</span> __n)</span> __THROW</span>;<br><br><span class="hljs-built_in">listen</span>(welcome_socket1, <span class="hljs-number">10</span>);<br></code></pre></td></tr></table></figure>
+
+<h3 id="（2）接收连接"><a href="#（2）接收连接" class="headerlink" title="（2）接收连接"></a>（2）接收连接</h3><p>在已经创建好的服务端socket上阻塞等待客户端连接。</p>
+<ul>
+<li><p>addr指针表示连接对方的地址，可以用INADDR_ANY表示任意地址，或者填如nullptr，也表示任意地址。若指定了某个地址，则只有该地址可以访问。</p>
+</li>
+<li><p>addr_len指针表示addr的sizeof。</p>
+</li>
+</ul>
+<p>当接收到一个客户端连接时，该方法就返回一个整数，代表本次会话的连接socket。</p>
+<p>注意这个连接socket和服务端socket不一样。服务端socket只用于接收新的连接，而连接socket</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Await a connection on socket FD.</span><br><span class="hljs-comment">   When a connection arrives, open a new socket to communicate with it,</span><br><span class="hljs-comment">   set *ADDR (which is *ADDR_LEN bytes long) to the address of the connecting</span><br><span class="hljs-comment">   peer and *ADDR_LEN to the address&#x27;s actual length, and return the</span><br><span class="hljs-comment">   new socket&#x27;s descriptor, or -1 for errors.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   This function is a cancellation point and therefore not marked with</span><br><span class="hljs-comment">   __THROW.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">accept</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __fd, __SOCKADDR_ARG __addr,</span></span><br><span class="hljs-params"><span class="hljs-function">		   <span class="hljs-keyword">socklen_t</span> *__restrict __addr_len)</span></span>;<br><br><span class="hljs-keyword">int</span> connection_socket = <span class="hljs-built_in">accept</span>(welcome_socket1, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br></code></pre></td></tr></table></figure>
+
+<h3 id="（3）读取返回"><a href="#（3）读取返回" class="headerlink" title="（3）读取返回"></a>（3）读取返回</h3><p>从使用read方法可以从刚才得到的连接socket中读取字节流，可以用一个缓冲区接收该字节流。</p>
+<p>经处理后，再将响应消息通过write方法，写入这个连接socket</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1024</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br><span class="hljs-built_in">read</span>(connection_socket, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, buffer);<br><span class="hljs-keyword">char</span>* response = <span class="hljs-string">&quot;hello world!&quot;</span>;<br><span class="hljs-built_in">send</span>(connection_socket, response, <span class="hljs-built_in">strlen</span>(response), <span class="hljs-number">0</span>);<br><span class="hljs-built_in">close</span>(welcome_socket);<br><span class="hljs-built_in">close</span>(connection_socket);<br></code></pre></td></tr></table></figure>
+
+<h3 id="（4）服务端完整代码"><a href="#（4）服务端完整代码" class="headerlink" title="（4）服务端完整代码"></a>（4）服务端完整代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">my_server</span><span class="hljs-params">(<span class="hljs-keyword">int</span> port)</span> </span>&#123;<br>    <span class="hljs-comment">// TCP连接</span><br>    <span class="hljs-keyword">int</span> welcome_socket = <span class="hljs-built_in">socket</span>(AF_INET, SOCK_STREAM, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (welcome_socket &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;socket创建失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-keyword">int</span> enable = <span class="hljs-number">1</span>;<br>    <span class="hljs-built_in">setsockopt</span>(welcome_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEADDR, &amp;enable, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-keyword">int</span>));<br>    <span class="hljs-comment">// 创建地址</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">addr</span>&#123;</span>&#125;;<br>    addr.sin_family = AF_INET;<br>    addr.sin_port = <span class="hljs-built_in">htons</span>(port);<br>    addr.sin_addr.s_addr = <span class="hljs-built_in">htonl</span>(INADDR_ANY);<br>    <span class="hljs-keyword">int</span> len = <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(addr);<br><br>    <span class="hljs-comment">// 绑定并并监听</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">bind</span>(welcome_socket, (sockaddr*) &amp;addr, len) &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;绑定失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-comment">// listen的第二个参数n，表示最大队列数</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">listen</span>(welcome_socket, <span class="hljs-number">10</span>) &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;监听失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">int</span> conn_socket = <span class="hljs-built_in">accept</span>(welcome_socket, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>        <span class="hljs-keyword">if</span> (conn_socket &lt; <span class="hljs-number">0</span>) &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;客户端连接失败&quot;</span>;<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>        &#125;<br>        <span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1024</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>        <span class="hljs-built_in">read</span>(conn_socket, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, buffer);<br>        <span class="hljs-keyword">char</span>* response = <span class="hljs-string">&quot;OK&quot;</span>;<br>        <span class="hljs-built_in">send</span>(conn_socket, response, <span class="hljs-built_in">strlen</span>(response), <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">close</span>(conn_socket);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="5、client-socket创建"><a href="#5、client-socket创建" class="headerlink" title="5、client socket创建"></a>5、client socket创建</h2><p>创建client socket和server端的socket差异不大，只是没有welcome socket和client的区分，以及连接服务端的方法不是accept，而是connect。代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">my_client</span><span class="hljs-params">(<span class="hljs-keyword">char</span>* host, <span class="hljs-keyword">int</span> port)</span> </span>&#123;<br>    <span class="hljs-keyword">int</span> client_socket = <span class="hljs-built_in">socket</span>(AF_INET, SOCK_STREAM, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (client_socket &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;客户端socket创建失败！&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">serverAddr</span>&#123;</span>&#125;;<br>    serverAddr.sin_family = AF_INET;<br>    serverAddr.sin_port = <span class="hljs-built_in">htons</span>(port);<br>    <span class="hljs-keyword">int</span> res = <span class="hljs-built_in">inet_pton</span>(AF_INET, host, &amp;serverAddr.sin_addr);<br>    <span class="hljs-keyword">if</span> (res &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;解析host失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    res = <span class="hljs-built_in">connect</span>(client_socket, (struct sockaddr *) &amp;serverAddr, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(serverAddr));<br>    <span class="hljs-keyword">if</span> (res &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;连接服务器失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1024</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-keyword">char</span>* message = <span class="hljs-string">&quot;hello server, I&#x27;m client!&quot;</span>;<br>    <span class="hljs-keyword">int</span> n = <span class="hljs-built_in">send</span>(client_socket, message, <span class="hljs-built_in">strlen</span>(message), <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (n &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;消息发送失败&quot;</span> &lt;&lt; endl;<br>    &#125;<span class="hljs-keyword">else</span> &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;消息已发送&quot;</span> &lt;&lt; endl;<br>    &#125;<br>    <span class="hljs-built_in">read</span>(client_socket, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s&quot;</span>, buffer);<br>    <span class="hljs-built_in">close</span>(client_socket);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="6、fork-server"><a href="#6、fork-server" class="headerlink" title="6、fork server"></a>6、fork server</h2><p>以上说的tcp server只能处理一个连接，无法处理多个请求。想要处理多个请求，第一时间可以想到用多进程或多进线程，可以通过fork一个server进程来实现处理多请求。在以往的unix操作系统中，使用多线程的难度高于使用多进程，因此大多数c++程序员使用多进程而不是多线程来处理多任务。</p>
+<p>代码如下。</p>
+<ul>
+<li><p><code>signal(SIGCHLD, SIG_IGN);</code>，忽略子进程的信号，子进程会交给操作系统内核来回收</p>
+</li>
+<li><p><code>fork()</code>，可以创建一个子进程，子进程使用的资源全部是从父进程复制的来。在子进程中该方法返回0，父进程中返回子进程的pid。</p>
+</li>
+</ul>
+<p>这里不深入讨论fork和signal的细节。</p>
+<p>题外话：postgres、linux上的oracle数据库的连接就是多进程的，而MySQL是多线程。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">fork_server</span><span class="hljs-params">(<span class="hljs-keyword">int</span> port)</span> </span>&#123;<br>    <span class="hljs-built_in">signal</span>(SIGCHLD, SIG_IGN); <span class="hljs-comment">// 忽略子进程的信号，子进程会交给操作系统内核来回收</span><br>    <span class="hljs-comment">// TCP连接</span><br>    <span class="hljs-keyword">int</span> welcome_socket = <span class="hljs-built_in">socket</span>(AF_INET, SOCK_STREAM, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (welcome_socket &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;socket创建失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-keyword">int</span> enable = <span class="hljs-number">1</span>;<br>    <span class="hljs-built_in">setsockopt</span>(welcome_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEADDR, &amp;enable, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(<span class="hljs-keyword">int</span>));<br>    <span class="hljs-comment">// 创建地址</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">addr</span>&#123;</span>&#125;;<br>    addr.sin_family = AF_INET;<br>    addr.sin_port = <span class="hljs-built_in">htons</span>(port);<br>    addr.sin_addr.s_addr = <span class="hljs-built_in">htonl</span>(INADDR_ANY);<br>    <span class="hljs-keyword">int</span> len = <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(addr);<br><br>    <span class="hljs-comment">// 绑定并并监听</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">bind</span>(welcome_socket, (sockaddr*) &amp;addr, len) &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;绑定失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-comment">// listen的第二个参数n，表示最大队列数</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">listen</span>(welcome_socket, <span class="hljs-number">10</span>) &lt; <span class="hljs-number">0</span>) &#123;<br>        cout &lt;&lt; <span class="hljs-string">&quot;监听失败&quot;</span>;<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    <span class="hljs-keyword">int</span> count = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">int</span> conn_socket = <span class="hljs-built_in">accept</span>(welcome_socket, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>        <span class="hljs-keyword">if</span> (conn_socket &lt; <span class="hljs-number">0</span>) &#123;<br>            cout &lt;&lt; <span class="hljs-string">&quot;客户端连接失败&quot;</span>;<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>        &#125;<br>        <span class="hljs-comment">// 如果该进程是父进程，收到一个connection，只需要fork一个子进程，将连接交给子进程来处理，自己可以回去继续接收连接</span><br>        <span class="hljs-keyword">if</span> (fork() &gt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-comment">// 以下是子进程操作</span><br>        <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>            <span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1024</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>            <span class="hljs-keyword">int</span> size = <span class="hljs-built_in">read</span>(conn_socket, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br>            <span class="hljs-keyword">if</span> (size &lt;= <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s %d\n&quot;</span>, buffer, count++);<br>            <span class="hljs-keyword">char</span>* response = buffer;<br>            <span class="hljs-built_in">send</span>(conn_socket, response, <span class="hljs-built_in">strlen</span>(response), <span class="hljs-number">0</span>);<br>        &#125;<br>        <span class="hljs-built_in">close</span>(conn_socket);<br>        <span class="hljs-comment">// 子进程需要关闭welcome_socket，并结束进程</span><br>        <span class="hljs-built_in">close</span>(welcome_socket);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="7、心跳"><a href="#7、心跳" class="headerlink" title="7、心跳"></a>7、心跳</h2><p>服务端对于一个已经建立好的连接，经常会设置接收消息的超时时间，即若超过这个时间没有消息到来时，就会断开该连接。</p>
+<p>服务端设置超时时间只需要对connectin socket设置setsockopt即可，如下。</p>
+<p>当服务端加上以下代码时，若客户端连接上后，超过10秒没有发送消息，服务端则会自动断开该连接。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// 设置接收报文超时时间</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">timeval</span> <span class="hljs-title">tv</span>&#123;</span>&#125;;<br>tv.tv_usec = <span class="hljs-number">0</span>;<br>tv.tv_sec = <span class="hljs-number">10</span>;<br><span class="hljs-built_in">setsockopt</span>(conn_socket, SOL_SOCKET, SO_RCVTIMEO, &amp;tv, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(tv));<br></code></pre></td></tr></table></figure>
+
+<p>而客户端为了保证一直保持连接状态，就需要定时向服务端发送心跳包。可以简单通过fork一个客户端进程来时间定时发送心跳包。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">if</span> (fork() == <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-comment">// 若为子进程，则无限循环每过5秒发送发送心跳包。</span><br>    <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-built_in">send</span>(client_socket, <span class="hljs-string">&quot;0&quot;</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1024</span>] = &#123;&#125;;<br>        <span class="hljs-built_in">read</span>(client_socket, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s&quot;</span>, buffer);<br>        <span class="hljs-built_in">sleep</span>(<span class="hljs-number">5</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>同时服务端也需要对收到的消息进行额外处理。若为心跳包，则不进行业务处理，而是直接返回一个success。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// 简单设定心跳报文为一个字符0，则当服务端收到心跳报文，不进行业务处理，只返回可以只返回一个成功消息即可。</span><br><span class="hljs-keyword">if</span> (size == <span class="hljs-number">1</span> &amp;&amp; <span class="hljs-built_in">strcmp</span>(buffer, <span class="hljs-string">&quot;0&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>    cout &lt;&lt; <span class="hljs-string">&quot;heart beat!&quot;</span> &lt;&lt; endl;<br>    <span class="hljs-keyword">char</span>* response = <span class="hljs-string">&quot;success&quot;</span>;<br>    <span class="hljs-built_in">send</span>(conn_socket, response, <span class="hljs-built_in">strlen</span>(response), <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">continue</span>;<br>&#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (size &lt;= <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-built_in">close</span>(conn_socket);<br>    <span class="hljs-keyword">break</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="8、select"><a href="#8、select" class="headerlink" title="8、select"></a>8、select</h2><h3 id="（1）介绍"><a href="#（1）介绍" class="headerlink" title="（1）介绍"></a>（1）介绍</h3><p>前面说的server socket每次只能处理一个客户端连接，当有多个客户端尝试请求服务器时，会以队列的形式一个一个处理。因此要处理多个客户端的连接，可以使用<strong>select</strong>命令。</p>
+<p>select命令允许监控多个socket，当这些socket都没有事件发生时，select被阻塞，当任意一个socket变为活动状态时就会返回对应socket数字，当select的返回值为-1时，则表示产生异常。</p>
+<p>select命令使用的结构体是<code>fd_set</code>，即socket要放在这个结构体中，才能被监控到。该默认大小是128个字节，结构体底层使用bitmap，128个字节对应1024位，每个位代表一个socket，因此最多可以记录1024个socket情况。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* fd_set for select and pselect.  */</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span></span><br><span class="hljs-class">  &#123;</span><br>    <span class="hljs-comment">/* XPG4.2 requires this member name.  Otherwise avoid the name</span><br><span class="hljs-comment">       from the global namespace.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">ifdef</span> __USE_XOPEN</span><br>    __fd_mask fds_bits[__FD_SETSIZE / __NFDBITS];<br><span class="hljs-meta"># <span class="hljs-meta-keyword">define</span> __FDS_BITS(set) ((set)-&gt;fds_bits)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">else</span></span><br>    __fd_mask __fds_bits[__FD_SETSIZE / __NFDBITS];<br><span class="hljs-meta"># <span class="hljs-meta-keyword">define</span> __FDS_BITS(set) ((set)-&gt;__fds_bits)</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">endif</span></span><br>  &#125; fd_set;<br></code></pre></td></tr></table></figure>
+
+<p>对<code>fd_set</code>数据结构的操作方法如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c++">fd_set read_fd;<br><br><span class="hljs-comment">// 清空fd_set</span><br><span class="hljs-built_in">FD_ZERO</span>(&amp;read_fd);  <br><br><span class="hljs-comment">// 往fd_set中新增一个文件描述符，即将bitmap对应位置的值设置为1</span><br><span class="hljs-built_in">FD_SET</span>(master_sock, &amp;read_fd);   <br><br><span class="hljs-comment">// 从fd_set中移除一个文件描述符，即将bitmap对应位置的值设置为0</span><br><span class="hljs-built_in">FD_CLR</span>(master_sock, &amp;read_fd); <br><br><span class="hljs-comment">// 如果一个文件描述符中发生了一些事件，则返回1，否则返回0。该事件可以是新连接、可读事件、可写事件等等。</span><br><span class="hljs-built_in">FD_ISSET</span>(master_sock, &amp;readfds); <br></code></pre></td></tr></table></figure>
+
+<p>select函数如下：</p>
+<ul>
+<li>返回值 &gt; 1，即活跃的socket</li>
+<li>返回值 = 0，超时</li>
+<li>返回值 = -1，出现异常</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Check the first NFDS descriptors each in READFDS (if not NULL) for read</span><br><span class="hljs-comment">   readiness, in WRITEFDS (if not NULL) for write readiness, and in EXCEPTFDS</span><br><span class="hljs-comment">   (if not NULL) for exceptional conditions.  If TIMEOUT is not NULL, time out</span><br><span class="hljs-comment">   after waiting the interval specified therein.  Returns the number of ready</span><br><span class="hljs-comment">   descriptors, or -1 for errors.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   This function is a cancellation point and therefore not marked with</span><br><span class="hljs-comment">   __THROW.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">select</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __nfds, fd_set *__restrict __readfds,</span></span><br><span class="hljs-params"><span class="hljs-function">		   fd_set *__restrict __writefds,</span></span><br><span class="hljs-params"><span class="hljs-function">		   fd_set *__restrict __exceptfds,</span></span><br><span class="hljs-params"><span class="hljs-function">		   struct timeval *__restrict __timeout)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="（2）流程"><a href="#（2）流程" class="headerlink" title="（2）流程"></a>（2）流程</h3><p>使用select常用轮询的方式：</p>
+<p>1、先创建一个welcome_socket准备接收连接，创建一个数组<code>int client_socket[30]</code>用于存放收到的socket。</p>
+<p>2、清空fd_set，将welcome_socket放入fd_set中监控，将client_socket中已有的连接放入fd_set中进行监控</p>
+<p>3、先判断welcome是否有活动。若有活动，则创建新连接，并加入到client_socket数组中。</p>
+<p>4、再循环client_socket依次判断这里面的所有socket是否有活动。若有活动则进行IO读写。若发现已经断开连接，则从client_socket中移除。</p>
+<p>5、重复步骤2。</p>
+<h3 id="（3）完整实现"><a href="#（3）完整实现" class="headerlink" title="（3）完整实现"></a>（3）完整实现</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">select_server</span><span class="hljs-params">(<span class="hljs-keyword">int</span> port)</span> </span>&#123;<br>    <span class="hljs-keyword">int</span> opt = <span class="hljs-literal">true</span>;<br>    <span class="hljs-keyword">int</span> welcome_socket , addrlen , new_socket , client_socket[<span class="hljs-number">30</span>] ,<br>            max_clients = <span class="hljs-number">30</span> , activity, i , valread , sd;<br>    <span class="hljs-keyword">int</span> max_sd, count = <span class="hljs-number">0</span>;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">address</span> &#123;</span> &#125;;<br><br>    <span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1025</span>];  <span class="hljs-comment">//data buffer of 1K</span><br><br>    <span class="hljs-comment">//set of socket descriptors</span><br>    fd_set readfds;<br><br>    <span class="hljs-comment">//a message</span><br>    <span class="hljs-keyword">char</span> *message = <span class="hljs-string">&quot;ECHO Daemon v1.0 \r\n&quot;</span>;<br><br>    <span class="hljs-comment">//initialise all client_socket[] to 0 so not checked</span><br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; max_clients; i++)<br>    &#123;<br>        client_socket[i] = <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-comment">//create a master socket</span><br>    <span class="hljs-keyword">if</span>( (welcome_socket = <span class="hljs-built_in">socket</span>(AF_INET , SOCK_STREAM , <span class="hljs-number">0</span>)) == <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;socket failed&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br><br>    <span class="hljs-comment">//set master socket to allow multiple connections ,</span><br>    <span class="hljs-comment">//this is just a good habit, it will work without this</span><br>    <span class="hljs-keyword">if</span>( <span class="hljs-built_in">setsockopt</span>(welcome_socket, SOL_SOCKET, SO_REUSEADDR, (<span class="hljs-keyword">char</span> *)&amp;opt,<br>                   <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(opt)) &lt; <span class="hljs-number">0</span> )<br>    &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;setsockopt&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br><br>    <span class="hljs-comment">//type of socket created</span><br>    address.sin_family = AF_INET;<br>    address.sin_addr.s_addr = INADDR_ANY;<br>    address.sin_port = <span class="hljs-built_in">htons</span>( port );<br><br>    <span class="hljs-comment">//bind the socket to localhost port 8888</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">bind</span>(welcome_socket, (struct sockaddr *)&amp;address, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(address))&lt;<span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;bind failed&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Listener on port %d \n&quot;</span>, port);<br><br>    <span class="hljs-comment">//try to specify maximum of 3 pending connections for the master socket</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">listen</span>(welcome_socket, <span class="hljs-number">3</span>) &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;listen&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br><br>    <span class="hljs-comment">//accept the incoming connection</span><br>    addrlen = <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(address);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Waiting for connections ...&quot;</span>);<br><br>    <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>)<br>    &#123;<br>        <span class="hljs-comment">//clear the socket set</span><br>        <span class="hljs-built_in">FD_ZERO</span>(&amp;readfds);<br><br>        <span class="hljs-comment">//add master socket to set</span><br>        <span class="hljs-built_in">FD_SET</span>(welcome_socket, &amp;readfds);<br>        max_sd = welcome_socket;<br><br>        <span class="hljs-comment">//add child sockets to set</span><br>        <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">0</span> ; i &lt; max_clients ; i++)<br>        &#123;<br>            <span class="hljs-comment">//socket descriptor</span><br>            sd = client_socket[i];<br><br>            <span class="hljs-comment">//if valid socket descriptor then add to read list</span><br>            <span class="hljs-keyword">if</span>(sd &gt; <span class="hljs-number">0</span>)<br>                <span class="hljs-built_in">FD_SET</span>( sd , &amp;readfds);<br><br>            <span class="hljs-comment">//highest file descriptor number, need it for the select function</span><br>            <span class="hljs-keyword">if</span>(sd &gt; max_sd)<br>                max_sd = sd;<br>        &#125;<br><br>        <span class="hljs-comment">//wait for an activity on one of the sockets , timeout is NULL ,</span><br>        <span class="hljs-comment">//so wait indefinitely</span><br>        activity = <span class="hljs-built_in">select</span>( max_sd + <span class="hljs-number">1</span> , &amp;readfds , <span class="hljs-literal">nullptr</span> , <span class="hljs-literal">nullptr</span> , <span class="hljs-literal">nullptr</span>);<br><br>        <span class="hljs-keyword">if</span> ((activity &lt; <span class="hljs-number">0</span>) &amp;&amp; (errno!=EINTR))<br>        &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;select error&quot;</span>);<br>        &#125;<br><br>        <span class="hljs-comment">//If something happened on the master socket ,</span><br>        <span class="hljs-comment">//then its an incoming connection</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">FD_ISSET</span>(welcome_socket, &amp;readfds))<br>        &#123;<br>            <span class="hljs-keyword">if</span> ((new_socket = <span class="hljs-built_in">accept</span>(welcome_socket,<br>                                     (struct sockaddr *)&amp;address, (<span class="hljs-keyword">socklen_t</span>*)&amp;addrlen))&lt;<span class="hljs-number">0</span>)<br>            &#123;<br>                <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;accept&quot;</span>);<br>                <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>            &#125;<br><br>            <span class="hljs-comment">//inform user of socket number - used in send and receive commands</span><br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;New connection , socket fd is %d , ip is : %s , port : %d\n&quot;</span>,<br>                   new_socket , <span class="hljs-built_in">inet_ntoa</span>(address.sin_addr) , <span class="hljs-built_in">ntohs</span>(address.sin_port));<br><br>            <span class="hljs-comment">//send new connection greeting message</span><br>            <span class="hljs-keyword">if</span>( <span class="hljs-built_in">send</span>(new_socket, message, <span class="hljs-built_in">strlen</span>(message), <span class="hljs-number">0</span>) != <span class="hljs-built_in">strlen</span>(message) )<br>            &#123;<br>                <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;send&quot;</span>);<br>            &#125;<br><br>            <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Welcome message sent successfully&quot;</span>);<br><br>            <span class="hljs-comment">//add new socket to array of sockets</span><br>            <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; max_clients; i++)<br>            &#123;<br>                <span class="hljs-comment">//if position is empty</span><br>                <span class="hljs-keyword">if</span>( client_socket[i] == <span class="hljs-number">0</span> )<br>                &#123;<br>                    client_socket[i] = new_socket;<br>                    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Adding to list of sockets as %d\n&quot;</span> , i);<br><br>                    <span class="hljs-keyword">break</span>;<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-comment">//else its some IO operation on some other socket</span><br>        <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; max_clients; i++)<br>        &#123;<br>            sd = client_socket[i];<br><br>            <span class="hljs-keyword">if</span> (<span class="hljs-built_in">FD_ISSET</span>( sd , &amp;readfds))<br>            &#123;<br>                <span class="hljs-comment">//Check if it was for closing , and also read the</span><br>                <span class="hljs-comment">//incoming message</span><br>                <span class="hljs-keyword">if</span> ((valread = <span class="hljs-built_in">read</span>( sd , buffer, <span class="hljs-number">1024</span>)) == <span class="hljs-number">0</span>)<br>                &#123;<br>                    <span class="hljs-comment">//Somebody disconnected , get his details and print</span><br>                    <span class="hljs-built_in">getpeername</span>(sd , (struct sockaddr*)&amp;address , \<br>                        (<span class="hljs-keyword">socklen_t</span>*)&amp;addrlen);<br>                    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Host disconnected , ip %s , port %d \n&quot;</span> ,<br>                           <span class="hljs-built_in">inet_ntoa</span>(address.sin_addr) , <span class="hljs-built_in">ntohs</span>(address.sin_port));<br><br>                    <span class="hljs-comment">//Close the socket and mark as 0 in list for reuse</span><br>                    <span class="hljs-built_in">close</span>( sd );<br>                    client_socket[i] = <span class="hljs-number">0</span>;<br>                &#125;<br><br>                <span class="hljs-comment">//Echo back the message that came in</span><br>                <span class="hljs-keyword">else</span><br>                &#123;<br>                    <span class="hljs-comment">//set the string terminating NULL byte on the end</span><br>                    <span class="hljs-comment">//of the data read</span><br>                    buffer[valread] = <span class="hljs-string">&#x27;r&#x27;</span>;<br>                    buffer[valread + <span class="hljs-number">1</span>] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>                    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s %d\n&quot;</span>, buffer, count++);<br>                    <span class="hljs-built_in">send</span>(sd , buffer , <span class="hljs-built_in">strlen</span>(buffer) , <span class="hljs-number">0</span> );<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="（4）优缺点"><a href="#（4）优缺点" class="headerlink" title="（4）优缺点"></a>（4）优缺点</h3><p>优点：</p>
+<ul>
+<li><p>IO复用</p>
+</li>
+<li><p>适用于并发量小的场景，性能强</p>
+</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>支持的文件描述符只有1024。由于采用轮询的方式，因此调大该数值的意义不大。</li>
+<li>只要连接没有关闭，即使没有活动，也会被遍历到，每次都要遍历所有socket，连接数越多性能越差。</li>
+<li>每次循环之前需要拷贝socket</li>
+</ul>
+<h3 id="（5）pselect"><a href="#（5）pselect" class="headerlink" title="（5）pselect"></a>（5）pselect</h3><p>pselect和select基本一样，在select的基础上有两处变化：</p>
+<ul>
+<li>timeout结构体从timeval（秒+微秒）改成了timespec（秒+纳秒）</li>
+<li>新增了一个__sigmask信号掩码参数</li>
+</ul>
+<p>嗯，不太懂。</p>
+<h3 id="（6）注意点"><a href="#（6）注意点" class="headerlink" title="（6）注意点"></a>（6）注意点</h3><ul>
+<li>select对于没有结束的事件，在下一次轮询中还会继续活跃。比如第一次read指定长度的buffer，但是客户端发送的数据包很大，一个buffer没有读完，因此在下一次循环中该socket依然是活跃的，可以继续从socket中读取数据。</li>
+<li>select本质上是针对文件描述符的，因此也可以多个文件的读写进行IO复用，但很少这样用。</li>
+</ul>
+<h2 id="9、poll"><a href="#9、poll" class="headerlink" title="9、poll"></a>9、poll</h2><p>poll和select在本质上没有区别，也是管理多个socket然后进行轮询，根据socket的状态进行处理。</p>
+<p>poll使用的数据结构是<code>pollfd</code>，一个封装了socket的机构体。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Data structure describing a polling request.  */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span></span><br><span class="hljs-class">  &#123;</span><br>    <span class="hljs-comment">// socket</span><br>    <span class="hljs-keyword">int</span> fd;			<span class="hljs-comment">/* File descriptor to poll.  */</span><br>    <span class="hljs-comment">// 用户注册的需要监听的事件</span><br>    <span class="hljs-keyword">short</span> <span class="hljs-keyword">int</span> events;		<span class="hljs-comment">/* Types of events poller cares about.  */</span><br>    <span class="hljs-comment">// 实际在socket上发生的事件</span><br>    <span class="hljs-keyword">short</span> <span class="hljs-keyword">int</span> revents;		<span class="hljs-comment">/* Types of events that actually occurred.  */</span><br>  &#125;;<br></code></pre></td></tr></table></figure>
+
+<p>事件共有以下几种：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">// 常用事件</span><br><span class="hljs-comment">/* Event types that can be polled for.  These bits may be set in `events&#x27;</span><br><span class="hljs-comment">   to indicate the interesting event types; they will appear in `revents&#x27;</span><br><span class="hljs-comment">   to indicate the status of the file descriptor.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> POLLIN		0x001		<span class="hljs-comment">/* There is data to read.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> POLLPRI		0x002		<span class="hljs-comment">/* There is urgent data to read.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> POLLOUT		0x004		<span class="hljs-comment">/* Writing now will not block.  */</span></span><br><br><span class="hljs-comment">// revents事件如下，revents事件不能用于events，用于表示socket状态</span><br><span class="hljs-comment">/* Event types always implicitly polled for.  These bits need not be set in</span><br><span class="hljs-comment">   `events&#x27;, but they will appear in `revents&#x27; to indicate the status of</span><br><span class="hljs-comment">   the file descriptor.  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> POLLERR		0x008		<span class="hljs-comment">/* Error condition.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> POLLHUP		0x010		<span class="hljs-comment">/* Hung up.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> POLLNVAL	0x020		<span class="hljs-comment">/* Invalid polling request.  */</span></span><br></code></pre></td></tr></table></figure>
+
+<p>poll方法从一个pollfd数组中，获取出和用户注册的事件一致的一个socket。poll方法如下：</p>
+<ul>
+<li>返回值 = 1，即活跃的socket</li>
+<li>返回值 = 0，超时</li>
+<li>返回值 = -1，出现异常</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/* Poll the file descriptors described by the NFDS structures starting at</span><br><span class="hljs-comment">   FDS.  If TIMEOUT is nonzero and not -1, allow TIMEOUT milliseconds for</span><br><span class="hljs-comment">   an event to occur; if TIMEOUT is -1, block until an event occurs.</span><br><span class="hljs-comment">   Returns the number of file descriptors with events, zero if timed out,</span><br><span class="hljs-comment">   or -1 for errors.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   This function is a cancellation point and therefore not marked with</span><br><span class="hljs-comment">   __THROW.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">poll</span> <span class="hljs-params">(struct pollfd *__fds, <span class="hljs-keyword">nfds_t</span> __nfds, <span class="hljs-keyword">int</span> __timeout)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<p>poll代码和select也差不多，如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">poll_server</span><span class="hljs-params">(<span class="hljs-keyword">int</span> port)</span> </span>&#123;<br>    <span class="hljs-keyword">int</span> MAX_CONNECTION = <span class="hljs-number">1024</span>;<br>    <span class="hljs-keyword">int</span> max_fd;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">addr</span>&#123;</span>&#125;;<br>    <span class="hljs-keyword">int</span> addr_len = <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(addr);<br>    <span class="hljs-keyword">char</span> buffer[<span class="hljs-number">1024</span>];<br>    <span class="hljs-keyword">char</span> response[<span class="hljs-number">1024</span>] = <span class="hljs-string">&quot;hello&quot;</span>;<br>    <span class="hljs-keyword">int</span> count = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-keyword">int</span> welcome_socket = <span class="hljs-built_in">create_welcome_socket</span>(port);<br>    cout &lt;&lt; <span class="hljs-string">&quot;welcome_socket:&quot;</span> &lt;&lt; welcome_socket &lt;&lt; endl;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pollfd</span> <span class="hljs-title">fds</span>[<span class="hljs-title">MAX_CONNECTION</span>];</span><br>    <span class="hljs-comment">// 初始化，将fd设置为-1</span><br>    <span class="hljs-comment">// 对于poll函数，若fd为-1，则会被忽略</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; MAX_CONNECTION; i++) fds[<span class="hljs-number">0</span>].fd = <span class="hljs-number">-1</span>;<br><br>    <span class="hljs-comment">// 初始化welcome_socket</span><br>    fds[welcome_socket].fd = welcome_socket;<br>    <span class="hljs-comment">// 为welcome_socket注册可读事件</span><br>    fds[welcome_socket].events = POLLIN;<br>    max_fd = welcome_socket;<br><br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">int</span> activity = <span class="hljs-built_in">poll</span>(fds, max_fd + <span class="hljs-number">1</span>, <span class="hljs-number">-1</span>);<br>        <span class="hljs-keyword">if</span> (activity &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;poll error!\n&quot;</span>);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt;= max_fd; ++i) &#123;<br>            pollfd f = fds[i];<br>            <span class="hljs-keyword">if</span> (f.fd == <span class="hljs-number">-1</span>) <span class="hljs-keyword">continue</span>;<br>            <span class="hljs-keyword">if</span> (f.revents != POLLIN) <span class="hljs-keyword">continue</span>;<br>            <span class="hljs-keyword">if</span> (f.fd == welcome_socket) &#123;<br>                <span class="hljs-comment">// 处理welcome_socket</span><br>                <span class="hljs-comment">// (struct sockaddr *)&amp;addr, (socklen_t *)(sizeof(addr))</span><br>                <span class="hljs-keyword">int</span> new_connection = <span class="hljs-built_in">accept</span>(welcome_socket, (struct sockaddr *)&amp;addr, (<span class="hljs-keyword">socklen_t</span>*)&amp;addr_len);<br>                <span class="hljs-keyword">if</span> (new_connection &lt; <span class="hljs-number">0</span>) &#123;<br>                    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;accept error!\n&quot;</span>);<br>                    <span class="hljs-keyword">continue</span>;<br>                &#125;<br>                cout &lt;&lt; <span class="hljs-string">&quot;new socket:&quot;</span> &lt;&lt; new_connection &lt;&lt; endl;<br>                <span class="hljs-comment">//inform user of socket number - used in send and receive commands</span><br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;New connection , socket:%d , ip:%s , port:%d\n&quot;</span>,<br>                       new_connection , <span class="hljs-built_in">inet_ntoa</span>(addr.sin_addr) , <span class="hljs-built_in">ntohs</span>(addr.sin_port));<br>                fds[new_connection].fd = new_connection;<br>                fds[new_connection].events = POLLIN;<br>                max_fd = <span class="hljs-built_in">max</span>(max_fd, new_connection);<br>                f.events = POLLIN;<br>                cout &lt;&lt; <span class="hljs-string">&quot;max_fd:&quot;</span> &lt;&lt; max_fd &lt;&lt; endl;<br>            &#125;<span class="hljs-keyword">else</span> &#123;<br>                cout &lt;&lt; <span class="hljs-string">&quot;fd:&quot;</span> &lt;&lt; f.fd &lt;&lt; endl;<br>                <span class="hljs-keyword">if</span> (f.revents == POLLIN) &#123;<br>                    <span class="hljs-comment">// 处理读事件</span><br>                    <span class="hljs-keyword">int</span> size = <span class="hljs-built_in">read</span>(f.fd, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br>                    <span class="hljs-keyword">if</span> (size &lt;= <span class="hljs-number">0</span>) &#123;<br>                        <span class="hljs-built_in">getpeername</span>(f.fd, (struct sockaddr *)&amp;addr, (<span class="hljs-keyword">socklen_t</span>*)&amp;addr_len);<br>                        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;client disconnected, ip:%s, port:%d\n&quot;</span>,<br>                               <span class="hljs-built_in">inet_ntoa</span>(addr.sin_addr) , <span class="hljs-built_in">ntohs</span>(addr.sin_port));<br>                        <span class="hljs-keyword">if</span> (max_fd == f.fd) &#123;<br>                            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = max_fd - <span class="hljs-number">1</span>; j &gt; <span class="hljs-number">0</span>; --j) &#123;<br>                                <span class="hljs-keyword">if</span> (fds[j].fd != <span class="hljs-number">-1</span>) &#123;<br>                                    max_fd = fds[j].fd;<br>                                    <span class="hljs-keyword">break</span>;<br>                                &#125;<br>                            &#125;<br>                        &#125;<br>                        cout &lt;&lt; <span class="hljs-string">&quot;max_fd:&quot;</span> &lt;&lt; max_fd &lt;&lt; endl;<br>                        <span class="hljs-built_in">close</span>(f.fd);<br>                        f.fd = <span class="hljs-number">-1</span>;<br>                    &#125;<span class="hljs-keyword">else</span> &#123;<br>                        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;接收消息%d:%s\n&quot;</span>, count++, buffer);<br>                        buffer[size] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>                        size = <span class="hljs-built_in">send</span>(f.fd, buffer, <span class="hljs-built_in">strlen</span>(buffer), <span class="hljs-number">0</span>);<br>                        <span class="hljs-keyword">if</span> (size &lt; <span class="hljs-number">0</span>) &#123;<br>                            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;write error!\n&quot;</span>);<br>                        &#125;<br>                        <span class="hljs-comment">// 将该socket重新注册监听可读事件</span><br>                        f.events = POLLIN;<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>poll的缺点：</p>
+<ul>
+<li>没有避免拷贝socket这个环节</li>
+<li>依然采用轮询的方式，连接数越多性能越差</li>
+</ul>
+<h2 id="10、epoll"><a href="#10、epoll" class="headerlink" title="10、epoll"></a>10、epoll</h2><h3 id="（1）简介"><a href="#（1）简介" class="headerlink" title="（1）简介"></a>（1）简介</h3><p>为解决以上select和poll轮询的缺点，epoll出现了。</p>
+<p>epoll的本质不是主动轮询找到活跃的fd，而是使用系统内核在每个fd上的回调函数实现的。即当有fd活跃时，会触发系统内核的一个callback函数，加入到Ready队列中，并通知应用程序来处理这个事件。因此应用程序只要无限循环处理这个Ready队列中的fd即可。</p>
+<p>epoll的两种工作模式：</p>
+<ul>
+<li>level triggered：水平触发，即当一个fd就绪时，内核会通知你，并且直到该fd事件完全结束。假如你读取了一部分数据，还剩一部分数据没读取，内核会继续通知这个事件。select和poll都是这种工作模式。支持block和no-block socket。</li>
+<li>edge triggered：边缘触发，即当一个fd就绪时，内核会通知你，直到你做了某些操作导致这个fd不再时就绪状态，比如读取了一半数据的fd，并不是就绪状态，后面内核就不再通知这个事件了。除非下一次IO又开始了。只支持non-block socket。这种方式会导致代码变得复杂，并且容易丢失数据。</li>
+</ul>
+<p>man文档是这样举例的：</p>
+<p>当一个IO事件如下时，若该fd注册到epoll中使用的是edge triggered时，下面第5步不会是就绪状态，而是阻塞状态。尽管在fd中还有可用数据。同时客户端会一直等待服务器针对这次IO的响应消息。但如果注册到epoll中使用的是level triggered时，第5步则会是就绪状态，即内核还会继续通知应用程序该fd事件。</p>
+<ul>
+<li>1.将一个read fd注册到epoll实例上</li>
+<li>2.read fd对应的客户端发送一个2kb的数据包给read fd</li>
+<li>3.epoll_wait就绪（解除阻塞）并且返回对应的fd给应用程序</li>
+<li>4.应用程序只读取了1kb的数据</li>
+<li>5.由于事件未结束，因此下一次调用epoll_wait函数时也是就绪状态。</li>
+</ul>
+<h3 id="（2）epoll使用的结构体和系统调用"><a href="#（2）epoll使用的结构体和系统调用" class="headerlink" title="（2）epoll使用的结构体和系统调用"></a>（2）epoll使用的结构体和系统调用</h3><p>结构体：</p>
+<ul>
+<li>epoll_event：epoll适用的事件结构体，events属性表示具体事件类型，data又是一个结构体，fd就是该事件对应的socket</li>
+</ul>
+<p>函数：</p>
+<ul>
+<li><p>epoll_create：创建一个epoll实例，需要将其他socket与之关联在一起</p>
+</li>
+<li><p>epoll_create1：同epoll_create，去掉了size参数，加上了flags参数</p>
+</li>
+<li><p>epoll_ctl：对epoll_fd进行操作，op参数为操作类型，可以新增、删除、修改一个普通fd的绑定关系。</p>
+</li>
+<li><p>epoll_wait：等待与epoll_fd绑定的fd上的事件，当有事件发生时解除阻塞，并返回事件数量</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">epoll_event</span></span><br><span class="hljs-class">&#123;</span><br>  <span class="hljs-keyword">uint32_t</span> events;	<span class="hljs-comment">/* Epoll events */</span><br>  <span class="hljs-keyword">epoll_data_t</span> data;	<span class="hljs-comment">/* User data variable */</span><br>&#125; __EPOLL_PACKED;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">union</span> <span class="hljs-title">epoll_data</span></span><br><span class="hljs-class">&#123;</span><br>  <span class="hljs-keyword">void</span> *ptr;<br>  <span class="hljs-keyword">int</span> fd;<br>  <span class="hljs-keyword">uint32_t</span> u32;<br>  <span class="hljs-keyword">uint64_t</span> u64;<br>&#125; <span class="hljs-keyword">epoll_data_t</span>;<br><br><span class="hljs-comment">/* Creates an epoll instance.  Returns an fd for the new instance.</span><br><span class="hljs-comment">   The &quot;size&quot; parameter is a hint specifying the number of file</span><br><span class="hljs-comment">   descriptors to be associated with the new instance.  The fd</span><br><span class="hljs-comment">   returned by epoll_create() should be closed with close().  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">epoll_create</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __size)</span> __THROW</span>;<br><br><span class="hljs-comment">/* Same as epoll_create but with an FLAGS parameter.  The unused SIZE</span><br><span class="hljs-comment">   parameter has been dropped.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">epoll_create1</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __flags)</span> __THROW</span>;<br><br><span class="hljs-comment">/* Manipulate an epoll instance &quot;epfd&quot;. Returns 0 in case of success,</span><br><span class="hljs-comment">   -1 in case of error ( the &quot;errno&quot; variable will contain the</span><br><span class="hljs-comment">   specific error code ) The &quot;op&quot; parameter is one of the EPOLL_CTL_*</span><br><span class="hljs-comment">   constants defined above. The &quot;fd&quot; parameter is the target of the</span><br><span class="hljs-comment">   operation. The &quot;event&quot; parameter describes which events the caller</span><br><span class="hljs-comment">   is interested in and any associated user data.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">epoll_ctl</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __epfd, <span class="hljs-keyword">int</span> __op, <span class="hljs-keyword">int</span> __fd,</span></span><br><span class="hljs-params"><span class="hljs-function">		      struct epoll_event *__event)</span> __THROW</span>;<br><br><span class="hljs-comment">/* Valid opcodes ( &quot;op&quot; parameter ) to issue to epoll_ctl().  */</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> EPOLL_CTL_ADD 1	<span class="hljs-comment">/* Add a file descriptor to the interface.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> EPOLL_CTL_DEL 2	<span class="hljs-comment">/* Remove a file descriptor from the interface.  */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> EPOLL_CTL_MOD 3	<span class="hljs-comment">/* Change file descriptor epoll_event structure.  */</span></span><br><br><span class="hljs-comment">/* Wait for events on an epoll instance &quot;epfd&quot;. Returns the number of</span><br><span class="hljs-comment">   triggered events returned in &quot;events&quot; buffer. Or -1 in case of</span><br><span class="hljs-comment">   error with the &quot;errno&quot; variable set to the specific error code. The</span><br><span class="hljs-comment">   &quot;events&quot; parameter is a buffer that will contain triggered</span><br><span class="hljs-comment">   events. The &quot;maxevents&quot; is the maximum number of events to be</span><br><span class="hljs-comment">   returned ( usually size of &quot;events&quot; ). The &quot;timeout&quot; parameter</span><br><span class="hljs-comment">   specifies the maximum wait time in milliseconds (-1 == infinite).</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">   This function is a cancellation point and therefore not marked with</span><br><span class="hljs-comment">   __THROW.  */</span><br><span class="hljs-function"><span class="hljs-keyword">extern</span> <span class="hljs-keyword">int</span> <span class="hljs-title">epoll_wait</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> __epfd, struct epoll_event *__events,</span></span><br><span class="hljs-params"><span class="hljs-function">		       <span class="hljs-keyword">int</span> __maxevents, <span class="hljs-keyword">int</span> __timeout)</span></span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="（3）epoll代码流程"><a href="#（3）epoll代码流程" class="headerlink" title="（3）epoll代码流程"></a>（3）epoll代码流程</h3><p>1、创建welcome_socket，将welcome_socket设置为非阻塞</p>
+<p>2、使用epoll_create1方法创建一个epoll_fd</p>
+<p>3、将welcome_socket和epoll_fd绑定</p>
+<p>4、调用epoll_wait方法，获取对应的时间数量nfds</p>
+<p>5、0-nfds循环，对事件进行处理，若为welcome_socket则获取连接socket，设置为非阻塞，绑定epoll_fd；若为连接socket则执行IO</p>
+<h3 id="（4）完整代码"><a href="#（4）完整代码" class="headerlink" title="（4）完整代码"></a>（4）完整代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">make_socket_non_blocking</span> <span class="hljs-params">(<span class="hljs-keyword">int</span> sfd)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">int</span> flags, s;<br><br>    flags = <span class="hljs-built_in">fcntl</span> (sfd, F_GETFL, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (flags == <span class="hljs-number">-1</span>)<br>    &#123;<br>        <span class="hljs-built_in">perror</span> (<span class="hljs-string">&quot;fcntl&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br><br>    flags |= O_NONBLOCK;<br>    s = <span class="hljs-built_in">fcntl</span> (sfd, F_SETFL, flags);<br>    <span class="hljs-keyword">if</span> (s == <span class="hljs-number">-1</span>)<br>    &#123;<br>        <span class="hljs-built_in">perror</span> (<span class="hljs-string">&quot;fcntl&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">epoll_server</span><span class="hljs-params">(<span class="hljs-keyword">int</span> port)</span> </span>&#123;<br>    <span class="hljs-keyword">int</span> MAX_CONNECTION = <span class="hljs-number">10</span>;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">epoll_event</span> <span class="hljs-title">ev</span>&#123;</span>&#125;;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">epoll_event</span> *<span class="hljs-title">events</span>;</span><br>    <span class="hljs-keyword">int</span> conn_sock, nfds, epollfd;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">addr</span>&#123;</span>&#125;;<br>    <span class="hljs-keyword">int</span> addr_len = <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(addr);<br>    <span class="hljs-keyword">int</span> count = <span class="hljs-number">0</span>;<br><br>    events = <span class="hljs-keyword">static_cast</span>&lt;epoll_event *&gt;(<span class="hljs-built_in">calloc</span>(MAX_CONNECTION, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(ev)));<br>    <span class="hljs-keyword">int</span> welcome_socket = <span class="hljs-built_in">create_welcome_socket</span>(port);<br>    <span class="hljs-keyword">int</span> s = <span class="hljs-built_in">make_socket_non_blocking</span>(welcome_socket);<br>    <span class="hljs-keyword">if</span> (s == <span class="hljs-number">-1</span>)<br>        <span class="hljs-built_in">abort</span>();<br><br>    epollfd = <span class="hljs-built_in">epoll_create1</span>(<span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (epollfd == <span class="hljs-number">-1</span>) &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;epoll_create1&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br><br>    ev.events = EPOLLIN;<br>    ev.data.fd = welcome_socket;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">epoll_ctl</span>(epollfd, EPOLL_CTL_ADD, welcome_socket, &amp;ev) == <span class="hljs-number">-1</span>) &#123;<br>        <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;epoll_ctl: listen_sock&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>    &#125;<br><br>    <span class="hljs-keyword">for</span> (;;) &#123;<br>        nfds = <span class="hljs-built_in">epoll_wait</span>(epollfd, events, MAX_CONNECTION, <span class="hljs-number">-1</span>);<br>        <span class="hljs-keyword">if</span> (nfds == <span class="hljs-number">-1</span>) &#123;<br>            <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;epoll_wait&quot;</span>);<br>            <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>        &#125;<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; nfds; ++i) &#123;<br>            <span class="hljs-keyword">if</span> (events[i].data.fd == welcome_socket) &#123;<br>                conn_sock = <span class="hljs-built_in">accept</span>(welcome_socket, (struct sockaddr *) &amp;addr, (<span class="hljs-keyword">socklen_t</span> *)&amp;addr_len);<br>                <span class="hljs-keyword">if</span> (conn_sock == <span class="hljs-number">-1</span>) &#123;<br>                    <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;accept&quot;</span>);<br>                    <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>                &#125;<br>                <span class="hljs-built_in">make_socket_non_blocking</span>(conn_sock);<br>                ev.events = EPOLLIN | EPOLLET;<br>                ev.data.fd = conn_sock;<br>                <span class="hljs-keyword">if</span> (<span class="hljs-built_in">epoll_ctl</span>(epollfd, EPOLL_CTL_ADD, conn_sock, &amp;ev) == <span class="hljs-number">-1</span>) &#123;<br>                    <span class="hljs-built_in">perror</span>(<span class="hljs-string">&quot;epoll_ctl: conn_sock&quot;</span>);<br>                    <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>                &#125;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-keyword">int</span> done = <span class="hljs-number">0</span>;<br><br>                <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)<br>                &#123;<br>                    <span class="hljs-keyword">ssize_t</span> size;<br>                    <span class="hljs-keyword">char</span> *buffer[<span class="hljs-number">1024</span>];<br>                    <span class="hljs-built_in">getpeername</span>(events[i].data.fd, (struct sockaddr *)&amp;addr, (<span class="hljs-keyword">socklen_t</span>*)&amp;addr_len);<br>                    size = <span class="hljs-built_in">read</span> (events[i].data.fd, buffer, <span class="hljs-built_in"><span class="hljs-keyword">sizeof</span></span>(buffer));<br>                    <span class="hljs-keyword">if</span> (size == <span class="hljs-number">-1</span>)<br>                    &#123;<br>                        <span class="hljs-comment">/* If errno == EAGAIN, that means we have read all</span><br><span class="hljs-comment">                           data. So go back to the main loop. */</span><br>                        <span class="hljs-keyword">if</span> (errno != EAGAIN)<br>                        &#123;<br>                            <span class="hljs-built_in">perror</span> (<span class="hljs-string">&quot;read&quot;</span>);<br>                            done = <span class="hljs-number">1</span>;<br>                        &#125;<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (size == <span class="hljs-number">0</span>)<br>                    &#123;<br>                        <span class="hljs-comment">/* End of file. The remote has closed the</span><br><span class="hljs-comment">                           connection. */</span><br>                        done = <span class="hljs-number">1</span>;<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;收到消息[%d] [ip:%s] [port:%d] - %s\n&quot;</span>,<br>                           count++, <span class="hljs-built_in">inet_ntoa</span>(addr.sin_addr) , <span class="hljs-built_in">ntohs</span>(addr.sin_port), buffer);<br>                    <span class="hljs-comment">/* Write the buffer to standard output */</span><br>                    s = <span class="hljs-built_in">send</span>(events[i].data.fd, buffer, size, <span class="hljs-number">0</span>);<br>                    <span class="hljs-keyword">if</span> (s == <span class="hljs-number">-1</span>)<br>                    &#123;<br>                        <span class="hljs-built_in">perror</span> (<span class="hljs-string">&quot;write&quot;</span>);<br>                        <span class="hljs-built_in">abort</span> ();<br>                    &#125;<br>                &#125;<br><br>                <span class="hljs-keyword">if</span> (done)<br>                &#123;<br>                    <span class="hljs-built_in">printf</span> (<span class="hljs-string">&quot;Closed connection on descriptor %d\n&quot;</span>,<br>                            events[i].data.fd);<br><br>                    <span class="hljs-comment">/* Closing the descriptor will make epoll remove it</span><br><span class="hljs-comment">                       from the set of descriptors which are monitored. */</span><br>                    <span class="hljs-built_in">close</span> (events[i].data.fd);<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>socket入门学习</div>
+      <div>https://yury757.github.io/computer-science/Computer-Networking/socket/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>April 15, 2022</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/java/java-%E6%96%87%E4%BB%B6IO%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E5%AF%B9%E6%AF%94/" title="java-文件IO常用操作对比">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">java-文件IO常用操作对比</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/%E5%B8%B8%E7%94%A8%E7%BB%84%E4%BB%B6%E7%AB%AF%E5%8F%A3%E5%8F%B7/" title="常用组件端口号">
+                        <span class="hidden-mobile">常用组件端口号</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

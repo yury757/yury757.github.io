@@ -1,0 +1,720 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="（1）性能剖析（profiling）：用于测试服务器的时间花费在哪里。 本书对数据库性能的定义：是指完成某件任务所需要的时间度量，即响应时间，每个SQL语句的查询话费的时间。 完成一项任务所需要的时间可以分成两部分：执行时间和等待时间（如IO等待）。 （2）性能剖析有两个步骤：  测量任务所花费的时间；  对结果进行统计分析，均值、方差、分布、计算特定的指标分析等。   （3）性能剖析本身会导致服">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第三章-服务器性能剖析">
+<meta property="og:url" content="https://yury757.github.io/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC3%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%80%A7%E8%83%BD%E5%89%96%E6%9E%90/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="（1）性能剖析（profiling）：用于测试服务器的时间花费在哪里。 本书对数据库性能的定义：是指完成某件任务所需要的时间度量，即响应时间，每个SQL语句的查询话费的时间。 完成一项任务所需要的时间可以分成两部分：执行时间和等待时间（如IO等待）。 （2）性能剖析有两个步骤：  测量任务所花费的时间；  对结果进行统计分析，均值、方差、分布、计算特定的指标分析等。   （3）性能剖析本身会导致服">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-10-31T18:31:18.379Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>第三章-服务器性能剖析 - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="第三章-服务器性能剖析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-12-01 00:00" pubdate>
+          December 1, 2020 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.7k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          64 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">第三章-服务器性能剖析</h1>
+            
+            <div class="markdown-body">
+              
+              <p><strong>（1）性能剖析（profiling）：用于测试服务器的时间花费在哪里。</strong></p>
+<p>本书对数据库性能的定义：是指完成某件任务所需要的时间度量，即响应时间，每个SQL语句的查询话费的时间。</p>
+<p><strong>完成一项任务所需要的时间可以分成两部分：执行时间和等待时间（如IO等待）。</strong></p>
+<p><strong>（2）性能剖析有两个步骤：</strong></p>
+<ul>
+<li><p>测量任务所花费的时间；</p>
+</li>
+<li><p>对结果进行统计分析，均值、方差、分布、计算特定的指标分析等。</p>
+</li>
+</ul>
+<p><strong>（3）性能剖析本身会导致服务器变慢吗？</strong></p>
+<p>当然会，因为要做额外的工作付出额外的开销。但是如果性能剖析可以帮助应用程序运行得更快，那么性能剖析就使值得的。</p>
+<p><strong>（4）慢查询日志和通用日志</strong></p>
+<p><font color="Red">慢查询日志是指捕获所有查询时间超过long_query_time的查询，将其SQL语句和消耗时间记录到日志中。可以设置long_query_time = 0来捕获所有SQL。慢查询日志是开销最低、精度最高的测量查询时间的工具。</font></p>
+<p>通用日志是指查询请求到服务器时记录，不包含响应时间和执行计划等重要信息。</p>
+<p>将慢查询日志生成剖析报告的工具：<font color="Red">pt-query-digest</font>（十年前给力，2020年需根据实际情况使用更好的工具）。</p>
+<p><strong>（5）SHOW PROFILES</strong></p>
+<p><font color="Red">SHOW PROFILES</font> 命令可以对每条SQL进行性能剖析，默认是禁用的，使用set profiling = 1打开对当前线程的SQL进行剖析。</p>
+<p>SHOW PROFILE FOR QUERY N 命令可以展示记录的id为N的查询每个执行步骤的详细时间记录。</p>
+<p>也可以查询每个查询的所有详细步骤信息：SELECT * FROM INFORMATION_SCHEMA.FROFILING;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; set profiling = 1;<br>Query OK, 0 rows affected, 1 warning (0.00 sec)<br><br>mysql&gt; select 1;<br>+---+<br>| 1 |<br>+---+<br>| 1 |<br>+---+<br>1 row in set (0.00 sec)<br><br>mysql&gt; show profiles;<br>+----------+------------+----------+<br>| Query_ID | Duration   | Query    |<br>+----------+------------+----------+<br>|        1 | 0.00043725 | select 1 |<br>+----------+------------+----------+<br>1 row in set, 1 warning (0.00 sec)<br><br>mysql&gt; select 2;<br>+---+<br>| 2 |<br>+---+<br>| 2 |<br>+---+<br>1 row in set (0.00 sec)<br><br>mysql&gt; show profiles;<br>+----------+------------+----------+<br>| Query_ID | Duration   | Query    |<br>+----------+------------+----------+<br>|        1 | 0.00043725 | select 1 |<br>|        2 | 0.00042800 | select 2 |<br>+----------+------------+----------+<br>2 rows in set, 1 warning (0.00 sec)<br><br>mysql&gt; set profiling = 0;<br>Query OK, 0 rows affected, 1 warning (0.00 sec)<br><br>mysql&gt; select 3;<br>+---+<br>| 3 |<br>+---+<br>| 3 |<br>+---+<br>1 row in set (0.00 sec)<br><br>mysql&gt; show profiles;<br>+----------+------------+----------+<br>| Query_ID | Duration   | Query    |<br>+----------+------------+----------+<br>|        1 | 0.00043725 | select 1 |<br>|        2 | 0.00042800 | select 2 |<br>+----------+------------+----------+<br>2 rows in set, 1 warning (0.00 sec)<br><br>mysql&gt; show profile for query 1;<br>+----------------------+----------+<br>| Status               | Duration |<br>+----------------------+----------+<br>| starting             | 0.000116 |<br>| checking permissions | 0.000007 |<br>| Opening tables       | 0.000013 |<br>| init                 | 0.000005 |<br>| optimizing           | 0.000008 |<br>| executing            | 0.000051 |<br>| end                  | 0.000004 |<br>| query end            | 0.000005 |<br>| closing tables       | 0.000002 |<br>| freeing items        | 0.000043 |<br>| cleaning up          | 0.000186 |<br>+----------------------+----------+<br>11 rows in set, 1 warning (0.00 sec)<br><br>mysql&gt; select * from information_schema.profiling;<br>+----------+-----+----------------------+----------+----------+------------+-------------------+---------------------+--------------+---------------+---------------+-------------------+-------------------+-------------------+-------+-----------------------+----------------------+-------------+<br>| QUERY_ID | SEQ | STATE                | DURATION | CPU_USER | CPU_SYSTEM | CONTEXT_VOLUNTARY | CONTEXT_INVOLUNTARY | BLOCK_OPS_IN | BLOCK_OPS_OUT | MESSAGES_SENT | MESSAGES_RECEIVED | PAGE_FAULTS_MAJOR | PAGE_FAULTS_MINOR | SWAPS | SOURCE_FUNCTION       | SOURCE_FILE          | SOURCE_LINE |<br>+----------+-----+----------------------+----------+----------+------------+-------------------+---------------------+--------------+---------------+---------------+-------------------+-------------------+-------------------+-------+-----------------------+----------------------+-------------+<br>|        1 |   2 | starting             | 0.000116 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | NULL                  | NULL                 |        NULL |<br>|        1 |   3 | checking permissions | 0.000007 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | check_access          | sql_authorization.cc |        2203 |<br>|        1 |   4 | Opening tables       | 0.000013 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | open_tables           | sql_base.cc          |        5590 |<br>|        1 |   5 | init                 | 0.000005 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | Sql_cmd_dml::execute  | sql_select.cc        |         662 |<br>|        1 |   6 | optimizing           | 0.000008 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | JOIN::optimize        | sql_optimizer.cc     |         217 |<br>|        1 |   7 | executing            | 0.000051 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | JOIN::exec            | sql_executor.cc      |         227 |<br>|        1 |   8 | end                  | 0.000004 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | Sql_cmd_dml::execute  | sql_select.cc        |         715 |<br>|        1 |   9 | query end            | 0.000005 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | mysql_execute_command | sql_parse.cc         |        4547 |<br>|        1 |  10 | closing tables       | 0.000002 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | mysql_execute_command | sql_parse.cc         |        4593 |<br>|        1 |  11 | freeing items        | 0.000043 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | mysql_parse           | sql_parse.cc         |        5264 |<br>|        1 |  12 | cleaning up          | 0.000186 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | dispatch_command      | sql_parse.cc         |        2159 |<br>|        2 |   2 | starting             | 0.000130 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | NULL                  | NULL                 |        NULL |<br>|        2 |   3 | checking permissions | 0.000011 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | check_access          | sql_authorization.cc |        2203 |<br>|        2 |   4 | Opening tables       | 0.000023 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | open_tables           | sql_base.cc          |        5590 |<br>|        2 |   5 | init                 | 0.000009 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | Sql_cmd_dml::execute  | sql_select.cc        |         662 |<br>|        2 |   6 | optimizing           | 0.000009 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | JOIN::optimize        | sql_optimizer.cc     |         217 |<br>|        2 |   7 | executing            | 0.000012 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | JOIN::exec            | sql_executor.cc      |         227 |<br>|        2 |   8 | end                  | 0.000004 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | Sql_cmd_dml::execute  | sql_select.cc        |         715 |<br>|        2 |   9 | query end            | 0.000006 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | mysql_execute_command | sql_parse.cc         |        4547 |<br>|        2 |  10 | closing tables       | 0.000094 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | mysql_execute_command | sql_parse.cc         |        4593 |<br>|        2 |  11 | freeing items        | 0.000112 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | mysql_parse           | sql_parse.cc         |        5264 |<br>|        2 |  12 | cleaning up          | 0.000019 | 0.000000 |   0.000000 |              NULL |                NULL |         NULL |          NULL |          NULL |              NULL |              NULL |              NULL |  NULL | dispatch_command      | sql_parse.cc         |        2159 |<br>+----------+-----+----------------------+----------+----------+------------+-------------------+---------------------+--------------+---------------+---------------+-------------------+-------------------+-------------------+-------+-----------------------+----------------------+-------------+<br>22 rows in set, 1 warning (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">（6）SHOW STATUS</font></p>
+<p>SHOW STATUS 命令可以查看计数器统计到的值，如统计了查询的次数、使用某个索引的次数。虽然无法展示使用时间，但还是可以通过观察哪些操作执行的更频繁。最有用的计数器有：句柄计数器（handler counter）、临时文件和表计数器等。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs mysql">mysql&gt; SHOW STATUS WHERE VARIABLE_NAME LIKE &#x27;Handler%&#x27; OR VARIABLE_NAME LIKE &#x27;Created%&#x27;;<br>+----------------------------+-------+<br>| Variable_name              | Value |<br>+----------------------------+-------+<br>| Created_tmp_disk_tables    | 0     |<br>| Created_tmp_files          | 5     |<br>| Created_tmp_tables         | 3     |<br>| Handler_commit             | 3     |<br>| Handler_delete             | 0     |<br>| Handler_discover           | 0     |<br>| Handler_external_lock      | 90    |<br>| Handler_mrr_init           | 0     |<br>| Handler_prepare            | 0     |<br>| Handler_read_first         | 0     |<br>| Handler_read_key           | 3     |<br>| Handler_read_last          | 0     |<br>| Handler_read_next          | 0     |<br>| Handler_read_prev          | 0     |<br>| Handler_read_rnd           | 0     |<br>| Handler_read_rnd_next      | 58    |<br>| Handler_rollback           | 0     |<br>| Handler_savepoint          | 0     |<br>| Handler_savepoint_rollback | 0     |<br>| Handler_update             | 0     |<br>| Handler_write              | 55    |<br>+----------------------------+-------+<br>21 rows in set (0.00 sec)<br></code></pre></td></tr></table></figure>
+
+<p><font color="Red">FLASH STATUS; – 该命令作用是重置计数器</font></p>
+<p><font color="Red">通过重置计数器，并测试一条SQL，就可以获取这条SQL的执行时各个计数器的值。EXPLAIN 得到的是估计的结果，而通过 SHOW STATUS 统计计数器的值测量到的是实际发生的结果。</font></p>
+<p><strong>（7）间歇性问题</strong></p>
+<p>举例：一个SQL查询正常情况下很快，但是有几次不合理的特别慢，手工执行下也很快，EXPLAIN 和 SHOW STATUS 中都正确使用了索引，尝试修改WHERE 条件排除缓存命中的可能，也没有什么问题，这种情况下很难查出来是什么原因导致这几次SQL执行很慢，可能是正在备份，或某种类型的锁，或争用阻塞了SQL的进度等，这种问题就是<font color="Red">间歇性问题</font>。书中对间歇性问题的建议是不要花费太多时间去找出问题所在，更不能用试错的方式来解决问题，可以通过以下思路进行尝试：</p>
+<ul>
+<li><p>先确定到底是服务器问题还是单条SQL的问题</p>
+<ul>
+<li><p>使用SHOW GLOBAL STATUS</p>
+</li>
+<li><p>使用SHOW PROCESSLIST</p>
+</li>
+<li><p>使用慢查询日志</p>
+</li>
+</ul>
+<p>  以上两个方法都是通过不停的捕获命令的输出，观察异常值等其他特征，来进行诊断。第三个方法是查看慢查询日志中吞吐量突然下降时间段<strong>结束后</strong>的那一部分日志，再具体分析哪个SQL导致缓慢。以上三个方法在书中都有具体例子，有需要可以自行看书。书中建议从第1、2两种方法开始查找问题，这两个方法开销最低。</p>
+</li>
+<li><p>有必要再捕获诊断数据</p>
+<ul>
+<li>触发器：根据实际情况设计触发指标和触发条件，使用合理工具（如pt-talk和pt-collect）收集数据给触发器去判断。</li>
+</ul>
+</li>
+</ul>
+<p><strong>（8）一个诊断案例</strong></p>
+<p>略，有需要可以自行看书。</p>
+<p><strong>（9）使用information_schema</strong></p>
+<p>稍后整理一个information_schema库的专题讲解。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/mysql/" class="category-chain-item">mysql</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>第三章-服务器性能剖析</div>
+      <div>https://yury757.github.io/database/mysql/《高性能MySQL》/第3章-服务器性能剖析/第三章-服务器性能剖析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>December 1, 2020</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC5%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%88%9B%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E7%9A%84%E7%B4%A2%E5%BC%95/" title="第五章-创建高性能的索引">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">第五章-创建高性能的索引</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/" title="第四章-Schema与数据类型优化">
+                        <span class="hidden-mobile">第四章-Schema与数据类型优化</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
