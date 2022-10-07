@@ -1,0 +1,764 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yury">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一、介绍cdc，是指变动数据捕获（change data capture），即捕获数据库数据变动信息。 cdc 是一种数据集成方法，公司一般通过变动数据捕获来获取几乎实时的增量数据，并执行相应的 ETL 操作，实现低延迟的数据更新。cdc 一般也用于实时 ETL 的第一步数据抽取的过程。 flinkcdc 是指在 flink 的一组数据源连接器（data source connector），集成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flinkcdc">
+<meta property="og:url" content="https://yury757.github.io/bigdata/flinkcdc/flinkcdc/index.html">
+<meta property="og:site_name" content="Yury&#39;s Note">
+<meta property="og:description" content="一、介绍cdc，是指变动数据捕获（change data capture），即捕获数据库数据变动信息。 cdc 是一种数据集成方法，公司一般通过变动数据捕获来获取几乎实时的增量数据，并执行相应的 ETL 操作，实现低延迟的数据更新。cdc 一般也用于实时 ETL 的第一步数据抽取的过程。 flinkcdc 是指在 flink 的一组数据源连接器（data source connector），集成">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-10-07T15:55:07.164Z">
+<meta property="article:author" content="Yury">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>flinkcdc - Yury&#39;s Note</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"yury757.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Yury's Note" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Yury&#39;s Note</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="flinkcdc"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-12-01 00:00" pubdate>
+          December 1, 2021 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.5k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">flinkcdc</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h2><p>cdc，是指变动数据捕获（change data capture），即捕获数据库数据变动信息。</p>
+<p>cdc 是一种数据集成方法，公司一般通过变动数据捕获来获取几乎实时的增量数据，并执行相应的 ETL 操作，实现低延迟的数据更新。cdc 一般也用于实时 ETL 的第一步数据抽取的过程。</p>
+<p>flinkcdc 是指在 flink 的一组数据源连接器（data source connector），集成 cdc 并从不同数据库获取变更数据。flinkcdc 底层使用 debezium 组件作为引擎来捕获变更数据。flinkcdc 支持 MySQL、postgresql 等多个数据库以提供其变更数据的数据源。</p>
+<p><strong>1、文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://ververica.github.io/flink-cdc-connectors/release-2.0/">Welcome to Flink CDC — Flink CDC 2.0.0 documentation (ververica.github.io)</a></p>
+<p><strong>2、版本</strong></p>
+<p>flink：1.13.6</p>
+<p>scale：2.12</p>
+<p>flink-cdc：2.0.1</p>
+<p><strong>3、支持的数据库</strong></p>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MySQL</td>
+<td>Database: 5.7, 8.0.x JDBC Driver: 8.0.16</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>Database: 9.6, 10, 11, 12 JDBC Driver: 42.2.12</td>
+</tr>
+</tbody></table>
+<p><strong>4、flink 和 flinkcdc 的兼容性</strong></p>
+<table>
+<thead>
+<tr>
+<th>Flink CDC Connector Version</th>
+<th>Flink Version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.0.0</td>
+<td>1.11.*</td>
+</tr>
+<tr>
+<td>1.1.0</td>
+<td>1.11.*</td>
+</tr>
+<tr>
+<td>1.2.0</td>
+<td>1.12.*</td>
+</tr>
+<tr>
+<td>1.3.0</td>
+<td>1.12.*</td>
+</tr>
+<tr>
+<td>1.4.0</td>
+<td>1.13.*</td>
+</tr>
+<tr>
+<td>2.0.*</td>
+<td>1.13.*</td>
+</tr>
+</tbody></table>
+<p><strong>5、一个较为通用的数据库的序列化器</strong></p>
+<p>flink 序列化类，常用于 MySQL 和 postgresql。这里的数据类型映射可能并不完整，需要根据不同数据库做调整。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.serialize;<br><br><span class="hljs-keyword">import</span> com.fasterxml.jackson.databind.JsonNode;<br><span class="hljs-keyword">import</span> com.fasterxml.jackson.databind.node.ArrayNode;<br><span class="hljs-keyword">import</span> com.fasterxml.jackson.databind.node.NullNode;<br><span class="hljs-keyword">import</span> com.fasterxml.jackson.databind.node.ObjectNode;<br><span class="hljs-keyword">import</span> com.ververica.cdc.debezium.DebeziumDeserializationSchema;<br><span class="hljs-keyword">import</span> io.debezium.data.Envelope;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> net.yury.utils.DateUtil;<br><span class="hljs-keyword">import</span> net.yury.utils.JsonUtil;<br><span class="hljs-keyword">import</span> org.apache.flink.api.common.typeinfo.TypeInformation;<br><span class="hljs-keyword">import</span> org.apache.flink.util.Collector;<br><span class="hljs-keyword">import</span> org.apache.kafka.connect.data.*;<br><span class="hljs-keyword">import</span> org.apache.kafka.connect.source.SourceRecord;<br><br><span class="hljs-keyword">import</span> java.math.BigDecimal;<br><span class="hljs-keyword">import</span> java.util.Iterator;<br><span class="hljs-keyword">import</span> java.util.List;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DBDeserialization</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">DebeziumDeserializationSchema</span>&lt;<span class="hljs-title">ObjectNode</span>&gt; </span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> DBDeserialization instance = <span class="hljs-keyword">new</span> DBDeserialization();<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String READ = <span class="hljs-string">&quot;r&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String UPDATE = <span class="hljs-string">&quot;u&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String INSERT = <span class="hljs-string">&quot;c&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String DELETE = <span class="hljs-string">&quot;d&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String TRUNCATE = <span class="hljs-string">&quot;t&quot;</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String BEFORE = <span class="hljs-string">&quot;before&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String AFTER = <span class="hljs-string">&quot;after&quot;</span>;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">deserialize</span><span class="hljs-params">(SourceRecord sourceRecord, Collector&lt;ObjectNode&gt; collector)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;<br>        ObjectNode node = JsonUtil.getMapper().createObjectNode();<br>        Struct value = (Struct)sourceRecord.value();<br>        Struct source = (Struct) value.get(<span class="hljs-string">&quot;source&quot;</span>);<br>        String database = source.getString(<span class="hljs-string">&quot;db&quot;</span>);<br>        String schemaName = source.getString(<span class="hljs-string">&quot;schema&quot;</span>);<br>        String tableName = source.getString(<span class="hljs-string">&quot;table&quot;</span>);<br>        Long modifyTime = source.getInt64(<span class="hljs-string">&quot;ts_ms&quot;</span>);<br>        Envelope.Operation operation = Envelope.operationFor(sourceRecord);<br>        node.put(<span class="hljs-string">&quot;mt&quot;</span>, modifyTime);          <span class="hljs-comment">// modify time</span><br>        node.put(<span class="hljs-string">&quot;db&quot;</span>, database);            <span class="hljs-comment">// database</span><br>        node.put(<span class="hljs-string">&quot;sm&quot;</span>, schemaName);          <span class="hljs-comment">// schemaName</span><br>        node.put(<span class="hljs-string">&quot;tb&quot;</span>, tableName);           <span class="hljs-comment">// table name</span><br>        node.put(<span class="hljs-string">&quot;op&quot;</span>, operation.code());    <span class="hljs-comment">// operation</span><br><br>        ObjectNode before = parseNode(value, BEFORE);<br>        ObjectNode after = parseNode(value, AFTER);<br>        ArrayNode diffField = parseDiff(before, after, operation.code());<br>        node.set(BEFORE, before);<br>        node.set(AFTER, after);<br>        node.set(<span class="hljs-string">&quot;diffField&quot;</span>, diffField);<br>        collector.collect(node);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> TypeInformation&lt;ObjectNode&gt; <span class="hljs-title">getProducedType</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> TypeInformation.of(ObjectNode.class);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ObjectNode <span class="hljs-title">parseNode</span><span class="hljs-params">(Struct struct, String field)</span> </span>&#123;<br>        Object o = struct.get(field);<br>        <span class="hljs-keyword">if</span> (o == <span class="hljs-keyword">null</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        &#125;<br>        Struct v = (Struct)o;<br>        ObjectNode node = JsonUtil.getMapper().createObjectNode();<br>        List&lt;Field&gt; fields = v.schema().fields();<br>        <span class="hljs-keyword">for</span> (Field f : fields) &#123;<br>            Schema.Type type = f.schema().type();<br>            String fName = f.name();<br>            <span class="hljs-keyword">switch</span> (type) &#123;<br>                <span class="hljs-keyword">case</span> INT8:<br>                    node.put(fName, v.getInt8(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> INT16:<br>                    node.put(fName, v.getInt16(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> INT32:<br>                    Integer int32 = v.getInt32(fName);<br>                    <span class="hljs-keyword">if</span> (int32 == <span class="hljs-keyword">null</span>) &#123;<br>                        node.set(fName, NullNode.instance);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                    <span class="hljs-keyword">if</span> (io.debezium.time.Date.SCHEMA_NAME.equals(f.schema().name())) &#123;<br>                        node.put(fName, DateUtil.formatToString(<span class="hljs-keyword">new</span> java.util.Date(int32 * DateUtil.ONE_DAY_SEC)));<br>                    &#125;<span class="hljs-keyword">else</span> &#123;<br>                        node.put(fName, int32);<br>                    &#125;<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> INT64:<br>                    node.put(fName, v.getInt64(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> FLOAT32:<br>                    node.put(fName, v.getFloat32(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> FLOAT64:<br>                    node.put(fName, v.getFloat64(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> STRING:<br>                    node.put(fName, v.getString(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> BOOLEAN:<br>                    node.put(fName, v.getBoolean(fName));<br>                    <span class="hljs-keyword">break</span>;<br>                <span class="hljs-keyword">case</span> BYTES:<br>                    Object o1 = v.get(fName);<br>                    <span class="hljs-keyword">if</span> (o1 <span class="hljs-keyword">instanceof</span> BigDecimal) &#123;<br>                        node.put(fName, (BigDecimal)o1);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (o1 <span class="hljs-keyword">instanceof</span> <span class="hljs-keyword">byte</span>[]) &#123;<br>                        node.put(fName, (<span class="hljs-keyword">byte</span>[]) o1);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<span class="hljs-keyword">else</span> &#123;<br>                        log.error(<span class="hljs-string">&quot;unsupported type [&#123;&#125;], we parse them as string.&quot;</span>, f.schema().name());<br>                        node.put(fName, String.valueOf(o1));<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                <span class="hljs-keyword">default</span>:<br>                    log.error(<span class="hljs-string">&quot;unsupported type [&#123;&#125;], we parse them as string.&quot;</span>, type.getName());<br>                    node.put(fName, String.valueOf(v.get(fName)));<br>                    <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> node;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ArrayNode <span class="hljs-title">parseDiff</span><span class="hljs-params">(ObjectNode before, ObjectNode after, String operation)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (UPDATE.equals(operation)) &#123;<br>            ArrayNode diff = JsonUtil.getMapper().createArrayNode();<br>            Iterator&lt;Map.Entry&lt;String, JsonNode&gt;&gt; nodeEntries = before.fields();<br>            <span class="hljs-keyword">while</span> (nodeEntries.hasNext()) &#123;<br>                Map.Entry&lt;String, JsonNode&gt; next = nodeEntries.next();<br>                String f = next.getKey();<br>                JsonNode v1 = next.getValue();<br>                JsonNode v2 = after.get(f);<br>                <span class="hljs-keyword">if</span> ((v1 == <span class="hljs-keyword">null</span> &amp;&amp; v2 != <span class="hljs-keyword">null</span>) || (v1 != <span class="hljs-keyword">null</span> &amp;&amp; (!v1.equals(v2)))) &#123;<br>                    diff.add(f);<br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">return</span> diff;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="二、postgresql"><a href="#二、postgresql" class="headerlink" title="二、postgresql"></a>二、postgresql</h2><p><strong>1、文档</strong></p>
+<p><a target="_blank" rel="noopener" href="https://debezium.io/documentation/reference/1.5/connectors/postgresql.html">Debezium connector for PostgreSQL :: Debezium Documentation</a></p>
+<p><strong>2、使用限制</strong></p>
+<ul>
+<li>pg 版本为 9.6 及以上版本</li>
+<li>pg 设置 wal_level 为 logical</li>
+<li>pg 安装了逻辑复制解码插件。最好使用 pgoutput 插件（10+ 版本默认安装，其他版本需要额外安装），低版本的 pg 若无法使用 pgoutput，则可以尝试使用 wal2json 插件（已被 debezium 新版本弃用）。</li>
+<li>只能作用在 primary 服务器上，即无法捕获从服务器的变动</li>
+<li>只支持 UTF-8 字符集的服务器</li>
+</ul>
+<p><strong>3、支持的事件</strong></p>
+<p>DML（read、insert、update、delete、truncate），不支持捕获 DDL 事件。</p>
+<p><strong>4、Replica identity</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/sql-altertable.html#SQL-CREATETABLE-REPLICA-IDENTITY">PostgreSQL: Documentation: 14: ALTER TABLE</a></p>
+<p>Replica identity：即规定需要记录到 wal 日志中的信息，用于识别被更新或者被删除的行。有以下三种模式可选。</p>
+<ul>
+<li>DEFAULT，只记录主键的旧值</li>
+<li>USING INDEX index_name，当变更数据字段包括在这个索引中，则记录旧值</li>
+<li>FULL，记录这一行中所有字段的旧值</li>
+<li>NOTHING，不记录任何值</li>
+</ul>
+<p>以上四种模式，常用 DEFAULT 和 FULL，这两种有各自的使用场景。</p>
+<p>当不关心旧数据具体是哪个字段变化时，可以使用 DEFAULT，需要知道具体哪个字段变化时，需要使用 FULL。</p>
+<p>修改该配置的方法如下， 且需要对每个表进行修改。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> t1 REPLICA <span class="hljs-keyword">IDENTITY</span> <span class="hljs-keyword">FULL</span>;<br></code></pre></td></tr></table></figure>
+
+<p><strong>5、stream api 使用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> net.yury.main;<br><br><span class="hljs-keyword">import</span> com.fasterxml.jackson.databind.node.ObjectNode;<br><span class="hljs-keyword">import</span> com.ververica.cdc.connectors.postgres.PostgreSQLSource;<br><span class="hljs-keyword">import</span> net.yury.serialize.DBDeserialization;<br><span class="hljs-keyword">import</span> net.yury.sink.PrintSink;<br><span class="hljs-keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;<br><span class="hljs-keyword">import</span> org.apache.flink.streaming.api.functions.source.SourceFunction;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo11PostgresCDC</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;<br>        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();<br>        SourceFunction&lt;ObjectNode&gt; pgSource = PostgreSQLSource.&lt;ObjectNode&gt;builder()<br>                .hostname(<span class="hljs-string">&quot;192.168.141.141&quot;</span>)<br>                .port(<span class="hljs-number">5432</span>)<br>                .database(<span class="hljs-string">&quot;postgres&quot;</span>)<br>                .schemaList(<span class="hljs-string">&quot;public&quot;</span>)<br>                .tableList(<span class="hljs-string">&quot;public.t1&quot;</span>)<br>                .username(<span class="hljs-string">&quot;postgres&quot;</span>)<br>                .password(<span class="hljs-string">&quot;postgres&quot;</span>)<br>                .deserializer(<span class="hljs-keyword">new</span> DBDeserialization())<br>                .decodingPluginName(<span class="hljs-string">&quot;pgoutput&quot;</span>)<br>                .build();<br><br>        env.addSource(pgSource)<br>                .addSink(<span class="hljs-keyword">new</span> PrintSink&lt;ObjectNode&gt;())<br>                .setParallelism(<span class="hljs-number">1</span>);<br>        env.execute(<span class="hljs-string">&quot;Print postgresql Snapshot + Binlog&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>6、sql api 使用</strong></p>
+<p><strong>7、复制槽</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> pg_catalog.pg_replication_slots;               # 复制槽状态<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> pg_catalog.pg_stat_replication;                # 逻辑复制状态<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> pg_catalog.pg_replication_origin_status;       # 逻辑复制数据源状态<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> pg_catalog.pg_replication_origin;              # 逻辑复制数据源<br><br><span class="hljs-keyword">select</span> pg_drop_replication_slot(<span class="hljs-string">&#x27;flink&#x27;</span>);   # 删除复制槽<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/bigdata/" class="category-chain-item">bigdata</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>flinkcdc</div>
+      <div>https://yury757.github.io/bigdata/flinkcdc/flinkcdc/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Yury</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>December 1, 2021</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>Licensed under</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/database/mysql/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/MySQL%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95/" title="MySQL迁移数据目录">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MySQL迁移数据目录</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/bigdata/clickhouse/clickhouse/" title="clickhouse">
+                        <span class="hidden-mobile">clickhouse</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
