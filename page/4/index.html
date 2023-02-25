@@ -224,15 +224,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/" target="_self">
-          第四章-Schema与数据类型优化
+        <a href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/" target="_self">
+          第一章-MySQL架构与历史
         </a>
       </h1>
 
-      <a class="index-excerpt" href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC4%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/%E7%AC%AC%E5%9B%9B%E7%AB%A0-Schema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/" target="_self">
+      <a class="index-excerpt" href="/database/mysql/%E3%80%8A%E9%AB%98%E6%80%A7%E8%83%BDMySQL%E3%80%8B/%E7%AC%AC1%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/%E7%AC%AC%E4%B8%80%E7%AB%A0-MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%86%E5%8F%B2/" target="_self">
         <div>
           
-          4.1 选择优化的数据类型1、应该尽量使用可以正确存储存储数据的最小数据类型。如能使用tinyint就不要使用int，能使用varchar(20)，就不要使用varchar(100)。 2、应该尽量使用尽可能简单的数据类型，如日期类型尽量使用date、time、datetime，而不是使用varchar存储日期数据，另外应该使用整形存储IP地址，而不是使用varchar。 3、应该尽量避免null
+          1.1 MySQL逻辑架构 第一层：连接、线程处理、授权认证、安全等  第二层：缓存、解析器、优化器等。第一层 + 第二层 &#x3D; 服务器层？？？  第三层：存储引擎，负责MySQL数据的存储和提取。    1.1.1 连接管理与安全性每个客户端连接都会在服务器中有一个线程，这个连接的查询只会在这个单独的线程中进行。如：  使用命令行登录MySQL服务器后，show processlist就会新增一个
         </div>
       </a>
 

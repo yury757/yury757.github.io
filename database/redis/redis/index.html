@@ -24,7 +24,7 @@
 <meta property="og:description" content="一、ACL123456789101112131415ACL &lt;subcommand&gt; [&lt;arg&gt; [value] [opt] ...].     # access control list，访问控制列表，可以结合subcommand子命令形成很多命令组合，主要用于权限访问相关命令。如：acl cat [&lt;category&gt;]     # 列举category目">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-05-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-10-30T14:17:20.173Z">
+<meta property="article:modified_time" content="2023-02-25T08:53:27.939Z">
 <meta property="article:author" content="Yury">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -217,7 +217,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          23k words
+          25k words
         
       </span>
     
@@ -228,7 +228,7 @@
         
         
         
-          195 mins
+          209 mins
         
       </span>
     
@@ -475,7 +475,8 @@
 <li>lettuce 的 pipeline 的 flush 机制有坑，性能也不如 jedis 的 pipeline，因此在大批量读写 redis 的场景时，最好还是使用jedis pipeline</li>
 <li>lettuce 6 版本不兼容 redis server 5 版本，要么使用和服务端相同版本的客户端连接，要么在使用 lettuce 6 连接 redis 5 时，设置<code>redisClient.setOptions(ClientOptions.builder().protocolVersion(ProtocolVersion.RESP2).build();</code></li>
 </ul>
-<h3 id="3、最佳实践"><a href="#3、最佳实践" class="headerlink" title="3、最佳实践"></a>3、最佳实践</h3><p>高并发场景使用 lettuce，低并发且大批量读写 redis 场景，使用 jedis pipeline。</p>
+<h3 id="3、最佳实践"><a href="#3、最佳实践" class="headerlink" title="3、最佳实践"></a>3、最佳实践</h3><p>1、高并发场景使用 lettuce，低并发且大批量读写 redis 场景，使用 jedis pipeline。</p>
+<p>2、mset、hmset、mget、hmget的性能比pipeline好，需要根据业务场景，适当调整redis的数据结构，尽量使用带m的命令代替pipeline。</p>
 <h2 id="八、并发"><a href="#八、并发" class="headerlink" title="八、并发"></a>八、并发</h2><h3 id="1、事务介绍"><a href="#1、事务介绍" class="headerlink" title="1、事务介绍"></a>1、事务介绍</h3><p>redis的事务是一个单独的隔离操作：事务中的所有命令都会被序列化，按顺序地执行，在执行过程中不会被其他命令打断。主要用处是将多个命令串联在一起，防止被别的命令插队修改数据导致无法实现预期的操作。</p>
 <p>类似于将多个命令按顺序打包成一个命令。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> redis-cli命令如下</span><br>multi      # 开启事务，相当于begin，开启后该客户端发送给服务器的命令会按顺序被打包起来，并不直接执行<br>exec       # 执行事务，先当与commit，将打包的命令依次执行，执行期间其他任何命令都会被阻塞<br>discard    # 抛弃事务，相当于rollback，主动抛弃所有打包的命令<br></code></pre></td></tr></table></figure>
@@ -549,6 +550,47 @@
 <li>200ms，线程2，等待结束，重试查询redis，命中缓存，返回数据。</li>
 </ul>
 <p>互斥锁实现：使用setnx实现。</p>
+<h2 id="十、哨兵模式"><a href="#十、哨兵模式" class="headerlink" title="十、哨兵模式"></a>十、哨兵模式</h2><p>哨兵模式实现了一个 redis 主从架构的高可用方案。</p>
+<p>哨兵模式的工作原理：</p>
+<p>部署一个哨兵程序集群，这个哨兵集群会一直监控 redis 主从的可用性，当哨兵集群认为主服务器客观下线时，就会投票从多个从服务器中选举出一台从服务器成为主服务器，并让其他从服务器成为新主服务器的从服务器，还会持续监控挂掉的那台服务器的可用性，当它重新可用时，会发送命令让他作为从服务器重新加入到主从集群中。</p>
+<p>详细资料：待完善</p>
+<h2 id="十一、分片集群"><a href="#十一、分片集群" class="headerlink" title="十一、分片集群"></a>十一、分片集群</h2><h3 id="1、集群总线端口"><a href="#1、集群总线端口" class="headerlink" title="1、集群总线端口"></a>1、集群总线端口</h3><p>默认为客户端端口+10000，还可以通过<code>cluster-port</code>自定义配置这个端口。如果有防火墙，则需要额外打开这个端口。</p>
+<p>作用：用于实例之间的通信，用作故障检测、配置更新、故障转移授权等。</p>
+<h3 id="2、数据分片"><a href="#2、数据分片" class="headerlink" title="2、数据分片"></a>2、数据分片</h3><p>redis cluster使用非一致哈希，redis cluster默认划分了16384个hash slot，每个实例可以负责存储不同hash slot的数据。使用CRC16算法计算key对应的hash slot。</p>
+<p>在创建好了集群后，在每个实例的工作目录下，会生成一个<code>nodes.conf</code>，指明了每个节点负责的slot范围。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getCRC16</span><span class="hljs-params">(<span class="hljs-keyword">byte</span>[] bytes, <span class="hljs-keyword">int</span> s, <span class="hljs-keyword">int</span> e)</span> </span>&#123;<br>    <span class="hljs-keyword">int</span> crc = <span class="hljs-number">0x0000</span>;<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = s; i &lt; e; i++) &#123;<br>        crc = ((crc &lt;&lt; <span class="hljs-number">8</span>) ^ LOOKUP_TABLE[((crc &gt;&gt;&gt; <span class="hljs-number">8</span>) ^ (bytes[i] &amp; <span class="hljs-number">0xFF</span>)) &amp; <span class="hljs-number">0xFF</span>]);<br>    &#125;<br>    <span class="hljs-keyword">return</span> crc &amp; <span class="hljs-number">0xFFFF</span>;<br>&#125;<br><br><span class="hljs-keyword">int</span> slot = getCRC16(key) &amp; (<span class="hljs-number">16384</span> - <span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+
+<p><strong>重点：key中如果存在{}字符，则{}字符中间的字符被称为<code>hash tag</code>，若存在hash tag，则以hash tag来计算slot，否则以整个key的内容来计算hash slot。因此，hash tag相同的key，会落在相同的slot中，也肯定在同一个服务器中。</strong></p>
+<h3 id="3、集群主从模式"><a href="#3、集群主从模式" class="headerlink" title="3、集群主从模式"></a>3、集群主从模式</h3><p>redis cluster支持在每一条分片实例（主）上搭建一个该实例的复制（从）。并且当主实例挂了时，集群会自动拉起从实例作为新的主实例并提供服务。</p>
+<p>redis cluster不是强一致的，因为主从复制是异步的。当客户端写入了数据到主实例时，并响应了OK给客户端，在还没来得及同步给从实例时，redis挂了，则会导致数据丢失。这种情况可以通过<code>WAIT</code>命令解决，即等待写入到从实例，再返回给客户端，但是<code>WAIT</code>会影响性能，需要在性能和一致性之间权衡。</p>
+<p>但是，即使使用了<code>WAIT</code>，还有一种情况会导致数据丢失：在进行网络重分区时，若选举过程中主节点的不可用时间较短，原来的主节点在选举后仍然是主节点，则不会发生数据丢失，集群正常运行；若通信过程中其他节点认为主节点不可用，并且超过了<code>cluster-node-timeout</code>，则集群认为原主节点失败了，需要进行故障转移，此时原主节点会停止执行读写，并选举出新的主节点，则这段时间写入到原主节点的数据会丢失。</p>
+<h3 id="4、配置参数"><a href="#4、配置参数" class="headerlink" title="4、配置参数"></a>4、配置参数</h3><table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>值</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>cluster-enabled</td>
+<td><code>&lt;yes/no&gt;</code></td>
+<td>是否开启集群模式</td>
+</tr>
+<tr>
+<td>cluster-config-file</td>
+<td><code>&lt;filename&gt;</code></td>
+<td>集群信息配置文件。这是一个用户不可编辑文件，每次集群分片修改时，redis cluster都会将集群信息记录到该文件中，以便下次重启时，可以按这个配置文件启动集群。</td>
+</tr>
+<tr>
+<td>cluster-node-timeout</td>
+<td><code>&lt;milliseconds&gt;</code></td>
+<td>redis节点不可用且不被视为失败的最长时间。如果无法访问主节点的时间超过指定的时间，则其副本将对其进行故障转移。</td>
+</tr>
+</tbody></table>
+<h3 id="5、创建集群"><a href="#5、创建集群" class="headerlink" title="5、创建集群"></a>5、创建集群</h3><p>在配置文件修改以下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs conf">cluster-enabled yes<br></code></pre></td></tr></table></figure>
+
 
               
             </div>
